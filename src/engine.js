@@ -1,0 +1,496 @@
+import * as d3 from "d3-selection";
+
+// Music
+const allNotes = [
+    "c",
+    "c#",
+    "d",
+    "d#",
+    "e",
+    "f",
+    "f#",
+    "g",
+    "g#",
+    "a",
+    "a#",
+    "b",
+];
+const allNotesEnh = [
+    "c",
+    "db",
+    "d",
+    "eb",
+    "fb",
+    "f",
+    "gb",
+    "g",
+    "ab",
+    "a",
+    "bb",
+    "cb",
+];
+const colors = [
+    "red",
+    "green",
+    "blue",
+    "black",
+    "purple",
+    "gray",
+    "orange",
+    "lightgray",
+];
+
+// tutte partono da C...
+export const Scales = {
+    // scales
+    lydian: "c d e f# g a b",
+    major: "c d e f g a b",
+    mixolydian: "c d e f g a bb",
+    dorian: "c d eb f g a bb",
+    aeolian: "c d eb f g ab bb",
+    phrygian: "c db eb f g ab bb",
+    locrian: "c db eb f gb ab bb",
+    "harmonic-minor": "c d eb f g ab b",
+    "melodic-minor": "c d eb f g a b",
+    "minor-pentatonic": "c eb f g bb",
+    "minor-blues": "c eb f f# g bb",
+    "major-pentatonic": "c d e g a",
+    "major-blues": "c d d# e g a",
+    "composite-blues": "c d d# e f f# g a bb",
+    "dom-pentatonic": "c e f g bb",
+    japanese: "c db f g ab",
+    // chords
+    maj: "c e g",
+    aug: "c e g#",
+    min: "c eb g",
+    dim: "c eb gb",
+    maj7: "c e g b",
+    7: "c e g bb",
+    min7: "c eb g bb",
+    m7b5: "c eb gb bb",
+    dim7: "c eb gb a",
+    _: function (scale) {
+        return Scales[scale].split(" ");
+    },
+};
+
+// permette di distinguere tra 
+// a aeolian
+// div con data-notes="....."
+// facendo girare la funzione opportuna
+export function whatIs(sequence) {
+    let sections = sequence.split(" ");
+    if (sections.length === 2 && typeof Scales[sections[1]] === "string") {
+        return "scale";
+    }
+    if (sections[0].indexOf(":") > 0) {
+        return "placeNotes";
+    } else {
+        return "addNotes";
+    }
+}
+
+export function asOffset(note) {
+    note = note.toLowerCase();
+    let offset = allNotes.indexOf(note);
+    if (offset === -1) {
+        offset = allNotesEnh.indexOf(note);
+    }
+    return offset;
+}
+
+export function absNote(note) {
+    let octave = note[note.length - 1];
+    let pitch = asOffset(note.slice(0, -1));
+    if (pitch > -1) {
+        return pitch + octave * 12;
+    }
+}
+
+export function noteName(absPitch) {
+    let octave = Math.floor(absPitch / 12);
+    let note = allNotes[absPitch % 12];
+    return note + octave.toString();
+}
+
+// scale = a aeolian
+export function asNotes(scale) {
+    let [root, type] = scale.split(" ");
+    let scaleInC = Scales._(type);  // ["c", "d", "eb", "f", "g", "ab", "bb"]
+    let offset = asOffset(root);  // offset indica lo spostamento da c
+    let scaleTransposed = scaleInC.map(function (note) {
+        return allNotes[(asOffset(note) + offset) % 12];
+    });
+    return scaleTransposed.join(" "); // 
+}
+
+// Fretboard
+export const Tunings = {
+    bass4: {
+        standard: ["e1", "a1", "d2", "g2", "b2", "e3"],
+    },
+    guitar6: {
+        standard: ["e2", "a2", "d3", "g3", "b3", "e4"],
+        E_4ths: ["e2", "a2", "d3", "g3", "c4", "f4"],
+        Drop_D: ["d2", "a2", "d3", "g3", "b3", "e4"],
+        G_open: ["d2", "g2", "d3", "g3", "b3", "d4"],
+        DADGAD: ["d2", "a2", "d3", "g3", "a3", "d4"],
+    },
+    guitar7: {
+        standard: ["b2", "e2", "a2", "d3", "g3", "b3", "e4"],
+        E_4ths: ["b2", "e2", "a2", "d3", "g3", "c3", "f4"],
+    },
+};
+
+// where è l'elemento dentro il quale si renderizza la fretboard
+export const Fretboard = function (config) {
+    config = config || {};
+    let where = config.where || "body";
+
+    let id = "fretboard-" + Math.floor(Math.random() * 1000000);
+
+    let instance = {
+        frets: 12,
+        startFret: 0,
+        strings: 6,
+        tuning: Tunings.guitar6.standard,
+        fretWidth: 50,
+        fretHeight: 20,
+        leftHanded: false,
+        showTitle: false,
+        notes: [],
+        ...config,
+    };
+
+
+    // scales è l'array di scale ordinato secondo la visualizzazione
+    // quello in top visualizzazione è l'ultimo
+    instance.set = (prop, value, scales) => {
+        instance[prop] = value;
+        instance.repaint(scales); // ridisegna la fretboard e poi le note
+    };
+
+    // 5)  le informazioni delle singole note vengono pushiate dentro instance notes
+    instance.addNoteOnString = function (note, string, color) {
+        instance.notes.push({ note, string, color });
+        return instance;
+    };
+
+    // 4) note = a1, red
+    instance.addNote = function (note, color) {
+        for (let string = 1; string <= instance.strings; string++) {  // per tutte le stringhe
+            instance.addNoteOnString(note, string, color);
+        }
+        return instance;
+    };
+
+    // 3) prende tutte le note e chiama l'addNote
+    instance.addNotes = function (notes, color) {
+        let allNotes = notes.split(" ");
+        for (let i = 0; i < allNotes.length; i++) { // aggiunge la nota per tutte le ottave...
+            let showColor = color || colors[i];     //  TODO: COLORI
+            let note = allNotes[i];
+            for (let octave = 1; octave < 7; octave++) {
+                instance.addNote(note + octave, showColor);
+            }
+        }
+        return instance;
+    };
+
+    // 2) scaleName = "a aeolian" -> AGGIUNGE UNA SCALA
+    instance.scale = function (scaleName) {
+        let notes = asNotes(scaleName);
+        instance.addNotes(notes);
+        return instance;
+    };
+
+    // genera una scala a partire da una sequenza di stringa:nota -> utile per gli accordi
+    instance.placeNotes = function (sequence) {
+        let pairs = sequence.split(" ");
+        pairs.forEach(function (pair, i) {
+            const [string, note] = pair.split(":");
+            instance.addNoteOnString(note, parseInt(string)); // , i==0? "red" : "black");
+        });
+        return instance;
+    };
+
+    // 1) qua si aggiunge la scala 
+    // something = "a aeolian"
+    // something = 5:a2 4:a3 3:d4 2:f#4
+    instance.add = function (something) {
+        let sections = something.trim().replace(/\s\s+/g, " ").split(";");
+        sections.forEach(function (section) {
+            section = section.trim();
+            let what = whatIs(section); // what è scale, addNotes o placeNotes
+            instance[what](section);  // qua si fa girare o istance.scale o istance.addNotes, istance.placeNotes
+        });
+        return instance;
+    };
+
+    // pulisce cancellando tutte le note
+    // toglie le note e le informazioni delle note 
+    instance.clearNotes = function () {
+        instance.notes = [];
+        instance.svgContainer.selectAll(".note").remove();
+        instance.svgContainer.selectAll(".note-info").remove();
+        return instance;
+    };
+
+    // METHODS for drawing -------------------------------------------
+
+    let fretFitsIn = function (fret) {
+        return fret > instance.startFret && fret <= instance.frets;
+    };
+
+    let fretsWithDots = function () {
+        let allDots = [3, 5, 7, 9, 15, 17, 19, 21];
+        return allDots.filter(fretFitsIn);
+    };
+
+    let fretsWithDoubleDots = function () {
+        let allDots = [12, 24];
+        return allDots.filter(fretFitsIn);
+    };
+
+    let fretboardHeight = function () {
+        return (instance.strings - 1) * instance.fretHeight + 2;
+    };
+
+    let fretboardWidth = function () {
+        return (instance.frets - instance.startFret) * instance.fretWidth + 2;
+    };
+
+    let XMARGIN = function () {
+        return instance.fretWidth;
+    };
+    let YMARGIN = function () {
+        return instance.fretHeight;
+    };
+
+    let makeContainer = function (elem) {
+        instance.width = fretboardWidth() + XMARGIN() * 2;
+        instance.height = fretboardHeight() + YMARGIN() * 2;
+
+        let container = d3
+            .select(elem)
+            .append("div")
+            .attr("class", "fretboard")
+            .attr("id", id)
+            .append("svg")
+            .attr("width", instance.width)
+            .attr("height", instance.height);
+
+        if (instance.leftHanded) {
+            container = container
+                .append("g")
+                .attr("transform", "scale(-1,1) translate(-" + instance.width + ",0)");
+        }
+
+        return container;
+    };
+
+    let drawFrets = function () {
+        for (let i = instance.startFret; i <= instance.frets; i++) {
+            // BEWARE: the coordinate system for SVG elements uses a transformation
+            // for lefties, however the HTML elements we use for fret numbers and
+            // tuning we transform by hand.
+            let x = (i - instance.startFret) * instance.fretWidth + 1 + XMARGIN();
+            let fretNumX = x;
+            if (instance.leftHanded) {
+                fretNumX = instance.width - x;
+            }
+            // fret
+            instance.svgContainer
+                .append("line")
+                .attr("x1", x)
+                .attr("y1", YMARGIN())
+                .attr("x2", x)
+                .attr("y2", YMARGIN() + fretboardHeight())
+                .attr("stroke", "lightgray")
+                .attr("stroke-width", i === 0 ? 8 : 2);
+            // number
+            d3.select("#" + id)
+                .append("p")
+                .attr("class", "fretnum")
+                .style("top", fretboardHeight() + YMARGIN() + 5 + "px")
+                .style("left", fretNumX - 4 + "px")
+                .text(i);
+        }
+    };
+
+    let drawStrings = function () {
+        for (let i = 0; i < instance.strings; i++) {
+            instance.svgContainer
+                .append("line")
+                .attr("x1", XMARGIN())
+                .attr("y1", i * instance.fretHeight + 1 + YMARGIN())
+                .attr("x2", XMARGIN() + fretboardWidth())
+                .attr("y2", i * instance.fretHeight + 1 + YMARGIN())
+                .attr("stroke", "black")
+                .attr("stroke-width", 1);
+        }
+        let placeTuning = function (d, i) {
+            return (instance.strings - i) * instance.fretHeight - 5 + "px";
+        };
+
+        let toBaseFretNote = function (note) {
+            return noteName(absNote(note) + instance.startFret);
+        };
+
+        let hPosition = instance.leftHanded ? instance.width - 16 + "px" : "4px";
+
+        d3.select("#" + id)
+            .selectAll(".tuning")
+            .data(instance.tuning.slice(0, instance.strings))
+            .style("top", placeTuning)
+            .text(toBaseFretNote)
+            .enter()
+            .append("p")
+            .attr("class", "tuning")
+            .style("top", placeTuning)
+            .style("left", hPosition)
+            .text(toBaseFretNote);
+    };
+
+    let drawDots = function () {
+        let p = instance.svgContainer.selectAll("circle").data(fretsWithDots());
+
+        function dotX(d) {
+            return (
+                (d - instance.startFret - 1) * instance.fretWidth +
+                instance.fretWidth / 2 +
+                XMARGIN()
+            );
+        }
+
+        function dotY(ylocation) {
+            let margin = YMARGIN();
+
+            if (instance.strings % 2 === 0) {
+                return (
+                    ((instance.strings + 3) / 2 - ylocation) * instance.fretHeight +
+                    margin
+                );
+            } else {
+                return (fretboardHeight() * ylocation) / 4 + margin;
+            }
+        }
+
+        p.enter()
+            .append("circle")
+            .attr("cx", dotX)
+            .attr("cy", dotY(2))
+            .attr("r", 4)
+            .style("fill", "#ddd");
+
+        p = instance.svgContainer.selectAll(".octave").data(fretsWithDoubleDots());
+
+        p.enter()
+            .append("circle")
+            .attr("class", "octave")
+            .attr("cx", dotX)
+            .attr("cy", dotY(3))
+            .attr("r", 4)
+            .style("fill", "#ddd");
+        p.enter()
+            .append("circle")
+            .attr("class", "octave")
+            .attr("cx", dotX)
+            .attr("cy", dotY(1))
+            .attr("r", 4)
+            .style("fill", "#ddd");
+    };
+
+    instance.drawBoard = function () {
+        //instance.delete();  // cancella la fretboard
+        instance.svgContainer = makeContainer(where); // crea l'svg
+        drawFrets();  // crea i tasti
+        drawDots();   // crea i punti
+        drawStrings();  // crea le stringhe
+        return instance;
+    };
+
+    function paintNote(note, string, color) {
+        if (string > instance.strings) {
+            return false;
+        }
+        let absPitch = absNote(note);
+        let actualColor = color || "black";
+        let absString = instance.strings - string;
+        let basePitch = absNote(instance.tuning[absString]) + instance.startFret;
+        if (
+            absPitch >= basePitch &&
+            absPitch <= basePitch + instance.frets - instance.startFret
+        ) {
+            // 0.75 is the offset into the fret (higher is closest to fret)
+            let x = (absPitch - basePitch + 0.75) * instance.fretWidth;
+            let y = (string - 1) * instance.fretHeight + 1 + YMARGIN();
+            const circle = instance.svgContainer
+                .append("circle")
+                .attr("class", "note")
+                .attr("stroke-width", 1)
+                .attr("cx", x)
+                .attr("cy", y)
+                .attr("r", 9)
+                .style("stroke", actualColor)
+                .style("fill", actualColor)
+                .on("click", function () {
+                    let fill = this.style.fill;
+                    this.setAttribute(
+                        "stroke-width",
+                        5 - parseInt(this.getAttribute("stroke-width"))
+                    );
+                    this.style.fill = fill === "white" ? "lightgray" : "white";
+                });
+
+            //Add the SVG Text Element to the svgContainer
+            const text = instance.svgContainer
+                .append("text")
+                .attr("class", "note-info")
+                .attr("x", x - 4.5)
+                .attr("y", y + 4.5)
+                .text('T')
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "12px")
+                .attr("fill", "white");
+
+            return true;
+        }
+        return false;
+    }
+
+    /* disegna TUTTE LE NOTE  a partire da istance.notes */
+    instance.paint = function () {
+        for (let { note, string, color } of instance.notes) {
+            paintNote(note, string, color);
+        }
+    };
+
+    instance.repaint = function (scales) {
+        // instance.drawBoard(); -> non si ricrea la tastiera ogni volta che si deve cambiare le note sopra...
+        instance.clearNotes();
+        scales.forEach(scale => {
+            if (scale.visible) {
+                instance.add(scale.value)
+            }
+        });
+        instance.paint();
+    };
+
+
+    /* è utile ??? cancella le note, cancella la tastiera e la ricostituisce. */
+    instance.clear = function () {
+        instance.clearNotes();
+        const el = document.getElementById(id);
+        el.parentNode.removeChild(el);
+        instance.drawBoard();
+        return instance;
+    };
+
+    // cancella tutto l'elemento della fretboard
+    instance.delete = function () {
+        d3.select("#" + id).remove();
+    };
+
+    return instance;
+};

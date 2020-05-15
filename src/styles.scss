@@ -1,0 +1,20 @@
+  .fretboard {
+    position: relative;
+  }
+
+  .fretboard .tuning,
+  .fretboard .fretnum {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    font-family: Helvetica;
+    text-transform: uppercase;
+  }
+
+  .fretboard .tuning {
+    font-size: 10px;
+  }
+
+  .fretboard .fretnum {
+    font-size: 8px;
+  }
