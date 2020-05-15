@@ -41,6 +41,18 @@ window.onload = function () {
             // Bindings
             document.getElementById('add-btn').addEventListener('click', this.addScale.bind(this));
             document.getElementById('remove-btn').addEventListener('click', this.removeScales.bind(this));
+
+            window.onresize = this.resize.bind(this);
+        }
+
+        resize() {
+            // console.log(window.innerHeight, window.innerWidth);
+            this.isSmall = window.innerWidth < 800;
+            if (this.isSmall) {
+                this.guitar.set('fretWidth', 40, this.scales);
+            } else {
+                this.guitar.set('fretWidth', 50, this.scales);
+            }
         }
 
         addScale(event) {

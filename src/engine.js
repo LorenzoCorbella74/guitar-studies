@@ -1,84 +1,12 @@
 import * as d3 from "d3-selection";
 
-// Music
-const allNotes = [
-    "c",
-    "c#",
-    "d",
-    "d#",
-    "e",
-    "f",
-    "f#",
-    "g",
-    "g#",
-    "a",
-    "a#",
-    "b",
-];
-const allNotesEnh = [
-    "c",
-    "db",
-    "d",
-    "eb",
-    "fb",
-    "f",
-    "gb",
-    "g",
-    "ab",
-    "a",
-    "bb",
-    "cb",
-];
-const colors = [
-    "red",
-    "green",
-    "blue",
-    "black",
-    "purple",
-    "gray",
-    "orange",
-    "lightgray",
-];
-
-// tutte partono da C...
-export const Scales = {
-    // scales
-    lydian: "c d e f# g a b",
-    major: "c d e f g a b",
-    mixolydian: "c d e f g a bb",
-    dorian: "c d eb f g a bb",
-    aeolian: "c d eb f g ab bb",
-    phrygian: "c db eb f g ab bb",
-    locrian: "c db eb f gb ab bb",
-    "harmonic-minor": "c d eb f g ab b",
-    "melodic-minor": "c d eb f g a b",
-    "minor-pentatonic": "c eb f g bb",
-    "minor-blues": "c eb f f# g bb",
-    "major-pentatonic": "c d e g a",
-    "major-blues": "c d d# e g a",
-    "composite-blues": "c d d# e f f# g a bb",
-    "dom-pentatonic": "c e f g bb",
-    japanese: "c db f g ab",
-    // chords
-    maj: "c e g",
-    aug: "c e g#",
-    min: "c eb g",
-    dim: "c eb gb",
-    maj7: "c e g b",
-    7: "c e g bb",
-    min7: "c eb g bb",
-    m7b5: "c eb gb bb",
-    dim7: "c eb gb a",
-    _: function (scale) {
-        return Scales[scale].split(" ");
-    },
-};
+import { allNotes, allNotesEnh, colors, Scales, Tunings } from './constants';
 
 // permette di distinguere tra 
 // a aeolian
 // div con data-notes="....."
 // facendo girare la funzione opportuna
-export function whatIs(sequence) {
+function whatIs(sequence) {
     let sections = sequence.split(" ");
     if (sections.length === 2 && typeof Scales[sections[1]] === "string") {
         return "scale";
@@ -90,7 +18,7 @@ export function whatIs(sequence) {
     }
 }
 
-export function asOffset(note) {
+function asOffset(note) {
     note = note.toLowerCase();
     let offset = allNotes.indexOf(note);
     if (offset === -1) {
@@ -99,7 +27,7 @@ export function asOffset(note) {
     return offset;
 }
 
-export function absNote(note) {
+function absNote(note) {
     let octave = note[note.length - 1];
     let pitch = asOffset(note.slice(0, -1));
     if (pitch > -1) {
@@ -107,14 +35,14 @@ export function absNote(note) {
     }
 }
 
-export function noteName(absPitch) {
+function noteName(absPitch) {
     let octave = Math.floor(absPitch / 12);
     let note = allNotes[absPitch % 12];
     return note + octave.toString();
 }
 
 // scale = a aeolian
-export function asNotes(scale) {
+function asNotes(scale) {
     let [root, type] = scale.split(" ");
     let scaleInC = Scales._(type);  // ["c", "d", "eb", "f", "g", "ab", "bb"]
     let offset = asOffset(root);  // offset indica lo spostamento da c
@@ -124,23 +52,7 @@ export function asNotes(scale) {
     return scaleTransposed.join(" "); // 
 }
 
-// Fretboard
-export const Tunings = {
-    bass4: {
-        standard: ["e1", "a1", "d2", "g2", "b2", "e3"],
-    },
-    guitar6: {
-        standard: ["e2", "a2", "d3", "g3", "b3", "e4"],
-        E_4ths: ["e2", "a2", "d3", "g3", "c4", "f4"],
-        Drop_D: ["d2", "a2", "d3", "g3", "b3", "e4"],
-        G_open: ["d2", "g2", "d3", "g3", "b3", "d4"],
-        DADGAD: ["d2", "a2", "d3", "g3", "a3", "d4"],
-    },
-    guitar7: {
-        standard: ["b2", "e2", "a2", "d3", "g3", "b3", "e4"],
-        E_4ths: ["b2", "e2", "a2", "d3", "g3", "c3", "f4"],
-    },
-};
+
 
 // where è l'elemento dentro il quale si renderizza la fretboard
 export const Fretboard = function (config) {
@@ -162,12 +74,12 @@ export const Fretboard = function (config) {
         ...config,
     };
 
-
     // scales è l'array di scale ordinato secondo la visualizzazione
     // quello in top visualizzazione è l'ultimo
     instance.set = (prop, value, scales) => {
         instance[prop] = value;
-        instance.repaint(scales); // ridisegna la fretboard e poi le note
+        instance.clear();           // ridisegna la fretboard
+        instance.repaint(scales);   // ridisegna le note
     };
 
     // 5)  le informazioni delle singole note vengono pushiate dentro instance notes
