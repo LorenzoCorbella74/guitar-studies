@@ -71,15 +71,16 @@ export const Fretboard = function (config) {
         leftHanded: false,
         showTitle: false,
         notes: [],
+        scales: [],
         ...config,
     };
 
     // scales è l'array di scale ordinato secondo la visualizzazione
     // quello in top visualizzazione è l'ultimo
-    instance.set = (prop, value, scales) => {
+    instance.set = (prop, value) => {
         instance[prop] = value;
         instance.clear();           // ridisegna la fretboard
-        instance.repaint(scales);   // ridisegna le note
+        instance.repaint(instance.scales);   // ridisegna le note
     };
 
     // 5)  le informazioni delle singole note vengono pushiate dentro instance notes
@@ -378,10 +379,10 @@ export const Fretboard = function (config) {
         }
     };
 
-    instance.repaint = function (scales) {
+    instance.repaint = function () {
         // instance.drawBoard(); -> non si ricrea la tastiera ogni volta che si deve cambiare le note sopra...
         instance.clearNotes();
-        scales.forEach(scale => {
+        instance.scales.forEach(scale => {
             if (scale.visible) {
                 instance.add(scale.value)
             }

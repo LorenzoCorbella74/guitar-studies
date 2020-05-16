@@ -36,7 +36,7 @@ window.onload = function () {
                 //tuning: fretboard.Tunings.guitar6.Drop_D,
             });
             this.guitar.drawBoard();
-            this.scales = [];
+            this.guitar.scales = [];
 
             // Bindings
             document.getElementById('add-btn').addEventListener('click', this.addScale.bind(this));
@@ -49,9 +49,9 @@ window.onload = function () {
             // console.log(window.innerHeight, window.innerWidth);
             this.isSmall = window.innerWidth < 800;
             if (this.isSmall) {
-                this.guitar.set('fretWidth', 40, this.scales);
+                this.guitar.set('fretWidth', 40);
             } else {
-                this.guitar.set('fretWidth', 50, this.scales);
+                this.guitar.set('fretWidth', 50);
             }
         }
 
@@ -69,7 +69,7 @@ window.onload = function () {
                 <span class="delete-btn"> x </span>
                 `;
             list.appendChild(li);
-            this.scales.push({ id: id, value: input.value, visible: true });
+            this.guitar.scales.push({ id: id, value: input.value, visible: true });
             this.guitar.add(input.value);
             this.guitar.paint();
             input.value = '';
@@ -91,25 +91,25 @@ window.onload = function () {
                 list.removeChild(list.firstChild);
             }
             this.guitar.clearNotes();
-            this.scales = [];
+            this.guitar.scales = [];
             this.updateTitle('');
         }
 
         toggleVisibility(event, id) {
             event.stopPropagation();
-            let selected = this.scales.find(e => e.id === id)
+            let selected = this.guitar.scales.find(e => e.id === id)
             selected.visible = !selected.visible;
             let li = document.getElementById(id)
             li.querySelector('.visibility-btn').textContent = selected.visible ? 'o' : '-';
-            this.guitar.repaint(this.scales);
+            this.guitar.repaint();
         }
 
         deleteScale(event, id) {
             event.stopPropagation();
             let elem = document.getElementById(id);
             elem.parentNode.removeChild(elem)
-            this.scales = this.scales.filter(s => s.id !== id);
-            this.guitar.repaint(this.scales);
+            this.guitar.scales = this.guitar.scales.filter(s => s.id !== id);
+            this.guitar.repaint();
         }
 
         selectScale(event, id) {
@@ -119,11 +119,11 @@ window.onload = function () {
             });
             let li = document.getElementById(id);
             li.classList.add('selected');
-            let index = this.scales.findIndex(e => e.id === id);
-            let selected = this.scales.splice(index, 1)[0];
-            this.scales.push(selected);
+            let index = this.guitar.scales.findIndex(e => e.id === id);
+            let selected = this.guitar.scales.splice(index, 1)[0];
+            this.guitar.scales.push(selected);
             this.updateTitle(selected.value);
-            this.guitar.repaint(this.scales);
+            this.guitar.repaint();
         }
 
         updateTitle(title) {
