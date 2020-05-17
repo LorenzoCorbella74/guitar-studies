@@ -3,6 +3,8 @@ import "./styles.scss";
 
 import { Fretboard } from './engine';
 
+import { Chord, Distance, Scale } from "@tonaljs/tonal";
+
 window.onload = function () {
 
     class App {
@@ -21,6 +23,13 @@ window.onload = function () {
                     <div id="output">
                         <div class="scale-info">
                             <h3 class="scale-title"></h3>
+                            <div class="scale-table">
+                                <table>
+                                    <tr class="degrees"></tr>
+                                    <tr class="notes"></tr>
+                                </table>
+                            </div>
+                            <div class="dots"> o </div>
                         </div>
                         <!-- FRETBOARD -->
                 </div>
@@ -72,7 +81,6 @@ window.onload = function () {
             this.guitar.scales.push({ id: id, value: input.value, visible: true });
             this.guitar.add(input.value);
             this.guitar.paint();
-            input.value = '';
             li.querySelector('.scale-txt').addEventListener('click', (event) => {
                 this.selectScale(event, id);
             });
@@ -82,6 +90,23 @@ window.onload = function () {
             li.querySelector('.delete-btn').addEventListener('click', (event) => {
                 this.deleteScale(event, id);
             });
+            this.updateTitle(input.value);
+            this.updateLayerInfo(input.value);
+            input.value = '';
+        }
+
+        updateLayerInfo(scale) {
+            let degrees = document.querySelector('.degrees')
+            let noteNames = document.querySelector('.notes')
+            if (scale) {
+                let [root, name] = scale.trim().split(' ');
+                let { notes, intervals } = Scale.get(`${root} ${name}`);
+                degrees.innerHTML = intervals.map(e => `<td>${e}</td>`).join('');
+                noteNames.innerHTML = notes.map(e => `<td>${e}</td>`).join('');
+            } else {
+                degrees.innerHTML = '';
+                noteNames.innerHTML = '';
+            }
         }
 
         removeScales(event) {
@@ -93,6 +118,7 @@ window.onload = function () {
             this.guitar.clearNotes();
             this.guitar.scales = [];
             this.updateTitle('');
+            this.updateLayerInfo();
         }
 
         toggleVisibility(event, id) {
@@ -123,6 +149,7 @@ window.onload = function () {
             let selected = this.guitar.scales.splice(index, 1)[0];
             this.guitar.scales.push(selected);
             this.updateTitle(selected.value);
+            this.updateLayerInfo(selected.value);
             this.guitar.repaint();
         }
 

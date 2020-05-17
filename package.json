@@ -8,11 +8,12 @@
   "license": "ISC",
   "scripts": {
     "clean": "rm dist/bundle.js",
-    "start:dev": "webpack-dev-server  --mode development",
+    "start": "webpack-dev-server  --mode development",
     "build-dev": "webpack -d --mode development",
     "build-prod": "webpack -p --mode production"
   },
   "dependencies": {
+    "@tonaljs/tonal": "^4.0.0",
     "d3-selection": "^1.4.1"
   },
   "devDependencies": {
