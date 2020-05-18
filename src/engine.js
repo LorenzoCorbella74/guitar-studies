@@ -42,7 +42,7 @@ function noteName(absPitch) {
 }
 
 // scale = a aeolian
-function asNotes(scale) {
+export function asNotes(scale) {
     let [root, type] = scale.split(" ");
     let scaleInC = Scales._(type);  // ["c", "d", "eb", "f", "g", "ab", "bb"]
     let offset = asOffset(root);  // offset indica lo spostamento da c
@@ -98,13 +98,16 @@ export const Fretboard = function (config) {
     };
 
     // 3) prende tutte le note e chiama l'addNote
-    instance.addNotes = function (notes, color) {
+    instance.addNotes = function (notes, scale) {
+        let index = instance.scales.findIndex(i => i.value === scale);
         let allNotes = notes.split(" ");
-        for (let i = 0; i < allNotes.length; i++) { // aggiunge la nota per tutte le ottave...
-            let showColor = color || colors[i];     //  TODO: COLORI
+        for (let i = 0; i < allNotes.length; i++) {
+            let showColor = colors[i];     //  TODO: COLORI
             let note = allNotes[i];
-            for (let octave = 1; octave < 7; octave++) {
-                instance.addNote(note + octave, showColor);
+            if (instance.scales[index].notesVisibility[i]) {        // solo se la nota è visibile
+                for (let octave = 1; octave < 7; octave++) {    // aggiunge la nota per tutte le ottave...
+                    instance.addNote(note + octave, showColor);
+                }
             }
         }
         return instance;
@@ -113,7 +116,7 @@ export const Fretboard = function (config) {
     // 2) scaleName = "a aeolian" -> AGGIUNGE UNA SCALA
     instance.scale = function (scaleName) {
         let notes = asNotes(scaleName);
-        instance.addNotes(notes);
+        instance.addNotes(notes, scaleName);
         return instance;
     };
 
@@ -148,6 +151,13 @@ export const Fretboard = function (config) {
         instance.svgContainer.selectAll(".note-info").remove();
         return instance;
     };
+
+    instance.updateLayer = function (index, scaleName) {
+        let indexScale = instance.scales.findIndex(n => n.value === scaleName);
+        let my = instance.scales[indexScale].notesVisibility[index];
+        instance.scales[indexScale].notesVisibility[index] = my ? 0 : 1;
+        instance.repaint();
+    }
 
     // METHODS for drawing -------------------------------------------
 

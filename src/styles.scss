@@ -37,6 +37,7 @@ body {
   min-height: 22px;
   display: flex;
   justify-content: space-between;
+  width: 97%;
 }
 
 .scale-title {
@@ -73,6 +74,10 @@ body {
 
 .note-info {
   font-weight: 700;
+}
+
+.disabled {
+  color: #b1afaf;
 }
 
 .fretboard {

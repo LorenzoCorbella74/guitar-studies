@@ -1,7 +1,8 @@
 import "./styles.css";
 import "./styles.scss";
+import template from './index.html'
 
-import { Fretboard } from './engine';
+import { Fretboard, asNotes } from './engine';
 
 import { Chord, Distance, Scale } from "@tonaljs/tonal";
 
@@ -11,33 +12,7 @@ window.onload = function () {
 
         constructor() {
             this.body = document.body;
-            this.body.innerHTML = `
-            <div class="container">
-                <!-- LAYERS -->
-                <div class="layers">
-                    <input id="input" type="text" placeholder="Add scale...">
-                        <button id="add-btn"> + </button>
-                        <button id="remove-btn"> x </button>
-                        <ul id="list"></ul>
-                </div>
-                    <div id="output">
-                        <div class="scale-info">
-                            <h3 class="scale-title"></h3>
-                            <div class="scale-table">
-                                <table>
-                                    <tr class="degrees"></tr>
-                                    <tr class="notes"></tr>
-                                </table>
-                            </div>
-                            <div class="dots"> o </div>
-                        </div>
-                        <!-- FRETBOARD -->
-                </div>
-                    <!-- SLIDER -->
-                <div id="slider">
-
-                </div>
-            </div>`;
+            this.body.innerHTML = `${template}`;
 
             this.guitar = Fretboard({
                 where: "#output",
@@ -64,6 +39,12 @@ window.onload = function () {
             }
         }
 
+        getNoteVisibilityRange(scale) {
+            let notes = asNotes(scale);
+            notes = notes.split(' ');
+            return notes.map(e => 1);
+        }
+
         addScale(event) {
             event.stopPropagation();
             const input = document.getElementById('input');
@@ -78,7 +59,13 @@ window.onload = function () {
                 <span class="delete-btn"> x </span>
                 `;
             list.appendChild(li);
-            this.guitar.scales.push({ id: id, value: input.value, visible: true });
+            let toBeAdded = {
+                id: id,
+                value: input.value,
+                visible: true,
+                notesVisibility: this.getNoteVisibilityRange(input.value)
+            };
+            this.guitar.scales.push(toBeAdded);
             this.guitar.add(input.value);
             this.guitar.paint();
             li.querySelector('.scale-txt').addEventListener('click', (event) => {
@@ -91,18 +78,33 @@ window.onload = function () {
                 this.deleteScale(event, id);
             });
             this.updateTitle(input.value);
-            this.updateLayerInfo(input.value);
+            this.updateLayerInfo(toBeAdded);
             input.value = '';
         }
 
-        updateLayerInfo(scale) {
+        updateLayerInfo(info) {
+            let scale = info.value;
             let degrees = document.querySelector('.degrees')
             let noteNames = document.querySelector('.notes')
             if (scale) {
                 let [root, name] = scale.trim().split(' ');
                 let { notes, intervals } = Scale.get(`${root} ${name}`);
-                degrees.innerHTML = intervals.map(e => `<td>${e}</td>`).join('');
-                noteNames.innerHTML = notes.map(e => `<td>${e}</td>`).join('');
+                degrees.innerHTML = intervals.map((e, i) => `<td class="${info.notesVisibility[i] ? '' : 'disabled'}">${e}</td>`).join('');
+                noteNames.innerHTML = notes.map((e, i) => `<td class="${info.notesVisibility[i] ? '' : 'disabled'}">${e}</td>`).join('');
+                for (let i = 0; i < noteNames.children.length; i++) {
+                    const elementN = noteNames.children[i];
+                    elementN.addEventListener('click', (event) => {
+                        this.guitar.updateLayer(i, scale);
+                        elementN.classList.toggle('disabled');
+                        elementD.classList.toggle('disabled');
+                    });
+                    const elementD = degrees.children[i];
+                    elementD.addEventListener('click', (event) => {
+                        this.guitar.updateLayer(i, scale);
+                        elementN.classList.toggle('disabled');
+                        elementD.classList.toggle('disabled');
+                    });
+                }
             } else {
                 degrees.innerHTML = '';
                 noteNames.innerHTML = '';
@@ -136,6 +138,8 @@ window.onload = function () {
             elem.parentNode.removeChild(elem)
             this.guitar.scales = this.guitar.scales.filter(s => s.id !== id);
             this.guitar.repaint();
+            this.updateTitle('');
+            this.updateLayerInfo();
         }
 
         selectScale(event, id) {
@@ -149,7 +153,7 @@ window.onload = function () {
             let selected = this.guitar.scales.splice(index, 1)[0];
             this.guitar.scales.push(selected);
             this.updateTitle(selected.value);
-            this.updateLayerInfo(selected.value);
+            this.updateLayerInfo(selected);
             this.guitar.repaint();
         }
 
