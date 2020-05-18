@@ -42,7 +42,7 @@ window.onload = function () {
         getNoteVisibilityRange(scale) {
             let notes = asNotes(scale);
             notes = notes.split(' ');
-            return notes.map(e => 1);
+            return notes.map(() => 1);
         }
 
         addScale(event) {
@@ -94,12 +94,14 @@ window.onload = function () {
                 for (let i = 0; i < noteNames.children.length; i++) {
                     const elementN = noteNames.children[i];
                     elementN.addEventListener('click', (event) => {
+                        event.stopPropagation();
                         this.guitar.updateLayer(i, scale);
                         elementN.classList.toggle('disabled');
                         elementD.classList.toggle('disabled');
                     });
                     const elementD = degrees.children[i];
                     elementD.addEventListener('click', (event) => {
+                        event.stopPropagation();
                         this.guitar.updateLayer(i, scale);
                         elementN.classList.toggle('disabled');
                         elementD.classList.toggle('disabled');

@@ -13,6 +13,7 @@ export const allNotes = [
     "a#",
     "b",
 ];
+
 export const allNotesEnh = [
     "c",
     "db",
@@ -27,6 +28,7 @@ export const allNotesEnh = [
     "bb",
     "cb",
 ];
+
 export const colors = [
     "red",
     "green",
