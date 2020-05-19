@@ -1,15 +1,3 @@
-
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Lato', sans-serif;
-}
-
 .container {
   display: flex;
   padding: 15px;
@@ -49,7 +37,7 @@ body {
   }
 }
 
-.scale-txt {
+.layer-label {
   flex: 1;
 }
 
@@ -67,7 +55,8 @@ body {
 }
 
 .note-info {
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 10px;
 }
 
 .disabled {

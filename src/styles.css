@@ -5,3 +5,33 @@
   --primary-color: #30336b;
   --secondary-color: #be2edd;
 }
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+}
+
+input[type=text],
+textarea,
+select,
+button {
+  width: 250px;
+  border: none;
+  padding: 12px 20px;
+  margin-top: 0px;
+}
+
+input[type=radio] {
+  width: 24px;
+  margin-bottom: 12px;
+}
+
+label {
+  width: 60px;
+  display: inline-block;
+}

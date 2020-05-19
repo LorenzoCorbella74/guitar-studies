@@ -2,21 +2,7 @@ import * as d3 from "d3-selection";
 
 import { allNotes, allNotesEnh, colors, Scales, Tunings } from './constants';
 
-// permette di distinguere tra 
-// a aeolian
-// div con data-notes="....."
-// facendo girare la funzione opportuna
-function whatIs(sequence) {
-    let sections = sequence.split(" ");
-    if (sections.length === 2 && typeof Scales[sections[1]] === "string") {
-        return "scale";
-    }
-    if (sections[0].indexOf(":") > 0) {
-        return "placeNotes";
-    } else {
-        return "addNotes";
-    }
-}
+import { /* Chord, Distance, */ Scale } from "@tonaljs/tonal";
 
 function asOffset(note) {
     note = note.toLowerCase();
@@ -41,19 +27,6 @@ function noteName(absPitch) {
     return note + octave.toString();
 }
 
-// scale = a aeolian
-export function asNotes(scale) {
-    let [root, type] = scale.split(" ");
-    let scaleInC = Scales._(type);  // ["c", "d", "eb", "f", "g", "ab", "bb"]
-    let offset = asOffset(root);  // offset indica lo spostamento da c
-    let scaleTransposed = scaleInC.map(function (note) {
-        return allNotes[(asOffset(note) + offset) % 12];
-    });
-    return scaleTransposed.join(" "); // 
-}
-
-
-
 // where è l'elemento dentro il quale si renderizza la fretboard
 export const Fretboard = function (config) {
     config = config || {};
@@ -71,7 +44,7 @@ export const Fretboard = function (config) {
         leftHanded: false,
         showTitle: false,
         notes: [],
-        scales: [],
+        layers: [],
         ...config,
     };
 
@@ -84,40 +57,38 @@ export const Fretboard = function (config) {
     };
 
     // 5)  le informazioni delle singole note vengono pushiate dentro instance notes
-    instance.addNoteOnString = function (note, string, color) {
-        instance.notes.push({ note, string, color });
-        return instance;
+    instance.addNoteOnString = function (note, string, color, info) {
+        instance.notes.push({ note, string, color, info });
     };
 
     // 4) note = a1, red
-    instance.addNote = function (note, color) {
+    instance.addNote = function (note, color, info) {
         for (let string = 1; string <= instance.strings; string++) {  // per tutte le stringhe
-            instance.addNoteOnString(note, string, color);
+            instance.addNoteOnString(note, string, color, info);
         }
-        return instance;
     };
 
     // 3) prende tutte le note e chiama l'addNote
-    instance.addNotes = function (notes, scale) {
-        let index = instance.layers.findIndex(i => i.value === scale);
-        let allNotes = notes.split(" ");
-        for (let i = 0; i < allNotes.length; i++) {
+    instance.addNotes = function (data) {
+        let { intervals, notes, name, tonic, type } = data;
+        let index = instance.layers.findIndex(i => i.value === name);
+        let whatToShow = instance.layers[index].whatToShow;
+        for (let i = 0; i < notes.length; i++) {
             let showColor = colors[i];     //  TODO: COLORI
-            let note = allNotes[i];
+            let note = notes[i];
+            let info = whatToShow === 'degrees' ? intervals[i] : note;
             if (instance.layers[index].notesVisibility[i]) {        // solo se la nota è visibile
-                for (let octave = 1; octave < 7; octave++) {    // aggiunge la nota per tutte le ottave...
-                    instance.addNote(note + octave, showColor);
+                for (let octave = 1; octave < 7; octave++) {        // aggiunge la nota per tutte le ottave...
+                    instance.addNote(note + octave, showColor, info);
                 }
             }
         }
-        return instance;
     };
 
     // 2) scaleName = "a aeolian" -> AGGIUNGE UNA SCALA
-    instance.scale = function (scaleName) {
-        let notes = asNotes(scaleName);
-        instance.addNotes(notes, scaleName);
-        return instance;
+    instance.addLayer = function (scaleName) {
+        let data = Scale.get(scaleName); // asNotes(scaleName);
+        instance.addNotes(data);
     };
 
     // genera una scala a partire da una sequenza di stringa:nota -> utile per gli accordi
@@ -127,29 +98,13 @@ export const Fretboard = function (config) {
             const [string, note] = pair.split(":");
             instance.addNoteOnString(note, parseInt(string)); // , i==0? "red" : "black");
         });
-        return instance;
     };
 
-    // 1) qua si aggiunge la scala 
-    // something = "a aeolian"
-    // something = 5:a2 4:a3 3:d4 2:f#4
-    instance.add = function (something) {
-        let sections = something.trim().replace(/\s\s+/g, " ").split(";");
-        sections.forEach(function (section) {
-            section = section.trim();
-            let what = whatIs(section); // what è scale, addNotes o placeNotes
-            instance[what](section);  // qua si fa girare o istance.scale o istance.addNotes, istance.placeNotes
-        });
-        return instance;
-    };
-
-    // pulisce cancellando tutte le note
-    // toglie le note e le informazioni delle note 
+    // pulisce cancellando tutte le note e le informazioni delle note 
     instance.clearNotes = function () {
         instance.notes = [];
         instance.svgContainer.selectAll(".note").remove();
         instance.svgContainer.selectAll(".note-info").remove();
-        return instance;
     };
 
     instance.updateLayer = function (index, scaleName) {
@@ -333,7 +288,7 @@ export const Fretboard = function (config) {
         return instance;
     };
 
-    function paintNote(note, string, color) {
+    function paintNote(note, string, color, info) {
         if (string > instance.strings) {
             return false;
         }
@@ -370,9 +325,9 @@ export const Fretboard = function (config) {
             const text = instance.svgContainer
                 .append("text")
                 .attr("class", "note-info")
-                .attr("x", x - 4.5)
-                .attr("y", y + 4.5)
-                .text('T')
+                .attr("x", x - 6)
+                .attr("y", y + 4)
+                .text(info)
                 .attr("font-family", "sans-serif")
                 .attr("font-size", "12px")
                 .attr("fill", "white");
@@ -384,8 +339,8 @@ export const Fretboard = function (config) {
 
     /* disegna TUTTE LE NOTE  a partire da istance.notes */
     instance.paint = function () {
-        for (let { note, string, color } of instance.notes) {
-            paintNote(note, string, color);
+        for (let { note, string, color, info } of instance.notes) {
+            paintNote(note, string, color, info);
         }
     };
 
@@ -394,7 +349,7 @@ export const Fretboard = function (config) {
         instance.clearNotes();
         instance.layers.forEach(scale => {
             if (scale.visible) {
-                instance.add(scale.value)
+                instance.addLayer(scale.value)
             }
         });
         instance.paint();
@@ -411,9 +366,9 @@ export const Fretboard = function (config) {
     };
 
     // cancella tutto l'elemento della fretboard
-    instance.delete = function () {
+    /* instance.delete = function () {
         d3.select("#" + id).remove();
-    };
+    }; */
 
     return instance;
 };
