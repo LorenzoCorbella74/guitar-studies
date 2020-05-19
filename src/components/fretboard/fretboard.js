@@ -26,7 +26,7 @@ export default class MyFretboard {
         document.getElementById('add-btn').addEventListener('click', this.addScale.bind(this));
         document.getElementById('remove-btn').addEventListener('click', this.removeScales.bind(this));
 
-        this.modal = new ModalChoice('modal', this.save);
+        this.modal = new ModalChoice('modal', this.save.bind(this));
 
         window.onresize = this.resize.bind(this);
     }
