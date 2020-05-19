@@ -80,7 +80,7 @@ export const Fretboard = function (config) {
     instance.set = (prop, value) => {
         instance[prop] = value;
         instance.clear();           // ridisegna la fretboard
-        instance.repaint(instance.scales);   // ridisegna le note
+        instance.repaint();   // ridisegna le note
     };
 
     // 5)  le informazioni delle singole note vengono pushiate dentro instance notes
@@ -99,12 +99,12 @@ export const Fretboard = function (config) {
 
     // 3) prende tutte le note e chiama l'addNote
     instance.addNotes = function (notes, scale) {
-        let index = instance.scales.findIndex(i => i.value === scale);
+        let index = instance.layers.findIndex(i => i.value === scale);
         let allNotes = notes.split(" ");
         for (let i = 0; i < allNotes.length; i++) {
             let showColor = colors[i];     //  TODO: COLORI
             let note = allNotes[i];
-            if (instance.scales[index].notesVisibility[i]) {        // solo se la nota è visibile
+            if (instance.layers[index].notesVisibility[i]) {        // solo se la nota è visibile
                 for (let octave = 1; octave < 7; octave++) {    // aggiunge la nota per tutte le ottave...
                     instance.addNote(note + octave, showColor);
                 }
@@ -153,9 +153,9 @@ export const Fretboard = function (config) {
     };
 
     instance.updateLayer = function (index, scaleName) {
-        let indexScale = instance.scales.findIndex(n => n.value === scaleName);
-        let my = instance.scales[indexScale].notesVisibility[index];
-        instance.scales[indexScale].notesVisibility[index] = my ? 0 : 1;
+        let indexScale = instance.layers.findIndex(n => n.value === scaleName);
+        let my = instance.layers[indexScale].notesVisibility[index];
+        instance.layers[indexScale].notesVisibility[index] = my ? 0 : 1;
         instance.repaint();
     }
 
@@ -392,7 +392,7 @@ export const Fretboard = function (config) {
     instance.repaint = function () {
         // instance.drawBoard(); -> non si ricrea la tastiera ogni volta che si deve cambiare le note sopra...
         instance.clearNotes();
-        instance.scales.forEach(scale => {
+        instance.layers.forEach(scale => {
             if (scale.visible) {
                 instance.add(scale.value)
             }
