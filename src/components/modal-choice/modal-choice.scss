@@ -73,15 +73,17 @@
 .save {
     font-weight: bold;
     text-align: right;
+    color: var(--primary-color)
 }
 
 .close:hover,
 .close:focus {
-    color: #000;
+    color: var(--primary-color);
     text-decoration: none;
     cursor: pointer;
 }
 
 .modal-header, .modal-body {
+    color: var(--primary-color);
     padding: 16px;
 }

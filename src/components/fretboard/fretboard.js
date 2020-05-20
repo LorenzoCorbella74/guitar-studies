@@ -7,7 +7,9 @@ import Settings from '../settings/settings';
 
 import { Fretboard } from '../../engine';
 
-import { /* Chord, Distance, */ Scale } from "@tonaljs/tonal";
+import { /* Chord, Distance, */ Note, Scale } from "@tonaljs/tonal";
+
+import { allIntervals } from '../../constants';
 
 export default class MyFretboard {
 
@@ -29,10 +31,61 @@ export default class MyFretboard {
         document.getElementById('add-btn').addEventListener('click', this.addLayer.bind(this));
         document.getElementById('remove-btn').addEventListener('click', this.removeLayers.bind(this));
         document.getElementById('settings-btn').addEventListener('click', this.openLayerSettings.bind(this));
+        document.getElementById('transpose-btn').addEventListener('click', this.transposeLayers.bind(this));
         window.onresize = this.resize.bind(this);
 
         this.modal = new ModalChoice('modal', this.save.bind(this));
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this))
+
+        // SLIDER RANGE
+        const slider = document.querySelector(".slidecontainer .slider");
+        const bubble = document.querySelector(".slidecontainer .bubble");
+        slider.addEventListener("input", () => {
+            this.setBubble(slider, bubble);
+        });
+        this.setBubble(slider, bubble);
+    }
+
+    setBubble (slider, bubble) {
+        const val = slider.value;
+        const min = slider.min ? slider.min : 0;
+        const max = slider.max ? slider.max : 100;
+        const newVal = Number(((val - min) * 100) / (max - min));
+        let selectedInterval = allIntervals[val];
+        bubble.innerHTML = selectedInterval;
+
+        // Sorta magic numbers based on size of the native UI thumb
+        bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
+
+        if (selectedInterval !== '1P') {
+            this.selectedInterval = selectedInterval;
+        }
+    }
+
+    transposeLayers () {
+        for (let i = 0; i < this.guitar.layers.length; i++) {
+            const layer = this.guitar.layers[i];
+            layer.root = Note.transpose(layer.root, this.selectedInterval);
+            layer.value = `${layer.root} ${layer.scale}`;
+        }
+        // layers are deselected
+        document.querySelectorAll('.scale').forEach(element => {
+            element.classList.remove('selected');
+        });
+        // updating labels
+        document.querySelectorAll('.scale').forEach((element, index) => {
+            element.querySelector('.layer-label').innerHTML = this.guitar.layers[index].value;
+        });
+        // Layer info are removed
+        this.updateTitle('');
+        this.updateLayerInfo();
+        // repaint layers
+        this.guitar.repaint();
+        // resetting range
+        const slider = document.querySelector(".slidecontainer .slider");
+        const bubble = document.querySelector(".slidecontainer .bubble");
+        slider.value = '0';
+        this.setBubble(slider, bubble);
     }
 
     resize () {
@@ -98,11 +151,12 @@ export default class MyFretboard {
             visible: true,
             notesVisibility: this.getNoteVisibilityRange(layer),
             tuning: data.tuning,
+            type: data.type,
             whatToShow: data.whatToShow,
             size: 1,
             opacity: 1,
-            color: 'default',
-            differences: 'own'
+            color: 'many',
+            differences: 'own',
         };
         this.guitar.layers.push(toBeAdded);
         this.guitar.addLayer(layer);
@@ -126,7 +180,7 @@ export default class MyFretboard {
     addLayer () {
         let def = {
             type: 'scale',      // can be scale | arpeggio
-            whatToShow: 'notes', // can be notes | degrees
+            whatToShow: 'degrees', // can be notes | degrees
             tuning: 'E_std',
             root: 'A',
             scale: 'dorian',
@@ -181,7 +235,7 @@ export default class MyFretboard {
 
     editLayer (event, id) {
         let selected = this.guitar.layers.find(e => e.id === id);
-        selected.title = 'Edit layer...';
+        selected.title = 'Edit layer';
         selected.action = 'Update';
         this.modal.open(selected);
     }

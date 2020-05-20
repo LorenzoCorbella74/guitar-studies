@@ -8,25 +8,32 @@
     <div class="settings-content">
         <form>
             <h4>Size: </h4>
-            <div class="slidecontainer">
-                <input type="range" min="1" max="100" value="50" class="slider" id="size" ref="size">
+            <div class="range-container">
+                <input type="range" min="0.6" max="1.4" value="1" class="slider" step="0.1" id="size" ref="size">
+                <output class="bubble"></output>
             </div>
             <br>
 
             <h4>Opacity: </h4>
-            <div class="slidecontainer">
-                <input type="range" min="1" max="100" value="50" class="slider" id="opacity" ref="opacity">
+            <div class="range-container">
+                <input type="range" min="0" max="1" value="1" step="0.2" class="slider" id="opacity" ref="opacity">
+                <output class="bubble"></output>
             </div>
             <br>
 
-            <h4>Tuning </h4>
+            <h4>Labels </h4>
             <input type="radio" name="whatToShow" value="notes">Notes
             <input type="radio" name="whatToShow" value="degrees">Degrees
             </select>
 
-            <h4>Comparison </h4>
-            <select id="root" ref="comparison">
-                <option>OWN</option>
+            <h4>Color </h4>
+            <input type="radio" name="color" value="one">one
+            <input type="radio" name="color" value="many">many
+            </select>
+
+            <h4>Differences </h4>
+            <select id="differences" ref="differences">
+                <option>own</option>
             </select>
 
         </form>

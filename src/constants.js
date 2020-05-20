@@ -74,6 +74,8 @@ export const Scales = {
     },
 };
 
+export const allIntervals = ["1P","2m","2M","3m","3M","4P","5d","5P","6m","6M","7m","7M"];
+
 // Fretboard
 export const Tunings = {
     bass4: {

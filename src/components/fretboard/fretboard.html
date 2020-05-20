@@ -10,9 +10,15 @@
         </div>
         <h4>Layers</h4>
         <ul id="list"></ul>
-        <h4>Transpose all</h4>
+        <div class="transpose-header">
+            <h4>Transpose all </h4>
+            <div>
+                <span id="transpose-btn"> &rarr; </span>
+            </div>
+        </div>
         <div class="slidecontainer">
-            <input type="range" min="1" max="100" value="50" class="slider" id="size" ref="size">
+            <input type="range" min="0" max="11" value="0" class="slider" id="intervals" ref="intervals">
+            <output class="bubble"></output>
         </div>
     </div>
     <div id="output">

@@ -28,13 +28,36 @@ export default class Settings {
                     this.element.firstChild.style.display = "none";
                 }
             }
+
+            // RANGE SLIDERS
+            const allRanges = document.querySelectorAll(".range-container");
+            allRanges.forEach(wrap => {
+                const range = wrap.querySelector(".slider");
+                const bubble = wrap.querySelector(".bubble");
+
+                range.addEventListener("input", () => {
+                    this.setBubble(range, bubble);
+                });
+                this.setBubble(range, bubble);
+            });
         }
     }
 
-    setRadioValue (name) {
+    setBubble (range, bubble) {
+        const val = range.value;
+        const min = range.min ? range.min : 0;
+        const max = range.max ? range.max : 100;
+        const newVal = Number(((val - min) * 100) / (max - min));
+        bubble.innerHTML = val;
+
+        // Sorta magic numbers based on size of the native UI thumb
+        bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
+    }
+
+    setRadioValue (name, value) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
-            if (radioElements[i].value === name) {
+            if (radioElements[i].name === name && radioElements[i].value === value) {
                 radioElements[i].checked = true;
             } else {
                 radioElements[i].checked = false;
@@ -45,8 +68,8 @@ export default class Settings {
     getRadioValue (name) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
-            if (radioElements[i].checked) {
-                return radioElements[i].value
+            if (radioElements[i].name === name && radioElements[i].checked) {
+                return radioElements[i].value;
             }
         }
     }
@@ -55,12 +78,13 @@ export default class Settings {
         this.id = data.id;
         this.refs.size.value = data.size;
         this.refs.opacity.value = data.opacity;
-        this.refs.comparison.value = data.comparison;
+        this.refs.differences.value = data.differences;
         this.setRadioValue('whatToShow', data.whatToShow);
+        this.setRadioValue('color', data.color);
     }
 
     configureForm () {
-        this.fillOptions('comparison', []);
+        this.fillOptions('differences', []);    // TODO:
     }
 
     fillOptions (id, options) {
@@ -73,14 +97,6 @@ export default class Settings {
             select.appendChild(el);
         }
     }
-
-    /* resetForm () {
-        // this.refs.tuning.value = '';
-        this.refs.scale.value = '';
-        this.refs.root.value = '';
-        this.refs.arpeggio.value = '';
-        this.resetRadio('whatToShow')
-    } */
 
     open (data) {
         this.element.firstChild.style.display = "block";
@@ -97,7 +113,8 @@ export default class Settings {
             whatToShow: this.getRadioValue('whatToShow'),   // can be notes | degrees
             size: this.refs.size.value,
             opacity: this.refs.opacity.value,
-            comparison: this.refs.comparison.value
+            color: this.getRadioValue('color'),
+            differences: this.refs.differences.value
         }
         this.close();
         // this.resetForm();

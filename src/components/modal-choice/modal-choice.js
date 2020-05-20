@@ -3,6 +3,7 @@ import template from './modal-choice.html';
 
 import { Scale } from "@tonaljs/tonal";
 
+
 const optionsScaleUsArp = [
     { text: 'Scale', value: 'scala' },
     { text: 'Arpeggio', value: 'arpeggio' }
@@ -68,10 +69,10 @@ export default class ModalChoice {
         }
     }
 
-    setRadioValue (name) {
+    setRadioValue (name, value) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
-            if (radioElements[i].value === name) {
+            if (radioElements[i].name === name && radioElements[i].value === value) {
                 radioElements[i].checked = true;
             } else {
                 radioElements[i].checked = false;
@@ -82,8 +83,8 @@ export default class ModalChoice {
     getRadioValue (name) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
-            if (radioElements[i].checked) {
-                return radioElements[i].value
+            if (radioElements[i].name === name && radioElements[i].checked) {
+                return radioElements[i].value;
             }
         }
     }
