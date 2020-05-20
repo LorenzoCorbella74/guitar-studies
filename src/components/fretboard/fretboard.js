@@ -273,6 +273,10 @@ export default class MyFretboard {
         li.classList.add('selected');
         let index = this.guitar.layers.findIndex(e => e.id === id);
         let selected = this.guitar.layers.splice(index, 1)[0];
+        this.guitar.layers.forEach(layer => {
+            layer.color = 'one';
+        });
+        selected.color='many';
         this.guitar.layers.push(selected);
         this.updateTitle(selected.value);
         this.updateLayerInfo(selected);

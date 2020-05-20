@@ -78,7 +78,7 @@ export const Fretboard = function (config) {
         for (let i = 0; i < notes.length; i++) {
             let showColor = instance.layers[index].color === 'many' ? colors[i] : getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
             let note = notes[i];
-            let info = whatToShow === 'degrees' ? intervals[i] : note;
+            let info = instance.layers[index].color === 'many' ? (whatToShow === 'degrees' ? intervals[i] : note) : '';
             if (instance.layers[index].notesVisibility[i]) {        // solo se la nota è visibile
                 for (let octave = 1; octave < 7; octave++) {        // aggiunge la nota per tutte le ottave...
                     instance.addNote(note + octave, showColor, info);
