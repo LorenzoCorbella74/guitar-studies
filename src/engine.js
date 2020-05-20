@@ -4,7 +4,7 @@ import { allNotes, allNotesEnh, colors, Scales, Tunings } from './constants';
 
 import { /* Chord, Distance, */ Scale } from "@tonaljs/tonal";
 
-function asOffset(note) {
+function asOffset (note) {
     note = note.toLowerCase();
     let offset = allNotes.indexOf(note);
     if (offset === -1) {
@@ -13,7 +13,7 @@ function asOffset(note) {
     return offset;
 }
 
-function absNote(note) {
+function absNote (note) {
     let octave = note[note.length - 1];
     let pitch = asOffset(note.slice(0, -1));
     if (pitch > -1) {
@@ -21,7 +21,7 @@ function absNote(note) {
     }
 }
 
-function noteName(absPitch) {
+function noteName (absPitch) {
     let octave = Math.floor(absPitch / 12);
     let note = allNotes[absPitch % 12];
     return note + octave.toString();
@@ -68,13 +68,15 @@ export const Fretboard = function (config) {
         }
     };
 
+
+
     // 3) prende tutte le note e chiama l'addNote
     instance.addNotes = function (data) {
         let { intervals, notes, name, tonic, type } = data;
         let index = instance.layers.findIndex(i => i.value === name);
         let whatToShow = instance.layers[index].whatToShow;
         for (let i = 0; i < notes.length; i++) {
-            let showColor = colors[i];     //  TODO: COLORI
+            let showColor = instance.layers[index].color === 'many' ? colors[i] : getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
             let note = notes[i];
             let info = whatToShow === 'degrees' ? intervals[i] : note;
             if (instance.layers[index].notesVisibility[i]) {        // solo se la nota è visibile
@@ -91,14 +93,15 @@ export const Fretboard = function (config) {
         instance.addNotes(data);
     };
 
+    // TODO: 
     // genera una scala a partire da una sequenza di stringa:nota -> utile per gli accordi
-    instance.placeNotes = function (sequence) {
+    /* instance.placeNotes = function (sequence) {
         let pairs = sequence.split(" ");
         pairs.forEach(function (pair, i) {
             const [string, note] = pair.split(":");
             instance.addNoteOnString(note, parseInt(string)); // , i==0? "red" : "black");
         });
-    };
+    }; */
 
     // pulisce cancellando tutte le note e le informazioni delle note 
     instance.clearNotes = function () {
@@ -233,7 +236,7 @@ export const Fretboard = function (config) {
     let drawDots = function () {
         let p = instance.svgContainer.selectAll("circle").data(fretsWithDots());
 
-        function dotX(d) {
+        function dotX (d) {
             return (
                 (d - instance.startFret - 1) * instance.fretWidth +
                 instance.fretWidth / 2 +
@@ -241,7 +244,7 @@ export const Fretboard = function (config) {
             );
         }
 
-        function dotY(ylocation) {
+        function dotY (ylocation) {
             let margin = YMARGIN();
 
             if (instance.strings % 2 === 0) {
@@ -288,7 +291,7 @@ export const Fretboard = function (config) {
         return instance;
     };
 
-    function paintNote(note, string, color, info) {
+    function paintNote (note, string, color, info) {
         if (string > instance.strings) {
             return false;
         }

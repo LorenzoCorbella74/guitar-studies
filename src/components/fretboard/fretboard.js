@@ -110,7 +110,10 @@ export default class MyFretboard {
 
     // callback from settings panel
     updateLayerSettings (data) {
-        console.log(data)
+        // console.log(data);
+        let toBeUpdate = this.guitar.layers.findIndex(e => e.id === data.id);
+        this.guitar.layers[toBeUpdate] = Object.assign(this.guitar.layers[toBeUpdate], data);
+        this.guitar.repaint();
     }
 
     // callback from modal
@@ -139,7 +142,7 @@ export default class MyFretboard {
         li.innerHTML = `
             <span class="layer-label">${layer}</span>
             <span class="edit-btn"> e </span>
-            <span class="visibility-btn"> o </span>
+            <span class="visibility-btn"> &#9728; </span>
             <span class="delete-btn"> x </span>
             `;
         list.appendChild(li);
@@ -245,7 +248,7 @@ export default class MyFretboard {
         let selected = this.guitar.layers.find(e => e.id === id)
         selected.visible = !selected.visible;
         let li = document.getElementById(id)
-        li.querySelector('.visibility-btn').textContent = selected.visible ? 'o' : '-';
+        li.querySelector('.visibility-btn').innerHTML = selected.visible ? ' &#9728; ' : '&#9788;';
         this.guitar.repaint();
     }
 
