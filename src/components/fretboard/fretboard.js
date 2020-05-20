@@ -3,15 +3,15 @@ import template from './fretboard.html'
 
 // Component
 import ModalChoice from '../modal-choice/modal-choice';
+import Settings from '../settings/settings';
 
 import { Fretboard } from '../../engine';
 
 import { /* Chord, Distance, */ Scale } from "@tonaljs/tonal";
 
-
 export default class MyFretboard {
 
-    constructor() {
+    constructor(input) {
         this.body = document.body;
         this.body.innerHTML = `${template}`;
 
@@ -20,18 +20,22 @@ export default class MyFretboard {
             frets: 12
         });
         this.guitar.drawBoard();
-        this.guitar.layers = [];
+        this.guitar.layers = input || [];
+        this.selectedIndex = null;
 
-        // Bindings
-        document.getElementById('add-btn').addEventListener('click', this.addScale.bind(this));
-        document.getElementById('remove-btn').addEventListener('click', this.removeScales.bind(this));
+        document.getElementById('settings-btn').style.visibility = 'hidden';
+
+        // EVENTS
+        document.getElementById('add-btn').addEventListener('click', this.addLayer.bind(this));
+        document.getElementById('remove-btn').addEventListener('click', this.removeLayers.bind(this));
+        document.getElementById('settings-btn').addEventListener('click', this.openLayerSettings.bind(this));
+        window.onresize = this.resize.bind(this);
 
         this.modal = new ModalChoice('modal', this.save.bind(this));
-
-        window.onresize = this.resize.bind(this);
+        this.settings = new Settings('settings', this.updateLayerSettings.bind(this))
     }
 
-    resize() {
+    resize () {
         // console.log(window.innerHeight, window.innerWidth);
         this.isSmall = window.innerWidth < 800;
         if (this.isSmall) {
@@ -41,12 +45,23 @@ export default class MyFretboard {
         }
     }
 
-    getNoteVisibilityRange(scale) {
+    getNoteVisibilityRange (scale) {
         let data = Scale.get(scale);
         return data.notes.map(() => 1);
     }
 
-    save(data) {
+    openLayerSettings () {
+        let index = this.guitar.layers.findIndex(e => e.id === this.selectedIndex);
+        this.settings.open(this.guitar.layers[index]);
+    }
+
+    // callback from settings panel
+    updateLayerSettings (data) {
+        console.log(data)
+    }
+
+    // callback from modal
+    save (data) {
         console.log(data);
         let layer = `${data.root} ${data.scale}`;
         if (data.id) {  // EDIT MODE
@@ -58,49 +73,57 @@ export default class MyFretboard {
             this.updateTitle(layer);
             this.updateLayerInfo(this.guitar.layers[toBeUpdate]);
         } else {        // SAVE NEW
-            const list = document.getElementById('list');
-            const id = Math.floor(Math.random() * 1000000);
-            let li = document.createElement('li');
-            li.classList.add('scale');
-            li.id = id;
-            li.innerHTML = `
-            <span class="layer-label">${layer}</span>
-            <span class="edit-btn"> | </span>
-            <span class="visibility-btn"> o </span>
-            <span class="delete-btn"> x </span>
-            `;
-            list.appendChild(li);
-            let toBeAdded = {
-                id: id,
-                root: data.root,
-                scale: data.scale,
-                value: layer,
-                visible: true,
-                notesVisibility: this.getNoteVisibilityRange(layer),
-                tuning: data.tuning,
-                whatToShow: data.whatToShow
-            };
-            this.guitar.layers.push(toBeAdded);
-            this.guitar.addLayer(layer);
-            this.guitar.paint();
-            li.querySelector('.layer-label').addEventListener('click', (event) => {
-                this.selectScale(event, id);
-            });
-            li.querySelector('.edit-btn').addEventListener('click', (event) => {
-                this.editLayer(event, id);
-            });
-            li.querySelector('.visibility-btn').addEventListener('click', (event) => {
-                this.toggleVisibility(event, id);
-            });
-            li.querySelector('.delete-btn').addEventListener('click', (event) => {
-                this.deleteScale(event, id);
-            });
-            this.updateTitle(layer);
-            this.updateLayerInfo(toBeAdded);
+            this.renderLayer(layer, data);
         }
     }
 
-    addScale() {
+    renderLayer (layer, data) {
+        const list = document.getElementById('list');
+        const id = data.id || Math.floor(Math.random() * 1000000);
+        let li = document.createElement('li');
+        li.classList.add('scale');
+        li.id = id;
+        li.innerHTML = `
+            <span class="layer-label">${layer}</span>
+            <span class="edit-btn"> e </span>
+            <span class="visibility-btn"> o </span>
+            <span class="delete-btn"> x </span>
+            `;
+        list.appendChild(li);
+        let toBeAdded = {
+            id: id,
+            root: data.root,
+            scale: data.scale,
+            value: layer,
+            visible: true,
+            notesVisibility: this.getNoteVisibilityRange(layer),
+            tuning: data.tuning,
+            whatToShow: data.whatToShow,
+            size: 1,
+            opacity: 1,
+            color: 'default',
+            differences: 'own'
+        };
+        this.guitar.layers.push(toBeAdded);
+        this.guitar.addLayer(layer);
+        this.guitar.paint();
+        li.querySelector('.layer-label').addEventListener('click', (event) => {
+            this.selectLayer(event, id);
+        });
+        li.querySelector('.edit-btn').addEventListener('click', (event) => {
+            this.editLayer(event, id);
+        });
+        li.querySelector('.visibility-btn').addEventListener('click', (event) => {
+            this.toggleLayerVisibility(event, id);
+        });
+        li.querySelector('.delete-btn').addEventListener('click', (event) => {
+            this.deleteLayer(event, id);
+        });
+        this.updateTitle(layer);
+        this.updateLayerInfo(toBeAdded);
+    }
+
+    addLayer () {
         let def = {
             type: 'scale',      // can be scale | arpeggio
             whatToShow: 'notes', // can be notes | degrees
@@ -108,12 +131,13 @@ export default class MyFretboard {
             root: 'A',
             scale: 'dorian',
             arpeggio: 'min7',
-            action: 'New layer...'    // can be 
+            title: 'New layer',    // can be 
+            action: 'Save'    // can be 
         };
         this.modal.open(def);
     }
 
-    updateLayerInfo(info) {
+    updateLayerInfo (info) {
         let degrees = document.querySelector('.degrees')
         let noteNames = document.querySelector('.notes')
         if (info) {
@@ -143,7 +167,7 @@ export default class MyFretboard {
         }
     }
 
-    removeScales(event) {
+    removeLayers (event) {
         event.stopPropagation();
         const list = document.getElementById('list');
         while (list.hasChildNodes()) {
@@ -155,13 +179,14 @@ export default class MyFretboard {
         this.updateLayerInfo();
     }
 
-    editLayer(event, id) {
+    editLayer (event, id) {
         let selected = this.guitar.layers.find(e => e.id === id);
-        selected.action = 'Edit layer...';
+        selected.title = 'Edit layer...';
+        selected.action = 'Update';
         this.modal.open(selected);
     }
 
-    toggleVisibility(event, id) {
+    toggleLayerVisibility (event, id) {
         event.stopPropagation();
         let selected = this.guitar.layers.find(e => e.id === id)
         selected.visible = !selected.visible;
@@ -170,7 +195,7 @@ export default class MyFretboard {
         this.guitar.repaint();
     }
 
-    deleteScale(event, id) {
+    deleteLayer (event, id) {
         event.stopPropagation();
         let elem = document.getElementById(id);
         elem.parentNode.removeChild(elem)
@@ -180,7 +205,9 @@ export default class MyFretboard {
         this.updateLayerInfo();
     }
 
-    selectScale(event, id) {
+    selectLayer (event, id) {
+        this.selectedIndex = id;
+        document.getElementById('settings-btn').style.visibility = 'inherit';
         event.stopPropagation();
         document.querySelectorAll('.scale').forEach(element => {
             element.classList.remove('selected');
@@ -195,8 +222,7 @@ export default class MyFretboard {
         this.guitar.repaint();
     }
 
-    updateTitle(title) {
-        let output = document.querySelector('#output .scale-title')
-        output.innerHTML = title;
+    updateTitle (title) {
+        document.querySelector('#output .scale-title').innerHTML = title;
     }
 }

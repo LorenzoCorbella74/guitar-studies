@@ -1,0 +1,36 @@
+<div class="settings-panel">
+
+    <div class="settings-header">
+        <span class="close">&times;</span>
+        <h2>Settings</h2>
+    </div>
+
+    <div class="settings-content">
+        <form>
+            <h4>Size: </h4>
+            <div class="slidecontainer">
+                <input type="range" min="1" max="100" value="50" class="slider" id="size" ref="size">
+            </div>
+            <br>
+
+            <h4>Opacity: </h4>
+            <div class="slidecontainer">
+                <input type="range" min="1" max="100" value="50" class="slider" id="opacity" ref="opacity">
+            </div>
+            <br>
+
+            <h4>Tuning </h4>
+            <input type="radio" name="whatToShow" value="notes">Notes
+            <input type="radio" name="whatToShow" value="degrees">Degrees
+            </select>
+
+            <h4>Comparison </h4>
+            <select id="root" ref="comparison">
+                <option>OWN</option>
+            </select>
+
+        </form>
+        <br>
+        <h4 class="save">Update</h4>
+    </div>
+</div>

@@ -4,15 +4,29 @@
   margin: 0 auto;
   max-width: 100%;
   width: 1024px;
-}
 
-.layers {
-  width: 30%;
-}
+  .layers {
+    width: 30%;
+  
+    .layers-header{
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
 
-.output {
-  width: 70%;
-  display: flex;
+    #add-btn, #remove-btn {
+      margin-left: 8px;
+      margin-right: 8px;
+      font-weight: 700;
+      align-content: center;
+      font-size: 24px;
+    }
+  }
+  
+  .output {
+    width: 70%;
+    display: flex;
+  }
 }
 
 .scale-info {
@@ -20,6 +34,7 @@
   display: flex;
   justify-content: space-between;
   width: 97%;
+  margin-top:24px
 }
 
 .scale-title {
@@ -27,9 +42,13 @@
   left: 26px;
 }
 
+
+
 #list {
   list-style: none;
   margin-top: 12px;
+  height: 200px;
+  overflow: hidden;
 
   li.scale {
     padding: 5px;
@@ -45,9 +64,10 @@
   color: var(--secondary-color);
 }
 
+.edit-btn,
 .delete-btn,
 .visibility-btn,
-.dots {
+#settings-btn {
   align-content: flex-start;
   margin-left: 8px;
   margin-right: 8px;

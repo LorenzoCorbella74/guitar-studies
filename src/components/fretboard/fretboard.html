@@ -1,10 +1,19 @@
 <div class="container">
     <!-- LAYERS -->
     <div class="layers">
-        <!-- <input id="input" type="text" placeholder="Add scale..."> -->
-        <button id="add-btn"> + </button>
-        <button id="remove-btn"> x </button>
+        <div class="layers-header">
+            <h2>Titolo studio</h2>
+            <div>
+                <span id="add-btn">&#43;</span>
+                <span id="remove-btn">&times;</span>
+            </div>
+        </div>
+        <h4>Layers</h4>
         <ul id="list"></ul>
+        <h4>Transpose all</h4>
+        <div class="slidecontainer">
+            <input type="range" min="1" max="100" value="50" class="slider" id="size" ref="size">
+        </div>
     </div>
     <div id="output">
         <div class="scale-info">
@@ -15,14 +24,14 @@
                     <tr class="notes"></tr>
                 </table>
             </div>
-            <div class="dots"> o </div>
+            <div id="settings-btn"> o </div>
         </div>
         <!-- FRETBOARD -->
     </div>
 </div>
 
 <!-- SLIDER -->
-<div id="slider">
+<div id="settings">
 
 </div>
 

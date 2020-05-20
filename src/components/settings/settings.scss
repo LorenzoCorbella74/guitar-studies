@@ -1,0 +1,54 @@
+.settings-panel {
+    display: none;
+    width: 200px;
+    z-index: 100;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    position: absolute;
+    top: 40px;
+    right: 0px;
+    background-color: #fefefe;
+    -webkit-animation-name: animateright;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animateright;
+    animation-duration: 0.4s;
+
+    .settings-header{
+        padding: 16px;
+    }
+
+    .settings-content {
+        position: relative;
+        margin: auto;
+        padding: 16px;
+        h4 {
+            margin-bottom: 12px;
+        }
+    }
+}
+
+/* Add Animation */
+@-webkit-keyframes animateright {
+    from {
+        right: -260px;
+        opacity: 0;
+    }
+
+    to {
+        right: 0;
+        opacity: 1;
+    }
+}
+
+@keyframes animateright {
+    from {
+        right: -260px;
+        opacity: 0;
+    }
+
+    to {
+        right: 0;
+        opacity: 1;
+    }
+}
+
+

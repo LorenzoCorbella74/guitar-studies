@@ -68,14 +68,18 @@ export default class ModalChoice {
         }
     }
 
-    setRadioValue(name) {
+    setRadioValue (name) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
-            // TODO
+            if (radioElements[i].value === name) {
+                radioElements[i].checked = true;
+            } else {
+                radioElements[i].checked = false;
+            }
         }
     }
 
-    getRadioValue(name) {
+    getRadioValue (name) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
             if (radioElements[i].checked) {
@@ -84,16 +88,17 @@ export default class ModalChoice {
         }
     }
 
-    resetRadio(name) {
+    resetRadio (name) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
             radioElements[i].checked = false;
         }
     }
 
-    fillForm(data) {
+    fillForm (data) {
         this.id = data.id;
-        this.refs.title.innerHTML = data.action;
+        this.refs.title.innerHTML = data.title;
+        this.refs.action.innerHTML = data.action;
         this.refs.tuning.value = data.tuning;
         this.refs.scale.value = data.scale;
         this.refs.root.value = data.root;
@@ -102,14 +107,14 @@ export default class ModalChoice {
         this.setRadioValue('whatToShow', data.whatToShow);
     }
 
-    configureForm() {
+    configureForm () {
         this.fillOptions('scale', optionsScales);
         this.fillOptions('tuning', optionsTuning);
         this.fillOptions('root', optionsNotes);
         this.fillOptions('arpeggio', optionsArp);
     }
 
-    fillOptions(id, options) {
+    fillOptions (id, options) {
         var select = document.getElementById(id);
         for (var i = 0; i < options.length; i++) {
             var opt = options[i];
@@ -120,7 +125,7 @@ export default class ModalChoice {
         }
     }
 
-    resetForm() {
+    resetForm () {
         // this.refs.tuning.value = '';
         this.refs.scale.value = '';
         this.refs.root.value = '';
@@ -129,16 +134,16 @@ export default class ModalChoice {
         this.resetRadio('whatToShow')
     }
 
-    open(data) {
+    open (data) {
         this.element.style.display = "block";
         this.fillForm(data);
     }
 
-    close() {
+    close () {
         this.element.style.display = "none";
     }
 
-    save() {
+    save () {
         this.data = {
             id: this.id,
             type: this.getRadioValue('type'),               // can be scale | arpeggio
