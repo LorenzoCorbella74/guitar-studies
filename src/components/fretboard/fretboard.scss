@@ -9,12 +9,15 @@
   &-title {
     width: 30%;
   }
+
   &-description {
     width: 65%;
   }
+
   &-actions {
     width: 5%;
   }
+
   #add-general-btn,
   #remove-general-btn {
     margin-left: 8px;
@@ -25,7 +28,7 @@
   }
 }
 
-.container {
+.fretboard-container {
   display: flex;
   padding: 15px;
   margin: 0 auto;
@@ -42,8 +45,8 @@
       /* border-bottom: 1px solid lightgray; */
     }
 
-    #add-btn,
-    #remove-btn {
+    .add-btn,
+    .remove-btn {
       margin-left: 8px;
       margin-right: 8px;
       font-weight: 700;
@@ -95,11 +98,15 @@
 .edit-btn,
 .delete-btn,
 .visibility-btn,
-#settings-btn {
+.settings-btn {
   align-content: flex-start;
   margin-left: 8px;
   margin-right: 8px;
   font-weight: 700;
+}
+
+.settings-btn {
+  visibility: hidden;
 }
 
 .note-info {

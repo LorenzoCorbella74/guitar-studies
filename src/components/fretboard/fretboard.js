@@ -7,7 +7,7 @@ import Settings from '../settings/settings';
 
 import { Fretboard } from '../../engine';
 
-import { /* Chord, Distance, */ Note, Scale } from "@tonaljs/tonal";
+import { Note, Scale } from "@tonaljs/tonal";
 
 import { allIntervals } from '../../constants';
 
@@ -17,6 +17,33 @@ export default class MyFretboard {
         this.body = document.body;
         this.body.innerHTML = `${template}`;
 
+        // events
+        document.getElementById('add-general-btn').addEventListener('click', this.addFretboard.bind(this));
+        document.getElementById('remove-general-btn').addEventListener('click', this.removeAllFretboard.bind(this));
+
+        // window.onresize = this.resize.bind(this);    // TODO: for all fretboards
+
+        this.modal = new ModalChoice('modal', this.save.bind(this));
+        this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
+
+        this.fretboardIstances = {};
+        this.selectedInterval = [];
+    }
+
+    addFretboard() {
+        var temp = document.getElementsByTagName("template")[0];
+        var clone = temp.content.cloneNode(true);
+        let id = Math.floor(Math.random() * 1000000);
+        clone.firstElementChild.dataset.id = id;
+        document.body.appendChild(clone);
+
+        let fretboard = document.querySelector(`[data-id='${id}']`);
+        // EVENTS
+        fretboard.querySelector('.add-btn').addEventListener('click', this.addLayer.bind(this));
+        fretboard.querySelector('.remove-btn').addEventListener('click', this.removeLayers.bind(this));
+        fretboard.querySelector('.settings-btn').addEventListener('click', this.openLayerSettings.bind(this));
+        fretboard.querySelector('.transpose-btn').addEventListener('click', this.transposeLayers.bind(this));
+
         this.guitar = Fretboard({
             where: ".col-output",
             fretWidth: window.innerWidth < 600 ? 34 : 46,
@@ -24,31 +51,26 @@ export default class MyFretboard {
             frets: 12 // window.innerWidth > 1000 ? 15 : 12
         });
         this.guitar.drawBoard();
-        this.guitar.layers = input || [];
-        this.selectedIndex = null;
-
-        document.getElementById('settings-btn').style.visibility = 'hidden';
-
-        // EVENTS
-        document.getElementById('add-btn').addEventListener('click', this.addLayer.bind(this));
-        document.getElementById('remove-btn').addEventListener('click', this.removeLayers.bind(this));
-        document.getElementById('settings-btn').addEventListener('click', this.openLayerSettings.bind(this));
-        document.getElementById('transpose-btn').addEventListener('click', this.transposeLayers.bind(this));
-        window.onresize = this.resize.bind(this);
-
-        this.modal = new ModalChoice('modal', this.save.bind(this));
-        this.settings = new Settings('settings', this.updateLayerSettings.bind(this))
+        this.guitar.layers = [];
+        this.guitar.selectedIndex = null;
 
         // SLIDER RANGE
-        const slider = document.querySelector(".slidecontainer .slider");
-        const bubble = document.querySelector(".slidecontainer .bubble");
+        const slider = fretboard.querySelector(".slidecontainer .slider");
+        const bubble = fretboard.querySelector(".slidecontainer .bubble");
         slider.addEventListener("input", () => {
-            this.setBubble(slider, bubble);
+            this.setBubble(slider, bubble, id);
         });
-        this.setBubble(slider, bubble);
+        this.setBubble(slider, bubble, id);
     }
 
-    setBubble(slider, bubble) {
+    removeAllFretboard() {
+        let fretboards = document.querySelectorAll('.fretboard-container')
+        fretboards.forEach(element => {
+            element.remove();
+        });
+    }
+
+    setBubble(slider, bubble, id) {
         const val = slider.value;
         const min = slider.min ? slider.min : 0;
         const max = slider.max ? slider.max : 100;
@@ -60,7 +82,7 @@ export default class MyFretboard {
         bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
 
         if (selectedInterval !== '1P') {
-            this.selectedInterval = selectedInterval;
+            this.selectedInterval[id] = selectedInterval;
         }
     }
 
@@ -106,7 +128,7 @@ export default class MyFretboard {
     }
 
     openLayerSettings() {
-        let index = this.guitar.layers.findIndex(e => e.id === this.selectedIndex);
+        let index = this.guitar.layers.findIndex(e => e.id === this.guitar.selectedIndex);
         this.settings.open(this.guitar.layers[index], this.guitar);
     }
 
@@ -276,8 +298,8 @@ export default class MyFretboard {
     }
 
     selectLayer(event, id) {
-        this.selectedIndex = id;
-        document.getElementById('settings-btn').style.visibility = 'inherit';
+        this.guitar.selectedIndex = id; // id del layer
+        document.querySelector('.settings-btn').style.visibility = 'inherit';
         event.stopPropagation();
         document.querySelectorAll('.scale').forEach(element => {
             element.classList.remove('selected');
