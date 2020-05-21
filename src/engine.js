@@ -68,8 +68,6 @@ export const Fretboard = function (config) {
         }
     };
 
-
-
     // 3) prende tutte le note e chiama l'addNote
     instance.addNotes = function (data) {
         let { intervals, notes, name, tonic, type } = data;

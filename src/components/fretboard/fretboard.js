@@ -18,7 +18,7 @@ export default class MyFretboard {
         this.body.innerHTML = `${template}`;
 
         this.guitar = Fretboard({
-            where: "#output",
+            where: ".col-output",
             fretWidth: window.innerWidth < 600 ? 34 : 46,
             fretHeight: 32,
             frets: 12 // window.innerWidth > 1000 ? 15 : 12
@@ -297,6 +297,6 @@ export default class MyFretboard {
     }
 
     updateTitle(title) {
-        document.querySelector('#output .scale-title').innerHTML = title;
+        document.querySelector('.col-output .scale-title').innerHTML = title;
     }
 }
