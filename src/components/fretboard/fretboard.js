@@ -19,7 +19,9 @@ export default class MyFretboard {
 
         this.guitar = Fretboard({
             where: "#output",
-            frets: 12
+            fretWidth: window.innerWidth < 600 ? 34 : 46,
+            fretHeight: 32,
+            frets: 12 // window.innerWidth > 1000 ? 15 : 12
         });
         this.guitar.drawBoard();
         this.guitar.layers = input || [];
@@ -46,7 +48,7 @@ export default class MyFretboard {
         this.setBubble(slider, bubble);
     }
 
-    setBubble (slider, bubble) {
+    setBubble(slider, bubble) {
         const val = slider.value;
         const min = slider.min ? slider.min : 0;
         const max = slider.max ? slider.max : 100;
@@ -62,7 +64,7 @@ export default class MyFretboard {
         }
     }
 
-    transposeLayers () {
+    transposeLayers() {
         for (let i = 0; i < this.guitar.layers.length; i++) {
             const layer = this.guitar.layers[i];
             layer.root = Note.transpose(layer.root, this.selectedInterval);
@@ -88,7 +90,7 @@ export default class MyFretboard {
         this.setBubble(slider, bubble);
     }
 
-    resize () {
+    resize() {
         // console.log(window.innerHeight, window.innerWidth);
         this.isSmall = window.innerWidth < 800;
         if (this.isSmall) {
@@ -98,26 +100,27 @@ export default class MyFretboard {
         }
     }
 
-    getNoteVisibilityRange (scale) {
+    getNoteVisibilityRange(scale) {
         let data = Scale.get(scale);
         return data.notes.map(() => 1);
     }
 
-    openLayerSettings () {
+    openLayerSettings() {
         let index = this.guitar.layers.findIndex(e => e.id === this.selectedIndex);
-        this.settings.open(this.guitar.layers[index]);
+        this.settings.open(this.guitar.layers[index], this.guitar);
     }
 
     // callback from settings panel
-    updateLayerSettings (data) {
+    updateLayerSettings(data) {
         // console.log(data);
         let toBeUpdate = this.guitar.layers.findIndex(e => e.id === data.id);
         this.guitar.layers[toBeUpdate] = Object.assign(this.guitar.layers[toBeUpdate], data);
         this.guitar.repaint();
+        this.updateLayerInfo(this.guitar.layers[toBeUpdate]);
     }
 
     // callback from modal
-    save (data) {
+    save(data) {
         console.log(data);
         let layer = `${data.root} ${data.scale}`;
         if (data.id) {  // EDIT MODE
@@ -133,7 +136,7 @@ export default class MyFretboard {
         }
     }
 
-    renderLayer (layer, data) {
+    renderLayer(layer, data) {
         const list = document.getElementById('list');
         const id = data.id || Math.floor(Math.random() * 1000000);
         let li = document.createElement('li');
@@ -180,7 +183,7 @@ export default class MyFretboard {
         this.updateLayerInfo(toBeAdded);
     }
 
-    addLayer () {
+    addLayer() {
         let def = {
             type: 'scale',      // can be scale | arpeggio
             whatToShow: 'degrees', // can be notes | degrees
@@ -194,14 +197,14 @@ export default class MyFretboard {
         this.modal.open(def);
     }
 
-    updateLayerInfo (info) {
+    updateLayerInfo(info) {
         let degrees = document.querySelector('.degrees')
         let noteNames = document.querySelector('.notes')
         if (info) {
             let scale = info.value;
             let { notes, intervals } = Scale.get(scale);
             degrees.innerHTML = intervals.map((e, i) => `<td class="${info.notesVisibility[i] ? '' : 'disabled'}">${e}</td>`).join('');
-            noteNames.innerHTML = notes.map((e, i) => `<td class="${info.notesVisibility[i] ? '' : 'disabled'}">${e}</td>`).join('');
+            noteNames.innerHTML = notes.map((e, i) => `<td class="label-notes ${info.notesVisibility[i] ? '' : 'disabled'}">${e}</td>`).join('');
             for (let i = 0; i < noteNames.children.length; i++) {
                 const elementN = noteNames.children[i];
                 elementN.addEventListener('click', (event) => {
@@ -218,13 +221,23 @@ export default class MyFretboard {
                     elementD.classList.toggle('disabled');
                 });
             }
+            if (info.differences !== 'own') {
+                let original = Scale.get(info.value).notes;
+                let compare = Scale.get(info.differences).notes;
+                let comparison = original.map(e => compare.includes(e) ? 1 : 0);
+                document.querySelectorAll('.label-notes').forEach((element, i) => {
+                    if (!comparison[i]) {
+                        element.classList.add('red')
+                    }
+                });
+            }
         } else {
             degrees.innerHTML = '';
             noteNames.innerHTML = '';
         }
     }
 
-    removeLayers (event) {
+    removeLayers(event) {
         event.stopPropagation();
         const list = document.getElementById('list');
         while (list.hasChildNodes()) {
@@ -236,14 +249,14 @@ export default class MyFretboard {
         this.updateLayerInfo();
     }
 
-    editLayer (event, id) {
+    editLayer(event, id) {
         let selected = this.guitar.layers.find(e => e.id === id);
         selected.title = 'Edit layer';
         selected.action = 'Update';
         this.modal.open(selected);
     }
 
-    toggleLayerVisibility (event, id) {
+    toggleLayerVisibility(event, id) {
         event.stopPropagation();
         let selected = this.guitar.layers.find(e => e.id === id)
         selected.visible = !selected.visible;
@@ -252,7 +265,7 @@ export default class MyFretboard {
         this.guitar.repaint();
     }
 
-    deleteLayer (event, id) {
+    deleteLayer(event, id) {
         event.stopPropagation();
         let elem = document.getElementById(id);
         elem.parentNode.removeChild(elem)
@@ -262,7 +275,7 @@ export default class MyFretboard {
         this.updateLayerInfo();
     }
 
-    selectLayer (event, id) {
+    selectLayer(event, id) {
         this.selectedIndex = id;
         document.getElementById('settings-btn').style.visibility = 'inherit';
         event.stopPropagation();
@@ -276,14 +289,14 @@ export default class MyFretboard {
         this.guitar.layers.forEach(layer => {
             layer.color = 'one';
         });
-        selected.color='many';
+        selected.color = 'many';
         this.guitar.layers.push(selected);
         this.updateTitle(selected.value);
         this.updateLayerInfo(selected);
         this.guitar.repaint();
     }
 
-    updateTitle (title) {
+    updateTitle(title) {
         document.querySelector('#output .scale-title').innerHTML = title;
     }
 }

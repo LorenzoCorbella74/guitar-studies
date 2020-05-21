@@ -29,16 +29,24 @@ export const allNotesEnh = [
     "cb",
 ];
 
-export const colors = [
-    "red",
-    "green",
-    "blue",
-    "black",
-    "purple",
-    "gray",
-    "orange",
-    "lightgray",
-];
+export const COLOURS = {
+    "1P": '#ffee58',
+    "2m": '#b3e5fc',
+    "2M": '#87CEFA',
+    "2A": '#87CEFA',
+    "3m": '#ffcc80',
+    "3M": '#ffa726',
+    "4P": '#a5d6a7',
+    "4A": '#66bb6a',
+    "5d": '#e57373',
+    "5P": '#FF4136',
+    "5A": '#f44336',
+    "6m": '#f8bbd0',
+    "6M": '#f48fb1',
+    "7d": '#e0e0e0',
+    "7m": '#bdbdbd',
+    "7M": '#9e9e9e'
+};
 
 // tutte partono da C...
 export const Scales = {
@@ -74,7 +82,7 @@ export const Scales = {
     },
 };
 
-export const allIntervals = ["1P","2m","2M","3m","3M","4P","5d","5P","6m","6M","7m","7M"];
+export const allIntervals = ["1P", "2m", "2M", "3m", "3M", "4P", "5d", "5P", "6m", "6M", "7m", "7M"];
 
 // Fretboard
 export const Tunings = {

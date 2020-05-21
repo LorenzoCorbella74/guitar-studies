@@ -17,8 +17,6 @@ export default class Settings {
             const refElems = this.element.querySelectorAll('[ref]')
             refElems.forEach((elem) => { this.refs[elem.getAttribute('ref')] = elem })
 
-            this.configureForm();
-
             document.getElementsByClassName("close")[0].addEventListener('click', this.close.bind(this));
             document.getElementsByClassName("save")[0].addEventListener('click', this.save.bind(this));
 
@@ -43,7 +41,7 @@ export default class Settings {
         }
     }
 
-    setBubble (range, bubble) {
+    setBubble(range, bubble) {
         const val = range.value;
         const min = range.min ? range.min : 0;
         const max = range.max ? range.max : 100;
@@ -54,7 +52,7 @@ export default class Settings {
         bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
     }
 
-    setRadioValue (name, value) {
+    setRadioValue(name, value) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
             if (radioElements[i].name === name && radioElements[i].value === value) {
@@ -65,7 +63,7 @@ export default class Settings {
         }
     }
 
-    getRadioValue (name) {
+    getRadioValue(name) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
             if (radioElements[i].name === name && radioElements[i].checked) {
@@ -74,40 +72,50 @@ export default class Settings {
         }
     }
 
-    fillForm (data) {
+    fillForm(data) {
         this.id = data.id;
         this.refs.size.value = data.size;
         this.refs.opacity.value = data.opacity;
         this.refs.differences.value = data.differences;
         this.setRadioValue('whatToShow', data.whatToShow);
         this.setRadioValue('color', data.color);
+        // aggiorna i bubble
+        const allRanges = document.querySelectorAll(".range-container");
+        allRanges.forEach(wrap => {
+            const range = wrap.querySelector(".slider");
+            const bubble = wrap.querySelector(".bubble");
+            this.setBubble(range, bubble);
+        });
+        this.configureForm();
     }
 
-    configureForm () {
-        this.fillOptions('differences', []);    // TODO:
+    configureForm() {
+        let others = this.guitar.layers.filter(e => e.id !== this.id);
+        this.fillOptions('differences', others);    // TODO:
     }
 
-    fillOptions (id, options) {
+    fillOptions(id, options) {
         var select = document.getElementById(id);
         for (var i = 0; i < options.length; i++) {
             var opt = options[i];
             var el = document.createElement("option");
-            el.textContent = opt.text;
+            el.textContent = opt.value;
             el.value = opt.value;
             select.appendChild(el);
         }
     }
 
-    open (data) {
+    open(data, guitar) {
+        this.guitar = guitar;
         this.element.firstChild.style.display = "block";
         this.fillForm(data);
     }
 
-    close () {
+    close() {
         this.element.firstChild.style.display = "none";
     }
 
-    save () {
+    save() {
         this.data = {
             id: this.id,
             whatToShow: this.getRadioValue('whatToShow'),   // can be notes | degrees

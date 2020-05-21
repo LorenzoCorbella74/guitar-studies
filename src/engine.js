@@ -1,10 +1,10 @@
 import * as d3 from "d3-selection";
 
-import { allNotes, allNotesEnh, colors, Scales, Tunings } from './constants';
+import { allNotes, allNotesEnh, COLOURS, /* Scales, */ Tunings } from './constants';
 
 import { /* Chord, Distance, */ Scale } from "@tonaljs/tonal";
 
-function asOffset (note) {
+function asOffset(note) {
     note = note.toLowerCase();
     let offset = allNotes.indexOf(note);
     if (offset === -1) {
@@ -13,7 +13,7 @@ function asOffset (note) {
     return offset;
 }
 
-function absNote (note) {
+function absNote(note) {
     let octave = note[note.length - 1];
     let pitch = asOffset(note.slice(0, -1));
     if (pitch > -1) {
@@ -21,7 +21,7 @@ function absNote (note) {
     }
 }
 
-function noteName (absPitch) {
+function noteName(absPitch) {
     let octave = Math.floor(absPitch / 12);
     let note = allNotes[absPitch % 12];
     return note + octave.toString();
@@ -57,14 +57,14 @@ export const Fretboard = function (config) {
     };
 
     // 5)  le informazioni delle singole note vengono pushiate dentro instance notes
-    instance.addNoteOnString = function (note, string, color, info) {
-        instance.notes.push({ note, string, color, info });
+    instance.addNoteOnString = function (note, string, color, info, size, opacity) {
+        instance.notes.push({ note, string, color, info, size, opacity });
     };
 
     // 4) note = a1, red
-    instance.addNote = function (note, color, info) {
+    instance.addNote = function (note, color, info, size, opacity) {
         for (let string = 1; string <= instance.strings; string++) {  // per tutte le stringhe
-            instance.addNoteOnString(note, string, color, info);
+            instance.addNoteOnString(note, string, color, info, size, opacity);
         }
     };
 
@@ -75,13 +75,15 @@ export const Fretboard = function (config) {
         let { intervals, notes, name, tonic, type } = data;
         let index = instance.layers.findIndex(i => i.value === name);
         let whatToShow = instance.layers[index].whatToShow;
+        let size = instance.layers[index].size;
+        let opacity = instance.layers[index].opacity;
         for (let i = 0; i < notes.length; i++) {
-            let showColor = instance.layers[index].color === 'many' ? colors[i] : getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+            let showColor = instance.layers[index].color === 'many' ? COLOURS[intervals[i]] : '#30336b' /* getComputedStyle(document.documentElement).getPropertyValue('--primary-color') */;
             let note = notes[i];
             let info = instance.layers[index].color === 'many' ? (whatToShow === 'degrees' ? intervals[i] : note) : '';
             if (instance.layers[index].notesVisibility[i]) {        // solo se la nota è visibile
                 for (let octave = 1; octave < 7; octave++) {        // aggiunge la nota per tutte le ottave...
-                    instance.addNote(note + octave, showColor, info);
+                    instance.addNote(note + octave, showColor, info, size, opacity);
                 }
             }
         }
@@ -207,7 +209,7 @@ export const Fretboard = function (config) {
                 .attr("y1", i * instance.fretHeight + 1 + YMARGIN())
                 .attr("x2", XMARGIN() + fretboardWidth())
                 .attr("y2", i * instance.fretHeight + 1 + YMARGIN())
-                .attr("stroke", "black")
+                .attr("stroke", "lightgray")
                 .attr("stroke-width", 1);
         }
         let placeTuning = function (d, i) {
@@ -215,7 +217,7 @@ export const Fretboard = function (config) {
         };
 
         let toBaseFretNote = function (note) {
-            return noteName(absNote(note) + instance.startFret);
+            return noteName(absNote(note) + instance.startFret)[0];
         };
 
         let hPosition = instance.leftHanded ? instance.width - 16 + "px" : "4px";
@@ -236,7 +238,7 @@ export const Fretboard = function (config) {
     let drawDots = function () {
         let p = instance.svgContainer.selectAll("circle").data(fretsWithDots());
 
-        function dotX (d) {
+        function dotX(d) {
             return (
                 (d - instance.startFret - 1) * instance.fretWidth +
                 instance.fretWidth / 2 +
@@ -244,7 +246,7 @@ export const Fretboard = function (config) {
             );
         }
 
-        function dotY (ylocation) {
+        function dotY(ylocation) {
             let margin = YMARGIN();
 
             if (instance.strings % 2 === 0) {
@@ -291,12 +293,30 @@ export const Fretboard = function (config) {
         return instance;
     };
 
-    function paintNote (note, string, color, info) {
+    function hexToRGB(h, opacity) {
+        let r = 0, g = 0, b = 0;
+
+        // 3 digits
+        if (h.length == 4) {
+            r = "0x" + h[1] + h[1];
+            g = "0x" + h[2] + h[2];
+            b = "0x" + h[3] + h[3];
+
+            // 6 digits
+        } else if (h.length == 7) {
+            r = "0x" + h[1] + h[2];
+            g = "0x" + h[3] + h[4];
+            b = "0x" + h[5] + h[6];
+        }
+
+        return "rgb(" + +r + "," + +g + "," + +b + "," + +opacity + ")";
+    }
+
+    function paintNote(note, string, color, info, size, opacity) {
         if (string > instance.strings) {
             return false;
         }
         let absPitch = absNote(note);
-        let actualColor = color || "black";
         let absString = instance.strings - string;
         let basePitch = absNote(instance.tuning[absString]) + instance.startFret;
         if (
@@ -304,36 +324,48 @@ export const Fretboard = function (config) {
             absPitch <= basePitch + instance.frets - instance.startFret
         ) {
             // 0.75 is the offset into the fret (higher is closest to fret)
-            let x = (absPitch - basePitch + 0.75) * instance.fretWidth;
+            let x = (absPitch - basePitch + 0.65) * instance.fretWidth;
             let y = (string - 1) * instance.fretHeight + 1 + YMARGIN();
-            const circle = instance.svgContainer
-                .append("circle")
-                .attr("class", "note")
-                .attr("stroke-width", 1)
-                .attr("cx", x)
-                .attr("cy", y)
-                .attr("r", 9)
-                .style("stroke", actualColor)
-                .style("fill", actualColor)
-                .on("click", function () {
-                    let fill = this.style.fill;
-                    this.setAttribute(
-                        "stroke-width",
-                        5 - parseInt(this.getAttribute("stroke-width"))
-                    );
-                    this.style.fill = fill === "white" ? "lightgray" : "white";
-                });
+            if (info == '1P' || info == '3M' || info == '3m' || info == '5P' || info == '5A' || info == '5d' || info == '7m' || info == '7M' || info == '7d') {
+                const rect = instance.svgContainer
+                    .append('rect')
+                    .attr('class', 'note')
+                    .style('stroke', '#666')
+                    .attr('stroke-width', 1)
+                    .attr("x", (absPitch - basePitch + 0.4) * instance.fretWidth)
+                    .attr("y", (string - 1) * instance.fretHeight + YMARGIN() / 2 + 3.5)
+                    .attr("width", 24 * size)
+                    .attr("height", 24 * size)
+                    .attr("rx", 8)
+
+                    .style("fill", hexToRGB(color, opacity))
+                    .on('click', () => null/* instance.playNote(note) */);
+            } else {
+                const circle = instance.svgContainer
+                    .append("circle")
+                    .attr("class", "note")
+                    .attr("stroke-width", 1)
+                    .attr("cx", x + 0.75)
+                    .attr("cy", y)
+                    .attr("r", 12 * size)
+                    .style("stroke", '#666')
+                    .style("fill", hexToRGB(color, opacity))
+                    .on("click", () => null);
+            }
+
+
 
             //Add the SVG Text Element to the svgContainer
             const text = instance.svgContainer
                 .append("text")
                 .attr("class", "note-info")
-                .attr("x", x - 6)
-                .attr("y", y + 4)
+                .attr('x', info.length > 1 ? ((absPitch - basePitch + 0.54) * instance.fretWidth + 'px') : ((absPitch - basePitch + 0.60) * instance.fretWidth + 'px'))
+                .attr('y', (string - 1) * instance.fretHeight + 1 + YMARGIN() + 3.5 + 'px')
                 .text(info)
                 .attr("font-family", "sans-serif")
                 .attr("font-size", "12px")
-                .attr("fill", "white");
+                .attr('fill', '#4c5151') // '#2F4F4F' DarkSlateGrey
+            //.attr("fill", "white");
 
             return true;
         }
@@ -342,8 +374,8 @@ export const Fretboard = function (config) {
 
     /* disegna TUTTE LE NOTE  a partire da istance.notes */
     instance.paint = function () {
-        for (let { note, string, color, info } of instance.notes) {
-            paintNote(note, string, color, info);
+        for (let { note, string, color, info, size, opacity } of instance.notes) {
+            paintNote(note, string, color, info, size, opacity);
         }
     };
 
