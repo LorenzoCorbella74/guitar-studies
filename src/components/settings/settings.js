@@ -41,7 +41,7 @@ export default class Settings {
         }
     }
 
-    setBubble(range, bubble) {
+    setBubble (range, bubble) {
         const val = range.value;
         const min = range.min ? range.min : 0;
         const max = range.max ? range.max : 100;
@@ -52,7 +52,7 @@ export default class Settings {
         bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
     }
 
-    setRadioValue(name, value) {
+    setRadioValue (name, value) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
             if (radioElements[i].name === name && radioElements[i].value === value) {
@@ -63,7 +63,7 @@ export default class Settings {
         }
     }
 
-    getRadioValue(name) {
+    getRadioValue (name) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
             if (radioElements[i].name === name && radioElements[i].checked) {
@@ -72,12 +72,11 @@ export default class Settings {
         }
     }
 
-    fillForm(data) {
+    fillForm (data) {
         this.id = data.id;
         this.parentId = data.parentId;
         this.refs.size.value = data.size;
         this.refs.opacity.value = data.opacity;
-        this.refs.differences.value = data.differences;
         this.setRadioValue('whatToShow', data.whatToShow);
         this.setRadioValue('color', data.color);
         // aggiorna i bubble
@@ -87,16 +86,23 @@ export default class Settings {
             const bubble = wrap.querySelector(".bubble");
             this.setBubble(range, bubble);
         });
-        this.configureForm();
+        this.configureForm(data);
     }
 
-    configureForm() {
+    configureForm (data) {
         let others = this.guitar.layers.filter(e => e.id !== this.id);
-        this.fillOptions('differences', others);    // TODO:
+        this.fillOptions('differences', others);
+        this.refs.differences.value = data.differences;
     }
 
-    fillOptions(id, options) {
+    fillOptions (id, options) {
         var select = document.getElementById(id);
+        // remove all but first
+        var length = select.options.length;
+        for (i = length - 1; i >= 1; i--) {
+            select.options[i] = null;
+        }
+        // 
         for (var i = 0; i < options.length; i++) {
             var opt = options[i];
             var el = document.createElement("option");
@@ -106,17 +112,17 @@ export default class Settings {
         }
     }
 
-    open(data, guitar) {
+    open (data, guitar) {
         this.guitar = guitar;
         this.element.firstChild.style.display = "block";
         this.fillForm(data);
     }
 
-    close() {
+    close () {
         this.element.firstChild.style.display = "none";
     }
 
-    save() {
+    save () {
         this.data = {
             id: this.id,
             parentId: this.parentId,
