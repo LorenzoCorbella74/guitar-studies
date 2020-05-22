@@ -3,8 +3,9 @@
 :root {
   --modal-duration: 1s;
   --primary-color: #30336b;
-  --secondary-color: #dd832e;
+  --secondary-color: #62b052;
   --contrast : #d3d3d3;
+  --light-grey: lightgrey;
 }
 
 * {

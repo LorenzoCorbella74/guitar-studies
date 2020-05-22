@@ -59,6 +59,7 @@ export default class MyFretboard {
         fretboard.querySelector('.remove-btn').addEventListener('click', (evt) => this.removeLayers.call(this, evt));
         fretboard.querySelector('.settings-btn').addEventListener('click', (evt) => this.openLayerSettings.call(this, evt));
         fretboard.querySelector('.transpose-btn').addEventListener('click', (evt) => this.transposeLayers.call(this, evt));
+        fretboard.querySelector('.remove-fret-btn').addEventListener('click', (evt) => this.removeFretboard.call(this, evt));
 
         this.fretboardIstances[id] = Fretboard({
             where: `[data-id='${id}'] .col-output`,
@@ -86,6 +87,11 @@ export default class MyFretboard {
         fretboards.forEach(element => {
             element.remove();
         });
+    }
+
+    removeFretboard(evt){
+        let { parent} = this.getParent(evt);
+        parent.remove();
     }
 
     setBubble (slider, bubble, id) {
@@ -302,6 +308,7 @@ export default class MyFretboard {
         this.fretboardIstances[id].layers = [];
         this.updateTitle('', parent.dataset.id);
         this.updateLayerInfo(null, parent.dataset.id);
+        parent.querySelector('.settings-btn').style.visibility = 'inherit';
     }
 
     editLayer (evt, layerId) {
