@@ -74,6 +74,7 @@ export default class Settings {
 
     fillForm(data) {
         this.id = data.id;
+        this.parentId = data.parentId;
         this.refs.size.value = data.size;
         this.refs.opacity.value = data.opacity;
         this.refs.differences.value = data.differences;
@@ -118,6 +119,7 @@ export default class Settings {
     save() {
         this.data = {
             id: this.id,
+            parentId: this.parentId,
             whatToShow: this.getRadioValue('whatToShow'),   // can be notes | degrees
             size: this.refs.size.value,
             opacity: this.refs.opacity.value,

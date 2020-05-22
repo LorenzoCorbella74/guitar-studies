@@ -13,7 +13,7 @@ import { allIntervals } from '../../constants';
 
 export default class MyFretboard {
 
-    constructor(input) {
+    constructor(input = {}) {
         this.body = document.body;
         this.body.innerHTML = `${template}`;
 
@@ -21,38 +21,56 @@ export default class MyFretboard {
         document.getElementById('add-general-btn').addEventListener('click', this.addFretboard.bind(this));
         document.getElementById('remove-general-btn').addEventListener('click', this.removeAllFretboard.bind(this));
 
-        // window.onresize = this.resize.bind(this);    // TODO: for all fretboards
+        window.onresize = this.resize.bind(this);
 
         this.modal = new ModalChoice('modal', this.save.bind(this));
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
 
         this.fretboardIstances = {};
         this.selectedInterval = [];
+
+        /*
+            If thre is an input use addFretboard 
+            and then for each layer use addLayer 
+        */
     }
 
-    addFretboard() {
+    getParent (evt, str) {
+        let parent;
+        if (!str) {
+            parent = evt.target.closest("[data-id*='fretboard']");
+        } else {
+            parent = document.querySelector("[data-id*='"+str+"']");
+        }
+        return { parent, id: parent.dataset.id };
+    }
+
+    addFretboard () {
         var temp = document.getElementsByTagName("template")[0];
         var clone = temp.content.cloneNode(true);
-        let id = Math.floor(Math.random() * 1000000);
+        let id = 'fretboard' + Math.floor(Math.random() * 1000000);
         clone.firstElementChild.dataset.id = id;
         document.body.appendChild(clone);
 
         let fretboard = document.querySelector(`[data-id='${id}']`);
-        // EVENTS
-        fretboard.querySelector('.add-btn').addEventListener('click', this.addLayer.bind(this));
-        fretboard.querySelector('.remove-btn').addEventListener('click', this.removeLayers.bind(this));
-        fretboard.querySelector('.settings-btn').addEventListener('click', this.openLayerSettings.bind(this));
-        fretboard.querySelector('.transpose-btn').addEventListener('click', this.transposeLayers.bind(this));
 
-        this.guitar = Fretboard({
-            where: ".col-output",
+        // EVENTS
+        fretboard.querySelector('.add-btn').addEventListener('click', (evt) => this.addLayer.call(this, evt));
+        fretboard.querySelector('.remove-btn').addEventListener('click', (evt) => this.removeLayers.call(this, evt));
+        fretboard.querySelector('.settings-btn').addEventListener('click', (evt) => this.openLayerSettings.call(this, evt));
+        fretboard.querySelector('.transpose-btn').addEventListener('click', (evt) => this.transposeLayers.call(this, evt));
+
+        this.fretboardIstances[id] = Fretboard({
+            where: `[data-id='${id}'] .col-output`,
             fretWidth: window.innerWidth < 600 ? 34 : 46,
             fretHeight: 32,
             frets: 12 // window.innerWidth > 1000 ? 15 : 12
         });
-        this.guitar.drawBoard();
-        this.guitar.layers = [];
-        this.guitar.selectedIndex = null;
+        this.fretboardIstances[id].drawBoard();
+        this.fretboardIstances[id].layers = [];
+        this.fretboardIstances[id].selectedIndex = null;
+
+        fretboard.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
         // SLIDER RANGE
         const slider = fretboard.querySelector(".slidecontainer .slider");
@@ -63,14 +81,14 @@ export default class MyFretboard {
         this.setBubble(slider, bubble, id);
     }
 
-    removeAllFretboard() {
+    removeAllFretboard () {
         let fretboards = document.querySelectorAll('.fretboard-container')
         fretboards.forEach(element => {
             element.remove();
         });
     }
 
-    setBubble(slider, bubble, id) {
+    setBubble (slider, bubble, id) {
         const val = slider.value;
         const min = slider.min ? slider.min : 0;
         const max = slider.max ? slider.max : 100;
@@ -86,84 +104,95 @@ export default class MyFretboard {
         }
     }
 
-    transposeLayers() {
-        for (let i = 0; i < this.guitar.layers.length; i++) {
-            const layer = this.guitar.layers[i];
-            layer.root = Note.transpose(layer.root, this.selectedInterval);
+    transposeLayers (evt) {
+
+        let { parent, id } = this.getParent(evt);
+
+        for (let i = 0; i < this.fretboardIstances[id].layers.length; i++) {
+            const layer = this.fretboardIstances[id].layers[i];
+            layer.root = Note.transpose(layer.root, this.selectedInterval[id]);
             layer.value = `${layer.root} ${layer.scale}`;
         }
         // layers are deselected
-        document.querySelectorAll('.scale').forEach(element => {
+        parent.querySelectorAll('.scale').forEach(element => {
             element.classList.remove('selected');
         });
         // updating labels
-        document.querySelectorAll('.scale').forEach((element, index) => {
-            element.querySelector('.layer-label').innerHTML = this.guitar.layers[index].value;
+        parent.querySelectorAll('.scale').forEach((element, index) => {
+            element.querySelector('.layer-label').innerHTML = this.fretboardIstances[id].layers[index].value;
         });
         // Layer info are removed
-        this.updateTitle('');
-        this.updateLayerInfo();
+        this.updateTitle('', id);
+        this.updateLayerInfo(null, id);
         // repaint layers
-        this.guitar.repaint();
+        this.fretboardIstances[id].repaint();
         // resetting range
-        const slider = document.querySelector(".slidecontainer .slider");
-        const bubble = document.querySelector(".slidecontainer .bubble");
+        const slider = parent.querySelector(".slidecontainer .slider");
+        const bubble = parent.querySelector(".slidecontainer .bubble");
         slider.value = '0';
         this.setBubble(slider, bubble);
     }
 
-    resize() {
+    resize () {
         // console.log(window.innerHeight, window.innerWidth);
         this.isSmall = window.innerWidth < 800;
-        if (this.isSmall) {
-            this.guitar.set('fretWidth', 40);
-        } else {
-            this.guitar.set('fretWidth', 50);
+        for (const key in this.fretboardIstances) {
+            const fretboard = this.fretboardIstances[key];
+            if (this.isSmall) {
+                fretboard.set('fretWidth', 40);
+            } else {
+                fretboard.set('fretWidth', 50);
+            }
         }
     }
 
-    getNoteVisibilityRange(scale) {
+    getNoteVisibilityRange (scale) {
         let data = Scale.get(scale);
         return data.notes.map(() => 1);
     }
 
-    openLayerSettings() {
-        let index = this.guitar.layers.findIndex(e => e.id === this.guitar.selectedIndex);
-        this.settings.open(this.guitar.layers[index], this.guitar);
+    openLayerSettings (evt) {
+        let { id } = this.getParent(evt);
+        let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
+        this.settings.open(this.fretboardIstances[id].layers[index], this.fretboardIstances[id]);
     }
 
     // callback from settings panel
-    updateLayerSettings(data) {
+    updateLayerSettings (data) {
         // console.log(data);
-        let toBeUpdate = this.guitar.layers.findIndex(e => e.id === data.id);
-        this.guitar.layers[toBeUpdate] = Object.assign(this.guitar.layers[toBeUpdate], data);
-        this.guitar.repaint();
-        this.updateLayerInfo(this.guitar.layers[toBeUpdate]);
+        let id = data.parentId;
+        let toBeUpdate = this.fretboardIstances[id].layers.findIndex(e => e.id === data.id);
+        this.fretboardIstances[id].layers[toBeUpdate] = Object.assign(this.fretboardIstances[id].layers[toBeUpdate], data);
+        this.fretboardIstances[id].repaint();
+        this.updateLayerInfo(this.fretboardIstances[id].layers[toBeUpdate], id);
     }
 
     // callback from modal
-    save(data) {
+    save (data) {
         console.log(data);
+        let { parent, id } = this.getParent(null, data.parentId);
         let layer = `${data.root} ${data.scale}`;
         if (data.id) {  // EDIT MODE
-            const li = document.getElementById(data.id);
+            const li = parent.querySelector(`[data-id='${data.id}']`);
             li.querySelector('.layer-label').innerHTML = layer;
-            let toBeUpdate = this.guitar.layers.findIndex(e => e.id === data.id);
-            this.guitar.layers[toBeUpdate] = Object.assign(this.guitar.layers[toBeUpdate], data);
-            this.guitar.repaint();
-            this.updateTitle(layer);
-            this.updateLayerInfo(this.guitar.layers[toBeUpdate]);
+            let toBeUpdate = this.fretboardIstances[id].layers.findIndex(e => e.id === data.id);
+            this.fretboardIstances[id].layers[toBeUpdate] = Object.assign(this.fretboardIstances[id].layers[toBeUpdate], data);
+            this.fretboardIstances[id].repaint();
+            this.updateTitle(layer, id);
+            this.updateLayerInfo(this.fretboardIstances[id].layers[toBeUpdate], id);
         } else {        // SAVE NEW
             this.renderLayer(layer, data);
         }
     }
 
-    renderLayer(layer, data) {
-        const list = document.getElementById('list');
-        const id = data.id || Math.floor(Math.random() * 1000000);
+    renderLayer (layer, data) {
+        let { parent } = this.getParent(null, data.parentId);
+        const list = parent.querySelector('.list');
+        const layerId = data.id || Math.floor(Math.random() * 1000000);
+        const parentId = data.parentId;
         let li = document.createElement('li');
         li.classList.add('scale');
-        li.id = id;
+        li.dataset.id = layerId;
         li.innerHTML = `
             <span class="layer-label">${layer}</span>
             <span class="edit-btn"> e </span>
@@ -172,7 +201,8 @@ export default class MyFretboard {
             `;
         list.appendChild(li);
         let toBeAdded = {
-            id: id,
+            id: layerId,
+            parentId: parentId,
             root: data.root,
             scale: data.scale,
             value: layer,
@@ -186,27 +216,29 @@ export default class MyFretboard {
             color: 'many',
             differences: 'own',
         };
-        this.guitar.layers.push(toBeAdded);
-        this.guitar.addLayer(layer);
-        this.guitar.paint();
+        this.fretboardIstances[parentId].layers.push(toBeAdded);
+        this.fretboardIstances[parentId].addLayer(layer);
+        this.fretboardIstances[parentId].paint();
         li.querySelector('.layer-label').addEventListener('click', (event) => {
-            this.selectLayer(event, id);
+            this.selectLayer(event, layerId, parentId);
         });
         li.querySelector('.edit-btn').addEventListener('click', (event) => {
-            this.editLayer(event, id);
+            this.editLayer(event, layerId, parentId);
         });
         li.querySelector('.visibility-btn').addEventListener('click', (event) => {
-            this.toggleLayerVisibility(event, id);
+            this.toggleLayerVisibility(event, layerId, parentId);
         });
         li.querySelector('.delete-btn').addEventListener('click', (event) => {
-            this.deleteLayer(event, id);
+            this.deleteLayer(event, layerId, parentId);
         });
-        this.updateTitle(layer);
-        this.updateLayerInfo(toBeAdded);
+        this.updateTitle(layer, parentId);
+        this.updateLayerInfo(toBeAdded, parentId);
     }
 
-    addLayer() {
+    addLayer (evt) {
+        let { parent } = this.getParent(evt);
         let def = {
+            parentId: parent.dataset.id,
             type: 'scale',      // can be scale | arpeggio
             whatToShow: 'degrees', // can be notes | degrees
             tuning: 'E_std',
@@ -219,9 +251,10 @@ export default class MyFretboard {
         this.modal.open(def);
     }
 
-    updateLayerInfo(info) {
-        let degrees = document.querySelector('.degrees')
-        let noteNames = document.querySelector('.notes')
+    updateLayerInfo (info, parentId) {
+        let { parent, id } = this.getParent(null, parentId);
+        let degrees = parent.querySelector('.degrees')
+        let noteNames = parent.querySelector('.notes')
         if (info) {
             let scale = info.value;
             let { notes, intervals } = Scale.get(scale);
@@ -231,14 +264,14 @@ export default class MyFretboard {
                 const elementN = noteNames.children[i];
                 elementN.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    this.guitar.updateLayer(i, scale);
+                    this.fretboardIstances[id].updateLayer(i, scale);
                     elementN.classList.toggle('disabled');
                     elementD.classList.toggle('disabled');
                 });
                 const elementD = degrees.children[i];
                 elementD.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    this.guitar.updateLayer(i, scale);
+                    this.fretboardIstances[id].updateLayer(i, scale);
                     elementN.classList.toggle('disabled');
                     elementD.classList.toggle('disabled');
                 });
@@ -247,7 +280,7 @@ export default class MyFretboard {
                 let original = Scale.get(info.value).notes;
                 let compare = Scale.get(info.differences).notes;
                 let comparison = original.map(e => compare.includes(e) ? 1 : 0);
-                document.querySelectorAll('.label-notes').forEach((element, i) => {
+                parent.querySelectorAll('.label-notes').forEach((element, i) => {
                     if (!comparison[i]) {
                         element.classList.add('red')
                     }
@@ -259,66 +292,68 @@ export default class MyFretboard {
         }
     }
 
-    removeLayers(event) {
-        event.stopPropagation();
-        const list = document.getElementById('list');
+    removeLayers (evt) {
+        let { parent, id } = this.getParent(evt);
+        const list = parent.querySelector('.list');
         while (list.hasChildNodes()) {
             list.removeChild(list.firstChild);
         }
-        this.guitar.clearNotes();
-        this.guitar.layers = [];
-        this.updateTitle('');
-        this.updateLayerInfo();
+        this.fretboardIstances[id].clearNotes();
+        this.fretboardIstances[id].layers = [];
+        this.updateTitle('', parent.dataset.id);
+        this.updateLayerInfo(null, parent.dataset.id);
     }
 
-    editLayer(event, id) {
-        let selected = this.guitar.layers.find(e => e.id === id);
+    editLayer (evt, layerId) {
+        let { id } = this.getParent(evt);
+        let selected = this.fretboardIstances[id].layers.find(e => e.id === layerId);
         selected.title = 'Edit layer';
         selected.action = 'Update';
         this.modal.open(selected);
     }
 
-    toggleLayerVisibility(event, id) {
+    toggleLayerVisibility (event, id, parentId) {
         event.stopPropagation();
-        let selected = this.guitar.layers.find(e => e.id === id)
+        let selected = this.fretboardIstances[parentId].layers.find(e => e.id === id)
         selected.visible = !selected.visible;
-        let li = document.getElementById(id)
+        let li = document.querySelector(`[data-id='${id}']`)
         li.querySelector('.visibility-btn').innerHTML = selected.visible ? ' &#9728; ' : '&#9788;';
-        this.guitar.repaint();
+        this.fretboardIstances[parentId].repaint();
     }
 
-    deleteLayer(event, id) {
+    deleteLayer (event, id, parentId) {
         event.stopPropagation();
-        let elem = document.getElementById(id);
-        elem.parentNode.removeChild(elem)
-        this.guitar.layers = this.guitar.layers.filter(s => s.id !== id);
-        this.guitar.repaint();
-        this.updateTitle('');
-        this.updateLayerInfo();
+        let layer = document.querySelector(`[data-id='${id}']`);
+        layer.parentNode.removeChild(layer)
+        this.fretboardIstances[parentId].layers = this.fretboardIstances[parentId].layers.filter(s => s.id !== id);
+        this.fretboardIstances[parentId].repaint();
+        this.updateTitle('', parentId);
+        this.updateLayerInfo(null, parentId);
     }
 
-    selectLayer(event, id) {
-        this.guitar.selectedIndex = id; // id del layer
-        document.querySelector('.settings-btn').style.visibility = 'inherit';
+    selectLayer (event, id, parentId) {
+        let { parent } = this.getParent(null, parentId);
+        this.fretboardIstances[parentId].selectedIndex = id; // id del layer
+        parent.querySelector('.settings-btn').style.visibility = 'inherit';
         event.stopPropagation();
-        document.querySelectorAll('.scale').forEach(element => {
+        parent.querySelectorAll('.scale').forEach(element => {
             element.classList.remove('selected');
         });
-        let li = document.getElementById(id);
+        let li = parent.querySelector(`[data-id='${id}']`);
         li.classList.add('selected');
-        let index = this.guitar.layers.findIndex(e => e.id === id);
-        let selected = this.guitar.layers.splice(index, 1)[0];
-        this.guitar.layers.forEach(layer => {
+        let index = this.fretboardIstances[parentId].layers.findIndex(e => e.id === id);
+        let selected = this.fretboardIstances[parentId].layers.splice(index, 1)[0];
+        this.fretboardIstances[parentId].layers.forEach(layer => {
             layer.color = 'one';
         });
         selected.color = 'many';
-        this.guitar.layers.push(selected);
-        this.updateTitle(selected.value);
-        this.updateLayerInfo(selected);
-        this.guitar.repaint();
+        this.fretboardIstances[parentId].layers.push(selected);
+        this.updateTitle(selected.value, parentId);
+        this.updateLayerInfo(selected, parentId);
+        this.fretboardIstances[parentId].repaint();
     }
 
-    updateTitle(title) {
-        document.querySelector('.col-output .scale-title').innerHTML = title;
+    updateTitle (title, parentId) {
+        document.querySelector(`[data-id='${parentId}'] .col-output .scale-title`).innerHTML = title;
     }
 }

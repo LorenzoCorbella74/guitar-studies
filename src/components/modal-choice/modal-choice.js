@@ -97,6 +97,7 @@ export default class ModalChoice {
     }
 
     fillForm (data) {
+        this.parentId = data.parentId;
         this.id = data.id;
         this.refs.title.innerHTML = data.title;
         this.refs.action.innerHTML = data.action;
@@ -147,6 +148,7 @@ export default class ModalChoice {
     save () {
         this.data = {
             id: this.id,
+            parentId: this.parentId,
             type: this.getRadioValue('type'),               // can be scale | arpeggio
             whatToShow: this.getRadioValue('whatToShow'),   // can be notes | degrees
             tuning: this.refs.tuning.value,
