@@ -50,7 +50,8 @@ export default class MyFretboard {
         var clone = temp.content.cloneNode(true);
         let id = 'fretboard' + Math.floor(Math.random() * 1000000);
         clone.firstElementChild.dataset.id = id;
-        document.body.appendChild(clone);
+        
+        document.querySelector('.content').appendChild(clone);
 
         let fretboard = document.querySelector(`[data-id='${id}']`);
 
