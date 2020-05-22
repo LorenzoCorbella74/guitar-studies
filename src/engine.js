@@ -331,7 +331,7 @@ export const Fretboard = function (config) {
                     .style('stroke', '#666')
                     .attr('stroke-width', 1)
                     .attr("x", (absPitch - basePitch + 0.4) * instance.fretWidth)
-                    .attr("y", (string - 1) * instance.fretHeight + YMARGIN() / 2 + 3.5)
+                    .attr("y", (string - 1) * instance.fretHeight + YMARGIN() / 2 + 4.5)
                     .attr("width", 24 * size)
                     .attr("height", 24 * size)
                     .attr("rx", 8)

@@ -1,10 +1,14 @@
-.fixed{
+.fixed {
   position: fixed;
   top: 0px;
   left: 0px;
   min-width: 100%;
   z-index: 5;
   background-color: white;
+}
+
+.hide {
+  display: none;
 }
 
 .header {
@@ -18,18 +22,90 @@
 
   &-title {
     width: 33%;
+
+    .progress {
+      display: flex;
+
+      .progress-range {
+        width: 65%;
+        margin-left: 12px;
+        align-self: center;
+      }
+
+      .progress-bubble {
+        background: VAR(--primary-color);
+        color: white;
+        font-size: 66%;
+        padding: 2px 8px;
+        border-radius: 3px;
+        margin: 0 12px
+      }
+    }
   }
 
   &-description {
-    width: 65%;
+    width: 60%;
   }
 
   &-actions {
-    width: 2%;
+    width: 7%;
+  }
+
+  &-tags-container {
+    width: 60%;
+    padding: 7px 15px;
+    border-radius: 6px;
+    height: 80px;
+
+    ul {
+      list-style: none;
+      margin: 0px;
+      padding: 0px;
+      display: inline-block;
+      font-size: 10px;
+      min-height: 22px;
+
+      li {
+        display: inline-block;
+        background: var(--primary-color);
+        color: white;
+        padding: 3px 5px 3px 10px;
+        border-radius: 15px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+
+        span {
+          color: white;
+          margin-left: 5px;
+          background: var(--primary-color);
+          width: 15px;
+          height: 15px;
+          border-radius: 50%;
+          display: inline-flex;
+          text-align: center;
+          align-items: center;
+          justify-content: center;
+
+          &:hover {
+            color: var(--secondary-color);
+          }
+        }
+      }
+    }
+
+    input {
+      border: 0px;
+      background: none;
+      margin-bottom: 5px;
+      display: inline-block;
+    }
+
   }
 
   #add-general-btn,
-  #remove-general-btn {
+  #remove-general-btn,
+  #tags-general-btn,
+  #back-btn {
     margin-left: 8px;
     /* margin-right: 8px; */
     font-weight: 700;
@@ -38,7 +114,7 @@
   }
 }
 
-.content{
+.content {
   margin-top: 120px;
 }
 
@@ -50,7 +126,7 @@
   width: 1024px;
   border-bottom: 1px solid var(--light-grey);
 
-  .remove-fret-btn{
+  .remove-fret-btn {
     align-self: flex-start;
     /* margin-right: 28px; */
     font-size: 18px;

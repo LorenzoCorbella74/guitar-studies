@@ -20,6 +20,7 @@ export default class MyFretboard {
         // events
         document.getElementById('add-general-btn').addEventListener('click', this.addFretboard.bind(this));
         document.getElementById('remove-general-btn').addEventListener('click', this.removeAllFretboard.bind(this));
+        document.getElementById('tags-general-btn').addEventListener('click', this.toggleTabsPanel.bind(this));
 
         window.onresize = this.resize.bind(this);
 
@@ -30,27 +31,83 @@ export default class MyFretboard {
         this.selectedInterval = [];
 
         /*
-            If thre is an input use addFretboard 
-            and then for each layer use addLayer 
+            If thre is an input data use addFretboard 
+            and then for each layer use addLayer s
         */
+
+        // SLIDER RANGE
+        const header = document.querySelector('.header');
+        const slider = header.querySelector(".progress-range .slider");
+        const bubble = header.querySelector(".progress-bubble");
+        slider.addEventListener("input", () => {
+            this.setBubbleProgress(slider, bubble);
+        });
+        this.setBubbleProgress(slider, bubble);
+
+        var txt = document.getElementById('tag-input');
+        this.taglist = document.getElementById('tag-list');
+        this.tags = [];
+
+        txt.addEventListener('keypress', e => {
+            if (e.key === 'Enter') {
+                let val = txt.value;
+                if (val !== '') {
+                    if (this.tags.indexOf(val) >= 0) {
+                        // tag già presente
+                    } else {
+                        this.tags.push(val);
+                        this.renderTag();
+                        txt.value = '';
+                        txt.focus();
+                    }
+                } else {
+                    console.log('Input is empty')
+                }
+            }
+        });
+        this.renderTag();
     }
 
-    getParent (evt, str) {
+    renderTag() {
+        this.taglist.innerHTML = '';
+        this.tags.map((item, index) => {
+            this.taglist.innerHTML += `<li>${item} <span data-tagid="${index}">&times;</span></li>`;
+        });
+        document.querySelectorAll('[data-tagid]').forEach(element => {
+            element.addEventListener('click', (evt) => {
+                // element.parentElement.remove(element);
+                this.remove(element.dataset.tagid)
+            });
+        });
+
+    }
+
+    remove(i) {
+        this.tags = this.tags.filter(item => this.tags.indexOf(item) != i);
+        this.renderTag();
+    }
+
+    getParent(evt, str) {
         let parent;
         if (!str) {
-            parent = evt.target.closest("[data-id*='fretboard']");
+            parent = evt.target.closest("[data-id*='header']");
         } else {
-            parent = document.querySelector("[data-id*='"+str+"']");
+            parent = document.querySelector("[data-id*='" + str + "']");
         }
         return { parent, id: parent.dataset.id };
     }
 
-    addFretboard () {
+    toggleTabsPanel() {
+        document.querySelector('.header-description').classList.toggle('hide');
+        document.querySelector('.header-tags-container').classList.toggle('hide');
+    }
+
+    addFretboard() {
         var temp = document.getElementsByTagName("template")[0];
         var clone = temp.content.cloneNode(true);
         let id = 'fretboard' + Math.floor(Math.random() * 1000000);
         clone.firstElementChild.dataset.id = id;
-        
+
         document.querySelector('.content').appendChild(clone);
 
         let fretboard = document.querySelector(`[data-id='${id}']`);
@@ -83,19 +140,19 @@ export default class MyFretboard {
         this.setBubble(slider, bubble, id);
     }
 
-    removeAllFretboard () {
+    removeAllFretboard() {
         let fretboards = document.querySelectorAll('.fretboard-container')
         fretboards.forEach(element => {
             element.remove();
         });
     }
 
-    removeFretboard(evt){
-        let { parent} = this.getParent(evt);
+    removeFretboard(evt) {
+        let { parent } = this.getParent(evt);
         parent.remove();
     }
 
-    setBubble (slider, bubble, id) {
+    setBubble(slider, bubble, id) {
         const val = slider.value;
         const min = slider.min ? slider.min : 0;
         const max = slider.max ? slider.max : 100;
@@ -111,7 +168,17 @@ export default class MyFretboard {
         }
     }
 
-    transposeLayers (evt) {
+    setBubbleProgress(slider, bubble) {
+        const val = slider.value;
+        const min = slider.min ? slider.min : 0;
+        const max = slider.max ? slider.max : 100;
+        const newVal = Number(((val - min) * 100) / (max - min));
+        bubble.innerHTML = val;
+        // Sorta magic numbers based on size of the native UI thumb
+        // bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.10}px))`;
+    }
+
+    transposeLayers(evt) {
 
         let { parent, id } = this.getParent(evt);
 
@@ -140,7 +207,7 @@ export default class MyFretboard {
         this.setBubble(slider, bubble);
     }
 
-    resize () {
+    resize() {
         // console.log(window.innerHeight, window.innerWidth);
         this.isSmall = window.innerWidth < 800;
         for (const key in this.fretboardIstances) {
@@ -153,19 +220,19 @@ export default class MyFretboard {
         }
     }
 
-    getNoteVisibilityRange (scale) {
+    getNoteVisibilityRange(scale) {
         let data = Scale.get(scale);
         return data.notes.map(() => 1);
     }
 
-    openLayerSettings (evt) {
+    openLayerSettings(evt) {
         let { id } = this.getParent(evt);
         let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
         this.settings.open(this.fretboardIstances[id].layers[index], this.fretboardIstances[id]);
     }
 
     // callback from settings panel
-    updateLayerSettings (data) {
+    updateLayerSettings(data) {
         // console.log(data);
         let id = data.parentId;
         let toBeUpdate = this.fretboardIstances[id].layers.findIndex(e => e.id === data.id);
@@ -175,7 +242,7 @@ export default class MyFretboard {
     }
 
     // callback from modal
-    save (data) {
+    save(data) {
         console.log(data);
         let { parent, id } = this.getParent(null, data.parentId);
         let layer = `${data.root} ${data.scale}`;
@@ -192,7 +259,7 @@ export default class MyFretboard {
         }
     }
 
-    renderLayer (layer, data) {
+    renderLayer(layer, data) {
         let { parent } = this.getParent(null, data.parentId);
         const list = parent.querySelector('.list');
         const layerId = data.id || Math.floor(Math.random() * 1000000);
@@ -242,7 +309,7 @@ export default class MyFretboard {
         this.updateLayerInfo(toBeAdded, parentId);
     }
 
-    addLayer (evt) {
+    addLayer(evt) {
         let { parent } = this.getParent(evt);
         let def = {
             parentId: parent.dataset.id,
@@ -258,7 +325,7 @@ export default class MyFretboard {
         this.modal.open(def);
     }
 
-    updateLayerInfo (info, parentId) {
+    updateLayerInfo(info, parentId) {
         let { parent, id } = this.getParent(null, parentId);
         let degrees = parent.querySelector('.degrees')
         let noteNames = parent.querySelector('.notes')
@@ -299,7 +366,7 @@ export default class MyFretboard {
         }
     }
 
-    removeLayers (evt) {
+    removeLayers(evt) {
         let { parent, id } = this.getParent(evt);
         const list = parent.querySelector('.list');
         while (list.hasChildNodes()) {
@@ -312,7 +379,7 @@ export default class MyFretboard {
         parent.querySelector('.settings-btn').style.visibility = 'inherit';
     }
 
-    editLayer (evt, layerId) {
+    editLayer(evt, layerId) {
         let { id } = this.getParent(evt);
         let selected = this.fretboardIstances[id].layers.find(e => e.id === layerId);
         selected.title = 'Edit layer';
@@ -320,7 +387,7 @@ export default class MyFretboard {
         this.modal.open(selected);
     }
 
-    toggleLayerVisibility (event, id, parentId) {
+    toggleLayerVisibility(event, id, parentId) {
         event.stopPropagation();
         let selected = this.fretboardIstances[parentId].layers.find(e => e.id === id)
         selected.visible = !selected.visible;
@@ -329,7 +396,7 @@ export default class MyFretboard {
         this.fretboardIstances[parentId].repaint();
     }
 
-    deleteLayer (event, id, parentId) {
+    deleteLayer(event, id, parentId) {
         event.stopPropagation();
         let layer = document.querySelector(`[data-id='${id}']`);
         layer.parentNode.removeChild(layer)
@@ -339,7 +406,7 @@ export default class MyFretboard {
         this.updateLayerInfo(null, parentId);
     }
 
-    selectLayer (event, id, parentId) {
+    selectLayer(event, id, parentId) {
         let { parent } = this.getParent(null, parentId);
         this.fretboardIstances[parentId].selectedIndex = id; // id del layer
         parent.querySelector('.settings-btn').style.visibility = 'inherit';
@@ -361,7 +428,7 @@ export default class MyFretboard {
         this.fretboardIstances[parentId].repaint();
     }
 
-    updateTitle (title, parentId) {
+    updateTitle(title, parentId) {
         document.querySelector(`[data-id='${parentId}'] .col-output .scale-title`).innerHTML = title;
     }
 }
