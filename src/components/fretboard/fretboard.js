@@ -44,10 +44,10 @@ export default class MyFretboard {
         });
         this.setBubbleProgress(slider, bubble);
 
-        var txt = document.getElementById('tag-input');
+        // TAGS
+        const txt = document.getElementById('tag-input');
         this.taglist = document.getElementById('tag-list');
         this.tags = [];
-
         txt.addEventListener('keypress', e => {
             if (e.key === 'Enter') {
                 let val = txt.value;
@@ -75,7 +75,6 @@ export default class MyFretboard {
         });
         document.querySelectorAll('[data-tagid]').forEach(element => {
             element.addEventListener('click', (evt) => {
-                // element.parentElement.remove(element);
                 this.remove(element.dataset.tagid)
             });
         });
@@ -90,7 +89,7 @@ export default class MyFretboard {
     getParent(evt, str) {
         let parent;
         if (!str) {
-            parent = evt.target.closest("[data-id*='header']");
+            parent = evt.target.closest("[data-id*='fretboard']");
         } else {
             parent = document.querySelector("[data-id*='" + str + "']");
         }
