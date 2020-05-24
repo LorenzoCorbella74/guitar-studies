@@ -1,6 +1,6 @@
 import * as d3 from "d3-selection";
 
-import { allNotes, allNotesEnh, COLOURS, /* Scales, */ Tunings } from './constants';
+import { allNotes, allNotesEnh, COLOURS, COLOURS_MERGE, Tunings } from './constants';
 
 import { /* Chord, Distance, */ Scale } from "@tonaljs/tonal";
 
@@ -25,6 +25,30 @@ function noteName(absPitch) {
     let octave = Math.floor(absPitch / 12);
     let note = allNotes[absPitch % 12];
     return note + octave.toString();
+}
+
+// crea i colori per l'array mergiato
+export function createMergeColors(combined, source1, source2) {
+    let result = [];
+    combined.forEach(note => {
+        if (source1.includes(note) && source2.includes(note)) {
+            result.push(0);
+        } else if (source1.includes(note)) {
+            result.push(1);
+        } else {
+            result.push(2);
+        }
+    });
+    return result;
+}
+
+// mergia e rimuove i duplicati
+export function mergeArrays(...arrays) {
+    let jointArray = []
+    arrays.forEach(array => {
+        jointArray = [...jointArray, ...array]
+    });
+    return [...new Set([...jointArray])]
 }
 
 // where è l'elemento dentro il quale si renderizza la fretboard
@@ -70,13 +94,18 @@ export const Fretboard = function (config) {
 
     // 3) prende tutte le note e chiama l'addNote
     instance.addNotes = function (data) {
-        let { intervals, notes, name, tonic, type } = data;
-        let index = instance.layers.findIndex(i => i.value === name);
+        let { intervals, notes, name } = data;
+        let index = instance.layers.findIndex(i => i.value === name);   // si recupera l'indice in base al nome
         let whatToShow = instance.layers[index].whatToShow;
         let size = instance.layers[index].size;
         let opacity = instance.layers[index].opacity;
         for (let i = 0; i < notes.length; i++) {
-            let showColor = instance.layers[index].color === 'many' ? COLOURS[intervals[i]] : '#30336b' /* getComputedStyle(document.documentElement).getPropertyValue('--primary-color') */;
+            let showColor;
+            if (data.combinedColors) {
+                showColor = COLOURS_MERGE[data.combinedColors[i]];
+            } else {
+                showColor = instance.layers[index].color === 'many' ? COLOURS[intervals[i]] : '#30336b' /* getComputedStyle(document.documentElement).getPropertyValue('--primary-color') */;
+            }
             let note = notes[i];
             let info = instance.layers[index].color === 'many' ? (whatToShow === 'degrees' ? intervals[i] : note) : '';
             if (instance.layers[index].notesVisibility[i]) {        // solo se la nota è visibile
@@ -86,6 +115,10 @@ export const Fretboard = function (config) {
             }
         }
     };
+
+    instance.addMergeLayer = function (data) {
+        instance.addNotes(data);
+    }
 
     // 2) scaleName = "a aeolian" -> AGGIUNGE UNA SCALA
     instance.addLayer = function (scaleName) {
@@ -382,7 +415,11 @@ export const Fretboard = function (config) {
         instance.clearNotes();
         instance.layers.forEach(scale => {
             if (scale.visible) {
-                instance.addLayer(scale.value)
+                if (scale.merge) {
+                    instance.addMergeLayer(scale);
+                } else {
+                    instance.addLayer(scale.value);
+                }
             }
         });
         instance.paint();

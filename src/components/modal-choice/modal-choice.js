@@ -69,7 +69,7 @@ export default class ModalChoice {
         }
     }
 
-    setRadioValue (name, value) {
+    setRadioValue(name, value) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
             if (radioElements[i].name === name && radioElements[i].value === value) {
@@ -80,7 +80,7 @@ export default class ModalChoice {
         }
     }
 
-    getRadioValue (name) {
+    getRadioValue(name) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
             if (radioElements[i].name === name && radioElements[i].checked) {
@@ -89,15 +89,17 @@ export default class ModalChoice {
         }
     }
 
-    resetRadio (name) {
+    resetRadio(name) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
             radioElements[i].checked = false;
         }
     }
 
-    fillForm (data) {
+    fillForm(data) {
         this.parentId = data.parentId;
+        this.mergeAction = data.mergeAction;
+        this.startScale = data.startScale;
         this.id = data.id;
         this.refs.title.innerHTML = data.title;
         this.refs.action.innerHTML = data.action;
@@ -109,14 +111,14 @@ export default class ModalChoice {
         this.setRadioValue('whatToShow', data.whatToShow);
     }
 
-    configureForm () {
+    configureForm() {
         this.fillOptions('scale', optionsScales);
         this.fillOptions('tuning', optionsTuning);
         this.fillOptions('root', optionsNotes);
         this.fillOptions('arpeggio', optionsArp);
     }
 
-    fillOptions (id, options) {
+    fillOptions(id, options) {
         var select = document.getElementById(id);
         for (var i = 0; i < options.length; i++) {
             var opt = options[i];
@@ -127,7 +129,7 @@ export default class ModalChoice {
         }
     }
 
-    resetForm () {
+    resetForm() {
         // this.refs.tuning.value = '';
         this.refs.scale.value = '';
         this.refs.root.value = '';
@@ -136,16 +138,16 @@ export default class ModalChoice {
         this.resetRadio('whatToShow')
     }
 
-    open (data) {
+    open(data) {
         this.element.style.display = "block";
         this.fillForm(data);
     }
 
-    close () {
+    close() {
         this.element.style.display = "none";
     }
 
-    save () {
+    save() {
         this.data = {
             id: this.id,
             parentId: this.parentId,
@@ -155,7 +157,10 @@ export default class ModalChoice {
             root: this.refs.root.value,
             scale: this.refs.scale.value,
             arpeggio: this.refs.arpeggio.value,
-            value: `${this.refs.root.value} ${this.refs.scale.value}`
+            value: `${this.refs.root.value} ${this.refs.scale.value}`,
+            // if it's a merge action
+            mergeAction: this.mergeAction,
+            startScale: this.startScale
         }
         this.element.style.display = "none";
         this.resetForm();

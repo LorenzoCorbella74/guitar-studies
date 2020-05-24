@@ -29,6 +29,8 @@ export const allNotesEnh = [
     "cb",
 ];
 
+export const COLOURS_MERGE = ['#F4D03F', '#b3e5fc', '#bdbdbd'];
+
 export const COLOURS = {
     "1P": '#ffee58',
     "2m": '#b3e5fc',
@@ -46,40 +48,6 @@ export const COLOURS = {
     "7d": '#e0e0e0',
     "7m": '#bdbdbd',
     "7M": '#9e9e9e'
-};
-
-// tutte partono da C...
-export const Scales = {
-    // scales
-    lydian: "c d e f# g a b",
-    major: "c d e f g a b",
-    mixolydian: "c d e f g a bb",
-    dorian: "c d eb f g a bb",
-    aeolian: "c d eb f g ab bb",
-    phrygian: "c db eb f g ab bb",
-    locrian: "c db eb f gb ab bb",
-    "harmonic-minor": "c d eb f g ab b",
-    "melodic-minor": "c d eb f g a b",
-    "minor-pentatonic": "c eb f g bb",
-    "minor-blues": "c eb f f# g bb",
-    "major-pentatonic": "c d e g a",
-    "major-blues": "c d d# e g a",
-    "composite-blues": "c d d# e f f# g a bb",
-    "dom-pentatonic": "c e f g bb",
-    japanese: "c db f g ab",
-    // chords
-    maj: "c e g",
-    aug: "c e g#",
-    min: "c eb g",
-    dim: "c eb gb",
-    maj7: "c e g b",
-    7: "c e g bb",
-    min7: "c eb g bb",
-    m7b5: "c eb gb bb",
-    dim7: "c eb gb a",
-    _: function (scale) {
-        return Scales[scale].split(" ");
-    },
 };
 
 export const allIntervals = ["1P", "2m", "2M", "3m", "3M", "4P", "5d", "5P", "6m", "6M", "7m", "7M"];
