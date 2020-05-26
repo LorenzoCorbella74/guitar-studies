@@ -62,6 +62,7 @@ export const Fretboard = function (config) {
         frets: 12,
         startFret: 0,
         strings: 6,
+        stringsVisibility: [],
         tuning: Tunings.guitar6.standard,
         fretWidth: 50,
         fretHeight: 20,
@@ -71,6 +72,11 @@ export const Fretboard = function (config) {
         layers: [],
         ...config,
     };
+
+    for (let v = 1; v < instance.strings + 1; v++) {
+        instance.stringsVisibility.push(1);
+
+    }
 
     // scales è l'array di scale ordinato secondo la visualizzazione
     // quello in top visualizzazione è l'ultimo
@@ -88,29 +94,31 @@ export const Fretboard = function (config) {
     // 4) note = a1, red
     instance.addNote = function (note, color, info, size, opacity) {
         for (let string = 1; string <= instance.strings; string++) {  // per tutte le stringhe
-            instance.addNoteOnString(note, string, color, info, size, opacity);
+            if (instance.stringsVisibility[string - 1]) {
+                instance.addNoteOnString(note, string, color, info, size, opacity);
+            }
         }
     };
 
     // 3) prende tutte le note e chiama l'addNote
     instance.addNotes = function (data) {
         let { intervals, notes, name } = data;
-        let index = instance.layers.findIndex(i => i.value === name);   // si recupera l'indice in base al nome
+        let index = instance.layers.findIndex(i => i.value === name);   // si recupera l'indice del layer in base al nome
         let whatToShow = instance.layers[index].whatToShow;
         let size = instance.layers[index].size;
         let opacity = instance.layers[index].opacity;
         for (let i = 0; i < notes.length; i++) {
-            let showColor;
+            let color;
             if (data.combinedColors) {
-                showColor = COLOURS_MERGE[data.combinedColors[i]];
+                color = COLOURS_MERGE[data.combinedColors[i]];
             } else {
-                showColor = instance.layers[index].color === 'many' ? COLOURS[intervals[i]] : '#30336b' /* getComputedStyle(document.documentElement).getPropertyValue('--primary-color') */;
+                color = instance.layers[index].color === 'many' ? COLOURS[intervals[i]] : (instance.layers[index].color === 'triads' ? (intervals[i] === '1P' || intervals[i] === '3m' || intervals[i] === '3M' || intervals[i] === '5P' ? COLOURS[intervals[i]] : '#30336b') : '#30336b');/* getComputedStyle(document.documentElement).getPropertyValue('--primary-color') */;
             }
             let note = notes[i];
-            let info = instance.layers[index].color === 'many' ? (whatToShow === 'degrees' ? intervals[i] : note) : '';
+            let info = instance.layers[index].color === 'many' || instance.layers[index].color === 'triads' ? (whatToShow === 'degrees' ? intervals[i] : (whatToShow === 'notes' ? note : '')) : '';
             if (instance.layers[index].notesVisibility[i]) {        // solo se la nota è visibile
                 for (let octave = 1; octave < 7; octave++) {        // aggiunge la nota per tutte le ottave...
-                    instance.addNote(note + octave, showColor, info, size, opacity);
+                    instance.addNote(note + octave, color, info, size, opacity);
                 }
             }
         }
@@ -126,7 +134,7 @@ export const Fretboard = function (config) {
         instance.addNotes(data);
     };
 
-    // TODO: 
+    // TODO: accordi e scale 3 note per stringa
     // genera una scala a partire da una sequenza di stringa:nota -> utile per gli accordi
     /* instance.placeNotes = function (sequence) {
         let pairs = sequence.split(" ");
@@ -233,6 +241,7 @@ export const Fretboard = function (config) {
     };
 
     let drawStrings = function () {
+        let namesStrings = instance.tuning.slice(0, instance.strings).map(e => e.toUpperCase()[0]);
         for (let i = 0; i < instance.strings; i++) {
             instance.svgContainer
                 .append("line")
@@ -242,28 +251,20 @@ export const Fretboard = function (config) {
                 .attr("y2", i * instance.fretHeight + 1 + YMARGIN())
                 .attr("stroke", "lightgray")
                 .attr("stroke-width", 1);
+
+            const stringsLetter = instance.svgContainer
+                .append("text")
+                .attr("class", "string-info")
+                .attr('x', 5 + 'px')
+                .attr('y', i * instance.fretHeight + 1 + YMARGIN() + 3.5 + 'px')
+                .text(namesStrings[i])
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "12px")
+                .on('click', () => {
+                    instance.stringsVisibility[i] = instance.stringsVisibility[i] === 1 ? 0 : 1;
+                    instance.repaint();
+                });
         }
-        let placeTuning = function (d, i) {
-            return (instance.strings - i) * instance.fretHeight - 5 + "px";
-        };
-
-        let toBaseFretNote = function (note) {
-            return noteName(absNote(note) + instance.startFret)[0];
-        };
-
-        let hPosition = instance.leftHanded ? instance.width - 16 + "px" : "4px";
-
-        d3.select("#" + id)
-            .selectAll(".tuning")
-            .data(instance.tuning.slice(0, instance.strings))
-            .style("top", placeTuning)
-            .text(toBaseFretNote)
-            .enter()
-            .append("p")
-            .attr("class", "tuning")
-            .style("top", placeTuning)
-            .style("left", hPosition)
-            .text(toBaseFretNote);
     };
 
     let drawDots = function () {
@@ -383,8 +384,6 @@ export const Fretboard = function (config) {
                     .style("fill", hexToRGB(color, opacity))
                     .on("click", () => null);
             }
-
-
 
             //Add the SVG Text Element to the svgContainer
             const text = instance.svgContainer
