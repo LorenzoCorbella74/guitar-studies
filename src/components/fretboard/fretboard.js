@@ -56,7 +56,7 @@ export default class MyFretboard {
                         // tag già presente
                     } else {
                         this.tags.push(val);
-                        this.renderTag();
+                        this.renderTags();
                         txt.value = '';
                         txt.focus();
                     }
@@ -65,25 +65,25 @@ export default class MyFretboard {
                 }
             }
         });
-        this.renderTag();
+        this.renderTags();
     }
 
-    renderTag() {
+    renderTags() {
         this.taglist.innerHTML = '';
         this.tags.map((item, index) => {
             this.taglist.innerHTML += `<li>${item} <span data-tagid="${index}">&times;</span></li>`;
         });
         document.querySelectorAll('[data-tagid]').forEach(element => {
             element.addEventListener('click', (evt) => {
-                this.remove(element.dataset.tagid)
+                this.removeTag(element.dataset.tagid)
             });
         });
 
     }
 
-    remove(i) {
+    removeTag(i) {
         this.tags = this.tags.filter(item => this.tags.indexOf(item) != i);
-        this.renderTag();
+        this.renderTags();
     }
 
     getParent(evt, str) {
@@ -122,7 +122,7 @@ export default class MyFretboard {
             where: `[data-id='${id}'] .col-output`,
             fretWidth: window.innerWidth < 600 ? 34 : 46,
             fretHeight: 32,
-            frets: 12 // window.innerWidth > 1000 ? 15 : 12
+            frets: window.innerWidth > 1024 ? 15 : 12
         });
         this.fretboardIstances[id].drawBoard();
         this.fretboardIstances[id].layers = [];
@@ -255,6 +255,7 @@ export default class MyFretboard {
             this.fretboardIstances[id].repaint();
             this.updateTitle(layer, id);
             this.updateLayerInfo(this.fretboardIstances[id].layers[toBeUpdate], id);
+            this.selectLayer({ target: parent }, data.id, id);  // si seleziona automaticamente e si apre la sidebar dei settings
         } else {        // SAVE NEW
             this.renderLayer(layer, data);
         }
@@ -314,6 +315,7 @@ export default class MyFretboard {
         });
         this.updateTitle(label_merged_layer, parentId);
         this.updateLayerInfo(toBeAdded, parentId);
+        this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente e si apre la sidebar dei settings
     }
 
     renderLayer(layer, data) {
@@ -368,6 +370,7 @@ export default class MyFretboard {
         });
         this.updateTitle(layer, parentId);
         this.updateLayerInfo(toBeAdded, parentId);
+        this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente e si apre la sidebar dei settings
     }
 
     addLayer(evt) {
@@ -501,7 +504,7 @@ export default class MyFretboard {
         let { parent } = this.getParent(null, parentId);
         this.fretboardIstances[parentId].selectedIndex = id; // id del layer
         parent.querySelector('.settings-btn').style.visibility = 'inherit';
-        event.stopPropagation();
+        // event.stopPropagation();
         parent.querySelectorAll('.scale').forEach(element => {
             element.classList.remove('selected');
         });
@@ -517,6 +520,34 @@ export default class MyFretboard {
         this.updateTitle(selected.value, parentId);
         this.updateLayerInfo(selected, parentId);
         this.fretboardIstances[parentId].repaint();
+        // this.settings.open(this.fretboardIstances[parentId].layers[index], this.fretboardIstances[parentId]);
+        this.updateFingeringBtns(event, selected, parentId)
+    }
+
+    updateFingeringBtns(event, data, parentId) {
+        let { parent } = this.getParent(event);
+        let info = Scale.get(data.value);
+        let a = 0;
+        let list = info.notes.map(() => {
+            a++;
+            return a
+        });
+        list.unshift('All');
+        let fingeringList = parent.querySelector('.fingering-list');
+        fingeringList.innerHTML = list.map(e => `<span class="fingering-item">${e}</span>`).join('');
+        for (let i = 0; i < fingeringList.children.length; i++) {
+            const fingering = fingeringList.children[i];
+            fingering.addEventListener('click', (event) => {
+                event.stopPropagation();
+                for (let item of fingeringList.children) {
+                    item.classList.remove('selected');
+                }
+                fingering.classList.toggle('selected');
+                // this.fretboardIstances[parentId].updateLayerFingering(i, scale);
+                console.log(data, i);
+            });
+        }
+        fingeringList.children[0].classList.add('selected');
     }
 
     updateTitle(title, parentId) {

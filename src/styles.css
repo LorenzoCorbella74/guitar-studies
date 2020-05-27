@@ -49,6 +49,10 @@ input[type=radio] {
   position: relative;
 }
 
+.slidecontainer {
+  margin-bottom: 12px;
+}
+
 .slider {
   -webkit-appearance: none;
   width: 100%;
@@ -87,7 +91,7 @@ input[type=radio] {
   position: absolute;
   border-radius: 3px;
   left: 50%;
-  top: 24px;
+  top: 22px;
   transform: translateX(-50%);
 }
 

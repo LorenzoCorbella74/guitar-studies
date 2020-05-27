@@ -140,7 +140,7 @@ export const Fretboard = function (config) {
         let pairs = sequence.split(" ");
         pairs.forEach(function (pair, i) {
             const [string, note] = pair.split(":");
-            instance.addNoteOnString(note, parseInt(string)); // , i==0? "red" : "black");
+            instance.addNoteOnString(note, parseInt(string)); // info, size, opacity
         });
     }; */
 
