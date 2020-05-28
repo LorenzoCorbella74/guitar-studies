@@ -254,7 +254,7 @@ export default class MyFretboard {
 
     // callback from modal
     save (data) {
-        console.log('Choose modal: ',data);
+        console.log('Choose modal: ', data);
         let { parent, id } = this.getParent(null, data.parentId);
         let layer = `${data.root} ${data.scale}`;
         if (data.id && data.mergeAction) {   // MERGE SCALES
@@ -420,8 +420,9 @@ export default class MyFretboard {
             root: 'A',
             scale: 'dorian',
             arpeggio: 'min7',
-            title: 'New layer',    // can be 
-            action: 'Save'         // can be 
+            title: 'New layer',
+            action: 'Save',
+            fingering: 'all'
         };
         this.modal.open(def);
     }
@@ -486,6 +487,7 @@ export default class MyFretboard {
         this.updateTitle('', parent.dataset.id);
         this.updateLayerInfo(null, parent.dataset.id);
         parent.querySelector('.settings-btn').style.visibility = 'inherit';
+        this.removeFingeringBtn(parent);
     }
 
     editLayer (evt, layerId) {
@@ -515,14 +517,15 @@ export default class MyFretboard {
         this.fretboardIstances[parentId].repaint();
     }
 
-    deleteLayer (event, id, parentId) {
-        event.stopPropagation();
+    deleteLayer (evt, id, parentId) {
+        let { parent } = this.getParent(evt);
         let layer = document.querySelector(`[data-id='${id}']`);
         layer.parentNode.removeChild(layer)
         this.fretboardIstances[parentId].layers = this.fretboardIstances[parentId].layers.filter(s => s.id !== id);
         this.fretboardIstances[parentId].repaint();
         this.updateTitle('', parentId);
         this.updateLayerInfo(null, parentId);
+        this.removeFingeringBtn(parent);
     }
 
     selectLayer (event, id, parentId) {
@@ -546,20 +549,27 @@ export default class MyFretboard {
         this.updateLayerInfo(selected, parentId);
         this.fretboardIstances[parentId].repaint();
         // this.settings.open(this.fretboardIstances[parentId].layers[index], this.fretboardIstances[parentId]);
-        this.updateFingeringBtns(event, selected, parentId)
+        this.updateFingeringBtns(event, selected);
     }
 
-    updateFingeringBtns (event, data, parentId) {
-        let { parent } = this.getParent(event);
-        let info = Scale.get(data.value);
+    updateFingeringBtns (event, data) {
+        let { parent, id } = this.getParent(event);
         let a = 0;
-        let list = info.notes.map(() => {
+        let list = data.notes.map(() => {
             a++;
             return a
         });
         list.unshift('All');
         let fingeringList = parent.querySelector('.fingering-list');
         fingeringList.innerHTML = list.map(e => `<span class="fingering-item">${e}</span>`).join('');
+
+        fingeringList.children[data.fingering === 'all' ? 0 : data.fingering].classList.add('selected');
+
+        if(data.fingering !== 'all' ){
+            this.fretboardIstances[id].repaint();
+        }
+
+        // EVENTS
         for (let i = 0; i < fingeringList.children.length; i++) {
             const fingering = fingeringList.children[i];
             fingering.addEventListener('click', (event) => {
@@ -568,11 +578,15 @@ export default class MyFretboard {
                     item.classList.remove('selected');
                 }
                 fingering.classList.toggle('selected');
-                // this.fretboardIstances[parentId].updateLayerFingering(i, scale);
-                console.log(data, i);
+                data.fingering = i === 0 ? 'all' : i;
+                this.fretboardIstances[id].repaint();
             });
         }
-        fingeringList.children[0].classList.add('selected');
+    }
+
+    removeFingeringBtn(parent){
+        let fingeringList = parent.querySelector('.fingering-list');
+        fingeringList.innerHTML = '';
     }
 
     updateTitle (title, parentId) {

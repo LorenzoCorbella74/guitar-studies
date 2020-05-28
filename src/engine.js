@@ -2,10 +2,9 @@ import * as d3 from "d3-selection";
 
 import { allNotes, allNotesEnh, COLOURS, COLOURS_MERGE, Tunings } from './constants';
 
-import { /* Chord, Distance, */ Scale } from "@tonaljs/tonal";
+/* import { Scale } from "@tonaljs/tonal"; */
 
 /* -------------------------------------------------------------------------- */
-
 
 function getStartOctave (startNote) {
     startNote = startNote.toLowerCase();
@@ -39,30 +38,41 @@ function getIntervalOfNote (note, all) {
     return all.intervals[index];
 }
 
-function generateStrOfNotes (arr, all, notesForString) {
+function generateStrOfNotes (arr, data) {
     let numberOfStrings = 6;
     let first_note = arr[0];
-    let startOctave = getStartOctave(first_note);
+    let runningOctave = getStartOctave(first_note);
+    let octaveForString = {};
+    for (let a = 0; a < arr.length / 3; a++) {
+        let n = arr[a];
+        octaveForString[n] = getStartOctave(n);
+    }
     let outputStr = "";
-    for (let ns = 0; ns < arr.length - 3; ns++) {
-        const note = arr[ns];
-        if (note.includes(first_note) && ns !== 0) {
-            startOctave++;
+    for (let ns = 0; ns < arr.length - 3; ns++) {   // per tutte le note
+        let note = arr[ns];
+        if (note.includes('C') && ns !== 0) {
+            runningOctave++;
+        } else {
+            let compare = octaveForString[note];
+            if (compare > runningOctave) {
+                runningOctave++;
+                octaveForString[note] = runningOctave;
+            }
         }
-        outputStr += `${numberOfStrings}:${note}${startOctave}:${getIntervalOfNote(
+        outputStr += `${numberOfStrings}:${note}${runningOctave}:${getIntervalOfNote(
             note,
-            all
+            data
         )} `;
-        if ((ns + 1) % notesForString === 0) {
+        if ((ns + 1) % data.notesForString === 0) {
             numberOfStrings--;
         }
     }
     return outputStr;
 }
 
-export function generateFingerings(data){
+export function generateFingerings (data) {
     let output = generateScales(data.notes);
-    return output.map(e => generateStrOfNotes(e, data, scale.notesForString));
+    return output.map(e => generateStrOfNotes(e, data, data.notesForString));
 }
 /* -------------------------------------------------------------------------- */
 function asOffset (note) {
@@ -82,11 +92,11 @@ function absNote (note) {
     }
 }
 
-function noteName (absPitch) {
+/* function noteName (absPitch) {
     let octave = Math.floor(absPitch / 12);
     let note = allNotes[absPitch % 12];
     return note + octave.toString();
-}
+} */
 
 // crea i colori per l'array mergiato
 export function createMergeColors (combined, source1, source2) {
@@ -136,7 +146,6 @@ export const Fretboard = function (config) {
 
     for (let v = 1; v < instance.strings + 1; v++) {
         instance.stringsVisibility.push(1);
-
     }
 
     // scales è l'array di scale ordinato secondo la visualizzazione
@@ -144,15 +153,16 @@ export const Fretboard = function (config) {
     instance.set = (prop, value) => {
         instance[prop] = value;
         instance.clear();           // ridisegna la fretboard
-        instance.repaint();   // ridisegna le note
+        instance.repaint();         // ridisegna le note
     };
 
     // 5)  le informazioni delle singole note vengono pushiate dentro instance notes
     instance.addNoteOnString = function (note, string, color, info, size, opacity) {
-        instance.notes.push({ note, string, color, info, size, opacity });
+        if (instance.stringsVisibility[string - 1]) {
+            instance.notes.push({ note, string, color, info, size, opacity });
+        }
     };
 
-    // 4) note = a1, red
     instance.addNote = function (note, color, info, size, opacity) {
         for (let string = 1; string <= instance.strings; string++) {  // per tutte le stringhe
             if (instance.stringsVisibility[string - 1]) {
@@ -161,28 +171,54 @@ export const Fretboard = function (config) {
         }
     };
 
-    // 3) prende tutte le note e chiama l'addNote
+    // 3) prende tutte le note e chiama l'addNote o addNoteOnString
     instance.addNotes = function (data) {
         let { intervals, notes, value } = data;
-        let index = instance.layers.findIndex(i => i.value === value);   // si recupera l'indice del layer in base al nome
+        let index = instance.layers.findIndex(i => i.value === value);   // si recupera l'indice del layer in base al nome della scala FIXME: id?
         let whatToShow = instance.layers[index].whatToShow;
         let size = instance.layers[index].size;
         let opacity = instance.layers[index].opacity;
-        for (let i = 0; i < notes.length; i++) {
-            let color;
-            if (data.combinedColors) {
-                color = COLOURS_MERGE[data.combinedColors[i]];
-            } else {
-                color = instance.layers[index].color === 'many' ? COLOURS[intervals[i]] : (instance.layers[index].color === 'triads' ? (intervals[i] === '1P' || intervals[i] === '3m' || intervals[i] === '3M' || intervals[i] === '5P' ? COLOURS[intervals[i]] : '#30336b') : '#30336b');/* getComputedStyle(document.documentElement).getPropertyValue('--primary-color') */;
+        if (data.fingering === 'all') {
+            for (let i = 0; i < notes.length; i++) {
+                let color;
+                if (data.combinedColors) {
+                    color = COLOURS_MERGE[data.combinedColors[i]];
+                } else {
+                    color = instance.layers[index].color === 'many' ? COLOURS[intervals[i]] : (instance.layers[index].color === 'triads' ? (intervals[i] === '1P' || intervals[i] === '3m' || intervals[i] === '3M' || intervals[i] === '5P' ? COLOURS[intervals[i]] : '#30336b') : '#30336b');/* getComputedStyle(document.documentElement).getPropertyValue('--primary-color') */;
+                }
+                let note = notes[i];
+                let info = instance.layers[index].color === 'many' || instance.layers[index].color === 'triads' ? (whatToShow === 'degrees' ? intervals[i] : (whatToShow === 'notes' ? note : '')) : '';
+                if (instance.layers[index].notesVisibility[i]) {        // solo se la nota è visibile
+                    for (let octave = 1; octave < 7; octave++) {        // aggiunge la nota per tutte le ottave...
+                        instance.addNote(note + octave, color, info, size, opacity);
+                    }
+                }
             }
-            let note = notes[i];
-            let info = instance.layers[index].color === 'many' || instance.layers[index].color === 'triads' ? (whatToShow === 'degrees' ? intervals[i] : (whatToShow === 'notes' ? note : '')) : '';
-            if (instance.layers[index].notesVisibility[i]) {        // solo se la nota è visibile
-                for (let octave = 1; octave < 7; octave++) {        // aggiunge la nota per tutte le ottave...
-                    instance.addNote(note + octave, color, info, size, opacity);
+        } else {
+            let sequence = data.fingerings[data.fingering - 1].trim();
+            let triplets = sequence.split(" ");
+            let items = [];
+            triplets.forEach((triplet) => {
+                const [string, note, interval] = triplet.split(":");
+                items.push({ string, note, interval });
+            });
+            for (let i = 0; i < items.length; i++) {
+                const ele = items[i];
+                let v = instance.layers[index].notesVisibility;
+                let visibility =[...v,...v,...v];
+                let color;
+                if (data.combinedColors) {
+                    color = COLOURS_MERGE[data.combinedColors[i]];
+                } else {
+                     color = instance.layers[index].color === 'many' ? COLOURS[ele.interval] : (instance.layers[index].color === 'triads' ? (ele.interval === '1P' || ele.interval === '3m' || ele.interval === '3M' || ele.interval === '5P' ? COLOURS[ele.interval] : '#30336b') : '#30336b');/* getComputedStyle(document.documentElement).getPropertyValue('--primary-color') */;
+                }
+                let info = instance.layers[index].color === 'many' || instance.layers[index].color === 'triads' ? (whatToShow === 'degrees' ? ele.interval : (whatToShow === 'notes' ? ele.note.substring(0, ele.note.length() - 1) : '')) : '';
+                if (visibility[i]) {
+                    instance.addNoteOnString(ele.note, parseInt(ele.string), color, info, size, opacity);
                 }
             }
         }
+
     };
 
     instance.addMergeLayer = function (data) {
@@ -301,7 +337,7 @@ export const Fretboard = function (config) {
     };
 
     let drawStrings = function () {
-        let namesStrings = instance.tuning.slice(0, instance.strings).map(e => e.toUpperCase()[0]);
+        let namesStrings = instance.tuning.slice(0, instance.strings).map(e => e.toUpperCase()[0]).reverse();
         for (let i = 0; i < instance.strings; i++) {
             instance.svgContainer
                 .append("line")

@@ -97,6 +97,7 @@ export default class ModalChoice {
     }
 
     fillForm(data) {
+        this.fingering = data.fingering;
         this.parentId = data.parentId;
         this.mergeAction = data.mergeAction;
         this.startScale = data.startScale;
@@ -160,7 +161,8 @@ export default class ModalChoice {
             value: `${this.refs.root.value} ${this.refs.scale.value}`,
             // if it's a merge action
             mergeAction: this.mergeAction,
-            startScale: this.startScale
+            startScale: this.startScale,
+            fingering: this.fingering
         }
         this.element.style.display = "none";
         this.resetForm();

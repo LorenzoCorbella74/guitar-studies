@@ -85,9 +85,13 @@
           text-align: center;
           align-items: center;
           justify-content: center;
+          transition: 0.5s ease;
 
           &:hover {
-            color: var(--secondary-color);
+            -webkit-transform: scale(1.25);
+            -moz-transform: scale(1.25);
+            -ms-transform: scale(1.25);
+            -o-transform: scale(1.25);
           }
         }
       }
@@ -111,6 +115,13 @@
     font-weight: 700;
     align-content: center;
     font-size: 24px;
+    transition: 0.5s ease;
+    &:hover {
+      -webkit-transform: scale(1.25);
+      -moz-transform: scale(1.25);
+      -ms-transform: scale(1.25);
+      -o-transform: scale(1.25);
+    }
   }
 }
 
@@ -150,6 +161,13 @@
       font-weight: 700;
       align-content: center;
       font-size: 18px;
+      transition: 0.5s ease;
+      &:hover {
+        -webkit-transform: scale(1.25);
+        -moz-transform: scale(1.25);
+        -ms-transform: scale(1.25);
+        -o-transform: scale(1.25);
+      }
     }
   }
 
@@ -202,6 +220,14 @@
   margin-left: 8px;
   margin-right: 8px;
   font-weight: 700;
+  transition: 0.5s ease;
+  &:hover {
+    -webkit-transform: scale(1.25);
+    -moz-transform: scale(1.25);
+    -ms-transform: scale(1.25);
+    -o-transform: scale(1.25);
+  }
+
 }
 
 .settings-btn {
@@ -225,10 +251,13 @@
     align-items: center;
     justify-content: center;
     font-size: 12px;
-    ;
+    transition: 0.5s ease;
 
     &:hover {
-      background-color: var(--secondary-color);
+        -webkit-transform: scale(1.25);
+        -moz-transform: scale(1.25);
+        -ms-transform: scale(1.25);
+        -o-transform: scale(1.25);
     }
 
     &.selected {
