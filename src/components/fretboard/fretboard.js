@@ -1,14 +1,14 @@
 import "./fretboard.scss";
 import template from './fretboard.html'
 
-// Component
+// Components
 import ModalChoice from '../modal-choice/modal-choice';
 import Settings from '../settings/settings';
+import Header from '../header/header';
 
+// Musin engines
 import { Fretboard, mergeArrays, createMergeColors, generateFingerings } from '../../engine';
-
 import { Note, Scale, Interval } from "@tonaljs/tonal";
-
 import { allIntervals } from '../../constants';
 
 export default class MyFretboard {
@@ -17,73 +17,34 @@ export default class MyFretboard {
         this.body = document.body;
         this.body.innerHTML = `${template}`;
 
-        // events
-        document.getElementById('add-general-btn').addEventListener('click', this.addFretboard.bind(this));
-        document.getElementById('remove-general-btn').addEventListener('click', this.removeAllFretboard.bind(this));
-        document.getElementById('tags-general-btn').addEventListener('click', this.toggleTabsPanel.bind(this));
-
-        window.onresize = this.resize.bind(this);
-
+        this.header = new Header('header', this.addFretboard.bind(this), this.removeAllFretboard.bind(this));
         this.modal = new ModalChoice('modal', this.save.bind(this));
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
 
         this.fretboardIstances = {};
         this.selectedInterval = [];
 
+        // così si accede alle proprietà del figlio....
+        console.log(this.header.refs.progress.value, this.header.tags);
+
         /*
-            If thre is an input data use addFretboard 
-            and then for each layer use addLayer s
+        If thre is an input data use addFretboard 
+        and then for each layer use addLayer s
         */
+        window.onresize = this.resize.bind(this);
+    }
 
-        // SLIDER RANGE
-        const header = document.querySelector('.header');
-        const slider = header.querySelector(".progress-range .slider");
-        const bubble = header.querySelector(".progress-bubble");
-        slider.addEventListener("input", () => {
-            this.setBubbleProgress(slider, bubble);
-        });
-        this.setBubbleProgress(slider, bubble);
-
-        // TAGS
-        const txt = document.getElementById('tag-input');
-        this.taglist = document.getElementById('tag-list');
-        this.tags = [];
-        txt.addEventListener('keypress', e => {
-            if (e.key === 'Enter') {
-                let val = txt.value;
-                if (val !== '') {
-                    if (this.tags.indexOf(val) >= 0) {
-                        // tag già presente
-                    } else {
-                        this.tags.push(val);
-                        this.renderTags();
-                        txt.value = '';
-                        txt.focus();
-                    }
-                } else {
-                    console.log('Input is empty')
-                }
+    resize() {
+        // console.log(window.innerHeight, window.innerWidth);
+        this.isSmall = window.innerWidth < 800;
+        for (const key in this.fretboardIstances) {
+            const fretboard = this.fretboardIstances[key];
+            if (this.isSmall) {
+                fretboard.set('fretWidth', 40);
+            } else {
+                fretboard.set('fretWidth', 50);
             }
-        });
-        this.renderTags();
-    }
-
-    renderTags() {
-        this.taglist.innerHTML = '';
-        this.tags.map((item, index) => {
-            this.taglist.innerHTML += `<li>${item} <span data-tagid="${index}">&times;</span></li>`;
-        });
-        document.querySelectorAll('[data-tagid]').forEach(element => {
-            element.addEventListener('click', (evt) => {
-                this.removeTag(element.dataset.tagid)
-            });
-        });
-
-    }
-
-    removeTag(i) {
-        this.tags = this.tags.filter(item => this.tags.indexOf(item) != i);
-        this.renderTags();
+        }
     }
 
     getParent(evt, str) {
@@ -94,11 +55,6 @@ export default class MyFretboard {
             parent = document.querySelector("[data-id*='" + str + "']");
         }
         return { parent, id: parent.dataset.id };
-    }
-
-    toggleTabsPanel() {
-        document.querySelector('.header-description').classList.toggle('hide');
-        document.querySelector('.header-tags-container').classList.toggle('hide');
     }
 
     addFretboard() {
@@ -167,18 +123,7 @@ export default class MyFretboard {
         }
     }
 
-    setBubbleProgress(slider, bubble) {
-        const val = slider.value;
-        const min = slider.min ? slider.min : 0;
-        const max = slider.max ? slider.max : 100;
-        const newVal = Number(((val - min) * 100) / (max - min));
-        bubble.innerHTML = val;
-        // Sorta magic numbers based on size of the native UI thumb
-        // bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.10}px))`;
-    }
-
     transposeLayers(evt) {
-
         let { parent, id } = this.getParent(evt);
 
         for (let i = 0; i < this.fretboardIstances[id].layers.length; i++) {
@@ -217,19 +162,6 @@ export default class MyFretboard {
         const bubble = parent.querySelector(".slidecontainer .bubble");
         slider.value = '0';
         this.setBubble(slider, bubble);
-    }
-
-    resize() {
-        // console.log(window.innerHeight, window.innerWidth);
-        this.isSmall = window.innerWidth < 800;
-        for (const key in this.fretboardIstances) {
-            const fretboard = this.fretboardIstances[key];
-            if (this.isSmall) {
-                fretboard.set('fretWidth', 40);
-            } else {
-                fretboard.set('fretWidth', 50);
-            }
-        }
     }
 
     getNoteVisibilityRange(notes) {

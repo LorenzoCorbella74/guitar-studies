@@ -47,25 +47,23 @@ export default class ModalChoice {
         this.element = document.getElementById(placeholderId);
         this.callback = callback;
 
-        if (template) {
-            // Load template into placeholder element
-            this.element.innerHTML = template;
+        // Load template into placeholder element
+        this.element.innerHTML = template;
 
-            // Find all refs in component
-            this.refs = {}
-            const refElems = this.element.querySelectorAll('[ref]')
-            refElems.forEach((elem) => { this.refs[elem.getAttribute('ref')] = elem })
+        // Find all refs in component
+        this.refs = {}
+        const refElems = this.element.querySelectorAll('[ref]')
+        refElems.forEach((elem) => { this.refs[elem.getAttribute('ref')] = elem })
 
-            this.configureForm();
+        this.configureForm();
 
-            document.getElementsByClassName("close")[0].addEventListener('click', this.close.bind(this));
-            document.getElementsByClassName("save")[0].addEventListener('click', this.save.bind(this));
+        document.getElementsByClassName("close")[0].addEventListener('click', this.close.bind(this));
+        document.getElementsByClassName("save")[0].addEventListener('click', this.save.bind(this));
 
-            // When the user clicks anywhere outside of the modal, close it
-            window.onclick = (event) => {
-                if (event.target == this.element) {
-                    this.element.style.display = "none";
-                }
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = (event) => {
+            if (event.target == this.element) {
+                this.element.style.display = "none";
             }
         }
     }
