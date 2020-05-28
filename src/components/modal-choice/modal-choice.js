@@ -14,11 +14,12 @@ const optionsNoteUsDegree = [
     { text: 'Degree', value: 'grado' }
 ];
 
+// TODO: 
 const optionsScales = Scale.names().map(e => {
     return { text: e, value: e };
 });
 
-const optionsArp = [
+/* const optionsArp = [
     { text: 'Maj', value: 'maj 1P 3M 5P' },
     { text: '7', value: '7 1P 3M 5P 7m' },
     { text: 'min', value: 'min 1P 3m 5P' },
@@ -27,7 +28,7 @@ const optionsArp = [
     { text: 'dim', value: 'dim 1P 3m 5d' },
     { text: 'dim7', value: 'dim7 1P 3m 5d 7d' },
     { text: 'aug', value: 'aug 1P 3M 5A' }
-];
+]; */
 
 const optionsNotes = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb', 'B'].map(e => {
     return { text: e, value: e };
@@ -99,16 +100,16 @@ export default class ModalChoice {
     fillForm(data) {
         this.fingering = data.fingering;
         this.parentId = data.parentId;
-        this.mergeAction = data.mergeAction;
-        this.startScale = data.startScale;
+        this.mergeAction = data.mergeAction;    // se è un merge
+        this.startScale = data.startScale;      // la scala iniziale da mergiare
         this.id = data.id;
         this.refs.title.innerHTML = data.title;
         this.refs.action.innerHTML = data.action;
         this.refs.tuning.value = data.tuning;
         this.refs.scale.value = data.scale;
         this.refs.root.value = data.root;
-        this.refs.arpeggio.value = data.arpeggio;
-        this.setRadioValue('type', data.type);
+        // this.refs.arpeggio.value = data.arpeggio;
+        // this.setRadioValue('type', data.type);
         this.setRadioValue('whatToShow', data.whatToShow);
     }
 
@@ -116,7 +117,7 @@ export default class ModalChoice {
         this.fillOptions('scale', optionsScales);
         this.fillOptions('tuning', optionsTuning);
         this.fillOptions('root', optionsNotes);
-        this.fillOptions('arpeggio', optionsArp);
+        // this.fillOptions('arpeggio', optionsArp);
     }
 
     fillOptions(id, options) {
@@ -134,8 +135,8 @@ export default class ModalChoice {
         // this.refs.tuning.value = '';
         this.refs.scale.value = '';
         this.refs.root.value = '';
-        this.refs.arpeggio.value = '';
-        this.resetRadio('type')
+        /* this.refs.arpeggio.value = '';
+        this.resetRadio('type') */
         this.resetRadio('whatToShow')
     }
 
@@ -157,7 +158,7 @@ export default class ModalChoice {
             tuning: this.refs.tuning.value,
             root: this.refs.root.value,
             scale: this.refs.scale.value,
-            arpeggio: this.refs.arpeggio.value,
+            //arpeggio: this.refs.arpeggio.value,
             value: `${this.refs.root.value} ${this.refs.scale.value}`,
             // if it's a merge action
             mergeAction: this.mergeAction,

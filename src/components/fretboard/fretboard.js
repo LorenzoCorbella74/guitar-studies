@@ -68,7 +68,7 @@ export default class MyFretboard {
         this.renderTags();
     }
 
-    renderTags () {
+    renderTags() {
         this.taglist.innerHTML = '';
         this.tags.map((item, index) => {
             this.taglist.innerHTML += `<li>${item} <span data-tagid="${index}">&times;</span></li>`;
@@ -81,12 +81,12 @@ export default class MyFretboard {
 
     }
 
-    removeTag (i) {
+    removeTag(i) {
         this.tags = this.tags.filter(item => this.tags.indexOf(item) != i);
         this.renderTags();
     }
 
-    getParent (evt, str) {
+    getParent(evt, str) {
         let parent;
         if (!str) {
             parent = evt.target.closest("[data-id*='fretboard']");
@@ -96,12 +96,12 @@ export default class MyFretboard {
         return { parent, id: parent.dataset.id };
     }
 
-    toggleTabsPanel () {
+    toggleTabsPanel() {
         document.querySelector('.header-description').classList.toggle('hide');
         document.querySelector('.header-tags-container').classList.toggle('hide');
     }
 
-    addFretboard () {
+    addFretboard() {
         var temp = document.getElementsByTagName("template")[0];
         var clone = temp.content.cloneNode(true);
         let id = 'fretboard' + Math.floor(Math.random() * 1000000);
@@ -139,19 +139,19 @@ export default class MyFretboard {
         this.setBubble(slider, bubble, id);
     }
 
-    removeAllFretboard () {
+    removeAllFretboard() {
         let fretboards = document.querySelectorAll('.fretboard-container')
         fretboards.forEach(element => {
             element.remove();
         });
     }
 
-    removeFretboard (evt) {
+    removeFretboard(evt) {
         let { parent } = this.getParent(evt);
         parent.remove();
     }
 
-    setBubble (slider, bubble, id) {
+    setBubble(slider, bubble, id) {
         const val = slider.value;
         const min = slider.min ? slider.min : 0;
         const max = slider.max ? slider.max : 100;
@@ -167,7 +167,7 @@ export default class MyFretboard {
         }
     }
 
-    setBubbleProgress (slider, bubble) {
+    setBubbleProgress(slider, bubble) {
         const val = slider.value;
         const min = slider.min ? slider.min : 0;
         const max = slider.max ? slider.max : 100;
@@ -177,7 +177,7 @@ export default class MyFretboard {
         // bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.10}px))`;
     }
 
-    transposeLayers (evt) {
+    transposeLayers(evt) {
 
         let { parent, id } = this.getParent(evt);
 
@@ -219,7 +219,7 @@ export default class MyFretboard {
         this.setBubble(slider, bubble);
     }
 
-    resize () {
+    resize() {
         // console.log(window.innerHeight, window.innerWidth);
         this.isSmall = window.innerWidth < 800;
         for (const key in this.fretboardIstances) {
@@ -232,18 +232,18 @@ export default class MyFretboard {
         }
     }
 
-    getNoteVisibilityRange (notes) {
+    getNoteVisibilityRange(notes) {
         return notes.map(() => 1);
     }
 
-    openLayerSettings (evt) {
+    openLayerSettings(evt) {
         let { id } = this.getParent(evt);
         let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
         this.settings.open(this.fretboardIstances[id].layers[index], this.fretboardIstances[id]);
     }
 
     // callback from settings panel
-    updateLayerSettings (data) {
+    updateLayerSettings(data) {
         // console.log(data);
         let id = data.parentId;
         let toBeUpdate = this.fretboardIstances[id].layers.findIndex(e => e.id === data.id);
@@ -253,7 +253,7 @@ export default class MyFretboard {
     }
 
     // callback from modal
-    save (data) {
+    save(data) {
         console.log('Choose modal: ', data);
         let { parent, id } = this.getParent(null, data.parentId);
         let layer = `${data.root} ${data.scale}`;
@@ -261,7 +261,7 @@ export default class MyFretboard {
             this.createMerge(data);
         } else if (data.id) {  // EDIT MODE
             let { notes, intervals } = Scale.get(layer);
-            data.notes = notes;
+            data.notes = notes.map(e => this.safeNotes(e));
             data.intervals = intervals;
             data.notesForString = notes.length > 5 ? 3 : 2;
             data.fingerings = generateFingerings(data);
@@ -279,7 +279,7 @@ export default class MyFretboard {
         }
     }
 
-    getIntervalsOfMerged (notes) {
+    getIntervalsOfMerged(notes) {
         let root = notes[0];
         let intervals = [];
         for (let i = 0; i < notes.length; i++) {
@@ -288,7 +288,7 @@ export default class MyFretboard {
         return intervals.sort();
     }
 
-    createMerge (data) {
+    createMerge(data) {
         let { parent } = this.getParent(null, data.parentId);
         const list = parent.querySelector('.list');
         const layerId = Math.floor(Math.random() * 1000000);
@@ -325,7 +325,7 @@ export default class MyFretboard {
         };
         let data1 = Scale.get(toBeAdded.value1);
         let data2 = Scale.get(toBeAdded.value2);
-        toBeAdded.notes = mergeArrays(data1.notes, data2.notes).sort();
+        toBeAdded.notes = mergeArrays(data1.notes.map(e => this.safeNotes(e)), data2.notes.map(e => this.safeNotes(e))).sort();
         toBeAdded.intervals = this.getIntervalsOfMerged(toBeAdded.notes);// sono riferiti alla scala di partenza
         toBeAdded.combinedColors = createMergeColors(toBeAdded.notes, data1.notes, data2.notes);
         toBeAdded.notesForString = toBeAdded.notes.length > 5 ? 3 : 2,
@@ -348,7 +348,7 @@ export default class MyFretboard {
         this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente e si apre la sidebar dei settings
     }
 
-    renderLayer (layer, data) {
+    renderLayer(layer, data) {
         let { parent } = this.getParent(null, data.parentId);
         const list = parent.querySelector('.list');
         const layerId = data.id || Math.floor(Math.random() * 1000000);
@@ -365,6 +365,7 @@ export default class MyFretboard {
             `;
         list.appendChild(li);
         let { notes, intervals } = Scale.get(layer);
+        notes = notes.map(e => this.safeNotes(e));
         let toBeAdded = {
             id: layerId,
             parentId: parentId,
@@ -410,12 +411,24 @@ export default class MyFretboard {
         this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente e si apre la sidebar dei settings
     }
 
-    addLayer (evt) {
+    safeNotes(note) {
+        let output;
+        switch (note) {
+            case 'B#': output = 'C'; break;
+            case 'E#': output = 'F'; break;
+            case 'Fb': output = 'E'; break;
+            case 'Cb': output = 'B'; break;
+            default: output = note; break;
+        }
+        return output;
+    }
+
+    addLayer(evt) {
         let { parent } = this.getParent(evt);
         let def = {
             parentId: parent.dataset.id,
             type: 'scale',          // can be scale | arpeggio
-            whatToShow: 'degrees',  // can be notes | degrees
+            whatToShow: 'degrees',  // can be notes | degrees | none
             tuning: 'E_std',
             root: 'A',
             scale: 'dorian',
@@ -427,7 +440,7 @@ export default class MyFretboard {
         this.modal.open(def);
     }
 
-    updateLayerInfo (info, parentId) {
+    updateLayerInfo(info, parentId) {
         let { parent, id } = this.getParent(null, parentId);
         let degrees = parent.querySelector('.degrees')
         let noteNames = parent.querySelector('.notes')
@@ -456,12 +469,14 @@ export default class MyFretboard {
                     original = info.notes;
                 } else {
                     original = Scale.get(info.value).notes;
+                    original = original.map(e => this.safeNotes(e));
                 }
                 if (info.differences.includes('merged')) {
                     let o = this.fretboardIstances[id].layers.find(e => e.value === info.differences);
                     compare = o.notes;
                 } else {
                     compare = Scale.get(info.differences).notes;
+                    compare = compare.map(e => this.safeNotes(e));
                 }
                 let comparison = original.map(e => compare.includes(e) ? 1 : 0);
                 parent.querySelectorAll('.label-notes').forEach((element, i) => {
@@ -476,7 +491,7 @@ export default class MyFretboard {
         }
     }
 
-    removeLayers (evt) {
+    removeLayers(evt) {
         let { parent, id } = this.getParent(evt);
         const list = parent.querySelector('.list');
         while (list.hasChildNodes()) {
@@ -490,7 +505,7 @@ export default class MyFretboard {
         this.removeFingeringBtn(parent);
     }
 
-    editLayer (evt, layerId) {
+    editLayer(evt, layerId) {
         let { id } = this.getParent(evt);
         let selected = this.fretboardIstances[id].layers.find(e => e.id === layerId);
         selected.title = 'Edit layer';
@@ -498,7 +513,7 @@ export default class MyFretboard {
         this.modal.open(selected);
     }
 
-    mergeLayer (evt, layerId) {
+    mergeLayer(evt, layerId) {
         let { id } = this.getParent(evt);
         let selected = this.fretboardIstances[id].layers.find(e => e.id === layerId);
         selected.title = 'Merge layer';
@@ -508,7 +523,7 @@ export default class MyFretboard {
         this.modal.open(selected);
     }
 
-    toggleLayerVisibility (event, id, parentId) {
+    toggleLayerVisibility(event, id, parentId) {
         event.stopPropagation();
         let selected = this.fretboardIstances[parentId].layers.find(e => e.id === id)
         selected.visible = !selected.visible;
@@ -517,7 +532,7 @@ export default class MyFretboard {
         this.fretboardIstances[parentId].repaint();
     }
 
-    deleteLayer (evt, id, parentId) {
+    deleteLayer(evt, id, parentId) {
         let { parent } = this.getParent(evt);
         let layer = document.querySelector(`[data-id='${id}']`);
         layer.parentNode.removeChild(layer)
@@ -528,7 +543,7 @@ export default class MyFretboard {
         this.removeFingeringBtn(parent);
     }
 
-    selectLayer (event, id, parentId) {
+    selectLayer(event, id, parentId) {
         let { parent } = this.getParent(null, parentId);
         this.fretboardIstances[parentId].selectedIndex = id; // id del layer
         parent.querySelector('.settings-btn').style.visibility = 'inherit';
@@ -552,7 +567,7 @@ export default class MyFretboard {
         this.updateFingeringBtns(event, selected);
     }
 
-    updateFingeringBtns (event, data) {
+    updateFingeringBtns(event, data) {
         let { parent, id } = this.getParent(event);
         let a = 0;
         let list = data.notes.map(() => {
@@ -565,7 +580,7 @@ export default class MyFretboard {
 
         fingeringList.children[data.fingering === 'all' ? 0 : data.fingering].classList.add('selected');
 
-        if(data.fingering !== 'all' ){
+        if (data.fingering !== 'all') {
             this.fretboardIstances[id].repaint();
         }
 
@@ -584,12 +599,12 @@ export default class MyFretboard {
         }
     }
 
-    removeFingeringBtn(parent){
+    removeFingeringBtn(parent) {
         let fingeringList = parent.querySelector('.fingering-list');
         fingeringList.innerHTML = '';
     }
 
-    updateTitle (title, parentId) {
+    updateTitle(title, parentId) {
         document.querySelector(`[data-id='${parentId}'] .col-output .scale-title`).innerHTML = title;
     }
 }
