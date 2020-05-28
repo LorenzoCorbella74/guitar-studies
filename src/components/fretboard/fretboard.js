@@ -297,6 +297,10 @@ export default class MyFretboard {
             `;
         list.appendChild(li);
         let { notes, intervals } = Scale.get(layer);
+        console.log('Extended:', Scale.extended(data.scale));
+        console.log('Mode names:', Scale.modeNames(data.scale));
+        console.log('Get all chords that fits a given scale:', Scale.scaleChords(data.scale));
+        // console.log('From notes to scales...:', Scale.scaleNotes(data.scale));
         notes = notes.map(e => this.safeNotes(e));
         let toBeAdded = {
             id: layerId,
