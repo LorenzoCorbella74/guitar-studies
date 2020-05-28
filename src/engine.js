@@ -4,7 +4,68 @@ import { allNotes, allNotesEnh, COLOURS, COLOURS_MERGE, Tunings } from './consta
 
 import { /* Chord, Distance, */ Scale } from "@tonaljs/tonal";
 
-function asOffset(note) {
+/* -------------------------------------------------------------------------- */
+
+
+function getStartOctave (startNote) {
+    startNote = startNote.toLowerCase();
+    return startNote.includes("e") ||
+        startNote.includes("f") ||
+        startNote.includes("g") ||
+        startNote.includes("a") ||
+        startNote.includes("b")
+        ? 2
+        : 3;
+}
+
+function generateScales (notes) {
+    let derived = [];
+    let start = notes;
+    notes.forEach(() => {
+        let newArr = [...start];
+        newArr.push(newArr.shift());
+        derived.push(newArr);
+        start = newArr;
+    });
+    derived.unshift(derived.pop());
+    derived = derived.map(e => {
+        return [...e, ...e, ...e]; // si considera 3 ottave
+    });
+    return derived;
+}
+
+function getIntervalOfNote (note, all) {
+    let index = all.notes.findIndex(e => e === note);
+    return all.intervals[index];
+}
+
+function generateStrOfNotes (arr, all, notesForString) {
+    let numberOfStrings = 6;
+    let first_note = arr[0];
+    let startOctave = getStartOctave(first_note);
+    let outputStr = "";
+    for (let ns = 0; ns < arr.length - 3; ns++) {
+        const note = arr[ns];
+        if (note.includes(first_note) && ns !== 0) {
+            startOctave++;
+        }
+        outputStr += `${numberOfStrings}:${note}${startOctave}:${getIntervalOfNote(
+            note,
+            all
+        )} `;
+        if ((ns + 1) % notesForString === 0) {
+            numberOfStrings--;
+        }
+    }
+    return outputStr;
+}
+
+export function generateFingerings(data){
+    let output = generateScales(data.notes);
+    return output.map(e => generateStrOfNotes(e, data, scale.notesForString));
+}
+/* -------------------------------------------------------------------------- */
+function asOffset (note) {
     note = note.toLowerCase();
     let offset = allNotes.indexOf(note);
     if (offset === -1) {
@@ -13,7 +74,7 @@ function asOffset(note) {
     return offset;
 }
 
-function absNote(note) {
+function absNote (note) {
     let octave = note[note.length - 1];
     let pitch = asOffset(note.slice(0, -1));
     if (pitch > -1) {
@@ -21,14 +82,14 @@ function absNote(note) {
     }
 }
 
-function noteName(absPitch) {
+function noteName (absPitch) {
     let octave = Math.floor(absPitch / 12);
     let note = allNotes[absPitch % 12];
     return note + octave.toString();
 }
 
 // crea i colori per l'array mergiato
-export function createMergeColors(combined, source1, source2) {
+export function createMergeColors (combined, source1, source2) {
     let result = [];
     combined.forEach(note => {
         if (source1.includes(note) && source2.includes(note)) {
@@ -43,7 +104,7 @@ export function createMergeColors(combined, source1, source2) {
 }
 
 // mergia e rimuove i duplicati
-export function mergeArrays(...arrays) {
+export function mergeArrays (...arrays) {
     let jointArray = []
     arrays.forEach(array => {
         jointArray = [...jointArray, ...array]
@@ -102,8 +163,8 @@ export const Fretboard = function (config) {
 
     // 3) prende tutte le note e chiama l'addNote
     instance.addNotes = function (data) {
-        let { intervals, notes, name } = data;
-        let index = instance.layers.findIndex(i => i.value === name);   // si recupera l'indice del layer in base al nome
+        let { intervals, notes, value } = data;
+        let index = instance.layers.findIndex(i => i.value === value);   // si recupera l'indice del layer in base al nome
         let whatToShow = instance.layers[index].whatToShow;
         let size = instance.layers[index].size;
         let opacity = instance.layers[index].opacity;
@@ -129,8 +190,7 @@ export const Fretboard = function (config) {
     }
 
     // 2) scaleName = "a aeolian" -> AGGIUNGE UNA SCALA
-    instance.addLayer = function (scaleName) {
-        let data = Scale.get(scaleName); // asNotes(scaleName);
+    instance.addLayer = function (data) {
         instance.addNotes(data);
     };
 
@@ -270,7 +330,7 @@ export const Fretboard = function (config) {
     let drawDots = function () {
         let p = instance.svgContainer.selectAll("circle").data(fretsWithDots());
 
-        function dotX(d) {
+        function dotX (d) {
             return (
                 (d - instance.startFret - 1) * instance.fretWidth +
                 instance.fretWidth / 2 +
@@ -278,7 +338,7 @@ export const Fretboard = function (config) {
             );
         }
 
-        function dotY(ylocation) {
+        function dotY (ylocation) {
             let margin = YMARGIN();
 
             if (instance.strings % 2 === 0) {
@@ -325,7 +385,7 @@ export const Fretboard = function (config) {
         return instance;
     };
 
-    function hexToRGB(h, opacity) {
+    function hexToRGB (h, opacity) {
         let r = 0, g = 0, b = 0;
 
         // 3 digits
@@ -344,7 +404,7 @@ export const Fretboard = function (config) {
         return "rgb(" + +r + "," + +g + "," + +b + "," + +opacity + ")";
     }
 
-    function paintNote(note, string, color, info, size, opacity) {
+    function paintNote (note, string, color, info, size, opacity) {
         if (string > instance.strings) {
             return false;
         }
@@ -417,7 +477,7 @@ export const Fretboard = function (config) {
                 if (scale.merge) {
                     instance.addMergeLayer(scale);
                 } else {
-                    instance.addLayer(scale.value);
+                    instance.addLayer(scale);
                 }
             }
         });

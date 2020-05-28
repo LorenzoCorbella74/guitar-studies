@@ -126,11 +126,11 @@ export default class Settings {
         this.data = {
             id: this.id,
             parentId: this.parentId,
-            whatToShow: this.getRadioValue('whatToShow'),   // can be notes | degrees
             size: this.refs.size.value,
             opacity: this.refs.opacity.value,
-            color: this.getRadioValue('color'),
-            differences: this.refs.differences.value
+            differences: this.refs.differences.value,
+            whatToShow: this.getRadioValue('whatToShow'),   // can be notes | degrees | none
+            color: this.getRadioValue('color')              // can be one | triads | many
         }
         this.close();
         // this.resetForm();
