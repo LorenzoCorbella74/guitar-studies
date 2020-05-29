@@ -20,10 +20,11 @@
   border-bottom: 1px solid var(--light-grey);
 
   .remove-fret-btn {
-    align-self: flex-start;
-    /* margin-right: 28px; */
     font-size: 18px;
     font-weight: 700;
+    position: relative;
+    top: -15px;
+    right: -15px;
   }
 
   .col-layers {
@@ -58,20 +59,46 @@
     width: 70%;
     display: flex;
     flex-direction: column;
+
+    .info {
+      display: none;
+      justify-content: space-around;
+    }
   }
 }
 
 .scale-info {
   min-height: 22px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  align-items: center;
   width: 97%;
-}
 
-.scale-title {
-  position: relative;
-  left: 30px;
-  width: 195px;
+  .scale-title {
+    margin-left: 30px;
+  }
+
+  .scale-info-btn,
+  .scale-play-btn {
+    margin-left: 12px;
+    display: none;
+  }
+
+  .scale-table {
+    flex: 1;
+    /* margin-left: auto; */
+
+    table {
+      margin-left: 35%;
+    }
+
+    td,
+    th {
+      // border: 1px solid #ddd;
+      padding: 0px 8px;
+      text-align: center;
+    }
+  }
 }
 
 .list {
@@ -111,7 +138,6 @@
     -ms-transform: scale(1.25);
     -o-transform: scale(1.25);
   }
-
 }
 
 .settings-btn {
@@ -187,11 +213,4 @@
   .note {
     border-radius: 4px;
   }
-}
-
-td,
-th {
-  // border: 1px solid #ddd;
-  padding: 0px 8px;
-  text-align: center;
 }

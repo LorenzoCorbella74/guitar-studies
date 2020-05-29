@@ -9,7 +9,7 @@ import Header from '../header/header';
 // Musin engines
 import { Fretboard, mergeArrays, createMergeColors, generateFingerings } from '../../engine';
 import { Note, Scale, Interval } from "@tonaljs/tonal";
-import { allIntervals } from '../../constants';
+import { allIntervals, allScales } from '../../constants';
 
 export default class MyFretboard {
 
@@ -75,7 +75,7 @@ export default class MyFretboard {
         fretboard.querySelector('.remove-fret-btn').addEventListener('click', (evt) => this.removeFretboard.call(this, evt));
 
         this.fretboardIstances[id] = Fretboard({
-            where: `[data-id='${id}'] .col-output`,
+            where: `[data-id='${id}'] .col-output .fret`,
             fretWidth: window.innerWidth < 600 ? 34 : 46,
             fretHeight: 32,
             frets: window.innerWidth > 1024 ? 15 : 12
@@ -280,6 +280,16 @@ export default class MyFretboard {
         this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente e si apre la sidebar dei settings
     }
 
+     checkScale(scales){
+        let output = [];
+        scales.forEach(scale => {
+            if(allScales.includes(scale)){
+                output.push(scale)
+            }
+        });
+        return output;
+    }
+    
     renderLayer(layer, data) {
         let { parent } = this.getParent(null, data.parentId);
         const list = parent.querySelector('.list');
@@ -297,10 +307,6 @@ export default class MyFretboard {
             `;
         list.appendChild(li);
         let { notes, intervals } = Scale.get(layer);
-        console.log('Extended:', Scale.extended(data.scale));
-        console.log('Mode names:', Scale.modeNames(data.scale));
-        console.log('Get all chords that fits a given scale:', Scale.scaleChords(data.scale));
-        // console.log('From notes to scales...:', Scale.scaleNotes(data.scale));
         notes = notes.map(e => this.safeNotes(e));
         let toBeAdded = {
             id: layerId,
@@ -320,7 +326,11 @@ export default class MyFretboard {
             color: 'many',
             differences: 'own',
             notesForString: notes.length > 5 ? 3 : 2,
-            fingering: 'all'
+            fingering: 'all',
+            reduced: this.checkScale(Scale.reduced(data.scale)),
+            extended: this.checkScale(Scale.extended(data.scale)),
+            scaleChords: Scale.scaleChords(data.scale),
+            modeNames: Scale.modeNames(data.scale)
         };
         toBeAdded.fingerings = generateFingerings(toBeAdded);
         console.log(`Layer ${toBeAdded.id}`, toBeAdded);
@@ -437,8 +447,8 @@ export default class MyFretboard {
         this.fretboardIstances[id].layers = [];
         this.updateTitle('', parent.dataset.id);
         this.updateLayerInfo(null, parent.dataset.id);
-        parent.querySelector('.settings-btn').style.visibility = 'inherit';
         this.removeFingeringBtn(parent);
+        parent.querySelector('.settings-btn').style.visibility = 'inherit';
     }
 
     editLayer(evt, layerId) {
@@ -498,9 +508,9 @@ export default class MyFretboard {
         this.fretboardIstances[parentId].layers.push(selected);
         this.updateTitle(selected.value, parentId);
         this.updateLayerInfo(selected, parentId);
+        this.updateFingeringBtns(event, selected);
         this.fretboardIstances[parentId].repaint();
         // this.settings.open(this.fretboardIstances[parentId].layers[index], this.fretboardIstances[parentId]);
-        this.updateFingeringBtns(event, selected);
     }
 
     updateFingeringBtns(event, data) {

@@ -3,6 +3,8 @@ import template from './modal-choice.html';
 
 import { Scale } from "@tonaljs/tonal";
 
+import {allScales} from '../../constants';
+
 
 const optionsScaleUsArp = [
     { text: 'Scale', value: 'scala' },
@@ -15,20 +17,9 @@ const optionsNoteUsDegree = [
 ];
 
 // TODO: 
-const optionsScales = Scale.names().map(e => {
+const optionsScales = /* Scale.names() */allScales.map(e => {
     return { text: e, value: e };
 });
-
-/* const optionsArp = [
-    { text: 'Maj', value: 'maj 1P 3M 5P' },
-    { text: '7', value: '7 1P 3M 5P 7m' },
-    { text: 'min', value: 'min 1P 3m 5P' },
-    { text: 'min7', value: 'min7 1P 3m 5P 7m' },
-    { text: 'min7/b5', value: 'min7/b5 1P 3m 5d 7m' },
-    { text: 'dim', value: 'dim 1P 3m 5d' },
-    { text: 'dim7', value: 'dim7 1P 3m 5d 7d' },
-    { text: 'aug', value: 'aug 1P 3M 5A' }
-]; */
 
 const optionsNotes = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb', 'B'].map(e => {
     return { text: e, value: e };
