@@ -39,6 +39,11 @@ function getIntervalOfNote(note, all) {
     return all.intervals[index];
 }
 
+// TODO: 
+// E minor #7M pentatonic oppure Eb phrygian dominant
+// 1P	3m	4P	5P	7M
+// E	G	A	B	D#  Salto del C !!! -> 
+
 function generateStrOfNotes(arr, data) {
     let numberOfStrings = 6;
     let first_note = arr[0];
@@ -49,16 +54,22 @@ function generateStrOfNotes(arr, data) {
         octaveForString[n] = getStartOctave(n);
     }
     let outputStr = "";
+    let alreadyDone = true; // flag for not double jump pn C, C#
     for (let ns = 0; ns < arr.length - 3; ns++) {   // per tutte le note
         let note = arr[ns];
-        if (note.includes('C') && ns !== 0) {
+        if (note.includes('C') && ns !== 0 && ns !== 1 && !alreadyDone) {   // se si incontra un C che non sia come 1 o 2° nota di una scala e non consecutive
             runningOctave++;
+            alreadyDone = true;
+        } else if (ns > 0 && arr[ns - 1].includes('B') && arr[ns].includes('D')) {  // se c'è un salto tra B e D
+            runningOctave++;
+            alreadyDone = true;
         } else {
             let compare = octaveForString[note];
             if (compare > runningOctave) {
                 runningOctave++;
                 octaveForString[note] = runningOctave;
             }
+            alreadyDone = false;
         }
         outputStr += `${numberOfStrings}:${note}${runningOctave}:${getIntervalOfNote(
             note,

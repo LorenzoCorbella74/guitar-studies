@@ -77,46 +77,49 @@
       margin-left: 24px;
       justify-content: space-between;
 
-      ul.reduced-list, ul.extended-list, ul.chords-list {
+      ul.reduced-list,
+      ul.extended-list,
+      ul.chords-list {
         list-style: none;
         display: inline-block;
         margin-right: 8px;
         font-size: 10px;
         min-height: 22px;
-      
+
         li {
-            display: inline-block;
-            background: var(--primary-color);
+          display: inline-block;
+          background: var(--primary-color);
+          color: white;
+          padding: 2px 4px 2px 8px;
+          border-radius: 12px;
+          margin-right: 4px;
+          margin-bottom: 4px;
+
+          span {
             color: white;
-            padding: 2px 4px 2px 8px;
-            border-radius: 12px;
-            margin-right: 4px;
-            margin-bottom: 4px;
-      
-            span {
-                color: white;
-                margin-left: 4px;
-                background: var(--primary-color);
-                width: 12px;
-                height: 12px;
-                border-radius: 50%;
-                display: inline-flex;
-                text-align: center;
-                align-items: center;
-                justify-content: center;
-                transition: 0.5s ease;
-      
-                &:hover {
-                    cursor: pointer;
-                    -webkit-transform: scale(1.25);
-                    -moz-transform: scale(1.25);
-                    -ms-transform: scale(1.25);
-                    -o-transform: scale(1.25);
-                }
+            margin-left: 4px;
+            background: var(--primary-color);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-flex;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            transition: 0.5s ease;
+
+            &:hover {
+              cursor: pointer;
+              -webkit-transform: scale(1.25);
+              -moz-transform: scale(1.25);
+              -ms-transform: scale(1.25);
+              -o-transform: scale(1.25);
             }
+          }
         }
       }
-      .ul.reduced-list{
+
+      .ul.reduced-list {
         margin-left: 24px;
       }
     }
@@ -152,8 +155,10 @@
 }
 
 .scale-info-btn,
-.scale-play-btn {
+.scale-play-btn,
+.scale-note-btn {
   margin-left: 12px;
+
   &:hover {
     cursor: pointer;
   }
@@ -201,7 +206,8 @@
 
 .settings-btn,
 .scale-info-btn,
-.scale-play-btn {
+.scale-play-btn,
+.scale-note-btn {
   visibility: hidden;
 }
 
@@ -276,5 +282,3 @@
     border-radius: 4px;
   }
 }
-
-
