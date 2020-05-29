@@ -35,6 +35,36 @@
     -webkit-animation-duration: 0.4s;
     animation-name: animatetop;
     animation-duration: 0.4s;
+
+    .modal-header,
+    .modal-body {
+        color: var(--primary-color);
+        padding: 16px;
+    }
+
+    /* The Close Button */
+    .close {
+        float: right;
+        /*         font-size: 28px;
+        font-weight: bold; */
+        &:hover,
+        &:focus {
+            color: var(--primary-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+    }
+
+    /* The save|update|merge Button */
+    .save {
+        font-weight: bold;
+        text-align: right;
+        color: var(--primary-color);
+        &:hover,
+        &:focus {
+            cursor: pointer;
+        }
+    }
 }
 
 /* Add Animation */
@@ -60,30 +90,4 @@
         top: 0;
         opacity: 1;
     }
-}
-
-/* The Close Button */
-.close {
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-/* The save|update Button */
-.save {
-    font-weight: bold;
-    text-align: right;
-    color: var(--primary-color)
-}
-
-.close:hover,
-.close:focus {
-    color: var(--primary-color);
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.modal-header, .modal-body {
-    color: var(--primary-color);
-    padding: 16px;
 }

@@ -231,8 +231,8 @@ export default class MyFretboard {
         let label_merged_layer = `${data.startScale} merged with ${data.value}`;
         li.innerHTML = `
             <span class="layer-label">${label_merged_layer}</span>
-            <span class="visibility-btn"> &#9728; </span>
-            <span class="delete-btn"> x </span>
+            <span class="visibility-btn"> &#9899; </span>
+            <span class="delete-btn"> &#128298; </span>
             `;
         list.appendChild(li);
         let toBeAdded = {
@@ -300,10 +300,10 @@ export default class MyFretboard {
         li.dataset.id = layerId;
         li.innerHTML = `
             <span class="layer-label">${layer}</span>
-            <span class="merge-btn"> m </span>
-            <span class="edit-btn"> e </span>
-            <span class="visibility-btn"> &#9728; </span>
-            <span class="delete-btn"> x </span>
+            <span class="merge-btn"> &#128279; </span>
+            <span class="edit-btn"> &#128295; </span>
+            <span class="visibility-btn"> &#9899; </span>
+            <span class="delete-btn"> &#128298; </span>
             `;
         list.appendChild(li);
         let { notes, intervals } = Scale.get(layer);
@@ -380,7 +380,7 @@ export default class MyFretboard {
             scale: 'dorian',
             arpeggio: 'min7',
             title: 'New layer',
-            action: 'Save',
+            action: 'Save &#128076;',
             fingering: 'all'
         };
         this.modal.open(def);
@@ -455,7 +455,7 @@ export default class MyFretboard {
         let { id } = this.getParent(evt);
         let selected = this.fretboardIstances[id].layers.find(e => e.id === layerId);
         selected.title = 'Edit layer';
-        selected.action = 'Update';
+        selected.action = 'Update &#128076;';
         this.modal.open(selected);
     }
 
@@ -463,7 +463,7 @@ export default class MyFretboard {
         let { id } = this.getParent(evt);
         let selected = this.fretboardIstances[id].layers.find(e => e.id === layerId);
         selected.title = 'Merge layer';
-        selected.action = 'Merge';
+        selected.action = 'Merge &#128076;';
         selected.mergeAction = true;
         selected.startScale = selected.value;
         this.modal.open(selected);
@@ -474,7 +474,7 @@ export default class MyFretboard {
         let selected = this.fretboardIstances[parentId].layers.find(e => e.id === id)
         selected.visible = !selected.visible;
         let li = document.querySelector(`[data-id='${id}']`)
-        li.querySelector('.visibility-btn').innerHTML = selected.visible ? ' &#9728; ' : '&#9788;';
+        li.querySelector('.visibility-btn').innerHTML = selected.visible ? ' &#9899; ' : '&#9898;';
         this.fretboardIstances[parentId].repaint();
     }
 

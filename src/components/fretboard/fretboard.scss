@@ -23,8 +23,17 @@
     font-size: 18px;
     font-weight: 700;
     position: relative;
-    top: -15px;
+    top: -5px;
     right: -15px;
+    transition: 0.5s ease;
+
+    &:hover {
+      cursor: pointer;
+      -webkit-transform: scale(1.25);
+      -moz-transform: scale(1.25);
+      -ms-transform: scale(1.25);
+      -o-transform: scale(1.25);
+    }
   }
 
   .col-layers {
@@ -38,7 +47,8 @@
     }
 
     .add-btn,
-    .remove-btn {
+    .remove-btn,
+    .transpose-btn {
       margin-left: 8px;
       margin-right: 8px;
       font-weight: 700;
@@ -47,6 +57,7 @@
       transition: 0.5s ease;
 
       &:hover {
+        cursor: pointer;
         -webkit-transform: scale(1.25);
         -moz-transform: scale(1.25);
         -ms-transform: scale(1.25);
@@ -81,7 +92,10 @@
   .scale-info-btn,
   .scale-play-btn {
     margin-left: 12px;
-    display: none;
+    display: flex;
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   .scale-table {
@@ -89,7 +103,7 @@
     /* margin-left: auto; */
 
     table {
-      margin-left: 35%;
+      margin-left: 20%;
     }
 
     td,
@@ -133,6 +147,7 @@
   transition: 0.5s ease;
 
   &:hover {
+    cursor: pointer;
     -webkit-transform: scale(1.25);
     -moz-transform: scale(1.25);
     -ms-transform: scale(1.25);
@@ -164,6 +179,7 @@
     transition: 0.5s ease;
 
     &:hover {
+      cursor: pointer;
       -webkit-transform: scale(1.25);
       -moz-transform: scale(1.25);
       -ms-transform: scale(1.25);
