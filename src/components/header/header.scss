@@ -6,6 +6,8 @@
     width: 1200px;
     justify-content: space-between;
     border-bottom: 1px solid var(--light-grey);
+    background-color: var(--background-color);
+    color: var(--font-color);
 
     &-title {
         width: 33%;

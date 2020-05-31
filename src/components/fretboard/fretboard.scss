@@ -4,7 +4,7 @@
   left: 0px;
   min-width: 100%;
   z-index: 5;
-  background-color: white;
+  background-color: var(--background-color);
 }
 
 .content {
@@ -250,12 +250,16 @@
   color: #4c5151;
 }
 
+.string-info {
+  fill: lightgray;
+}
+
 .disabled {
   color: #b1afaf;
 }
 
 .red {
-  background-color: rgb(218, 84, 84);
+  background-color: rgb(228, 58, 58);
   color: white;
 }
 

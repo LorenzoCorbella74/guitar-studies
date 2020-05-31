@@ -25,10 +25,11 @@
 /* Modal Content */
 .modal-content {
     position: relative;
-    background-color: #fefefe;
+    background-color: var(--background-color);
+
     margin: auto;
     padding: 0;
-    border: 1px solid #888;
+    border: 1px solid light-grey;
     width: 400px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     -webkit-animation-name: animatetop;
@@ -38,13 +39,14 @@
 
     .modal-header,
     .modal-body {
-        color: var(--primary-color);
+        color: var(--font-color);
         padding: 16px;
     }
 
     /* The Close Button */
     .close {
         float: right;
+
         /*         font-size: 28px;
         font-weight: bold; */
         &:hover,
@@ -60,6 +62,7 @@
         font-weight: bold;
         text-align: right;
         color: var(--primary-color);
+
         &:hover,
         &:focus {
             cursor: pointer;

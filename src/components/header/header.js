@@ -27,6 +27,18 @@ export default class Header {
         });
         this.setBubbleProgress(slider, bubble);
 
+        document.querySelector('.theme').addEventListener('click', e => {
+            e.preventDefault();
+            if (document.body.classList.contains('dark-theme')) {
+                document.body.classList.remove('dark-theme');
+                localStorage.removeItem('dark-theme');
+            } else {
+                document.body.classList.add('dark-theme');
+                localStorage.setItem('dark-theme', true);
+            }
+            document.querySelector('.theme').classList.toggle('disabled');
+        });
+
         // TAGS
         const txt = document.getElementById('tag-input');
         this.taglist = document.getElementById('tag-list');

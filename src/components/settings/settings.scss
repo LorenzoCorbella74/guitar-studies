@@ -6,7 +6,8 @@
     position: fixed;
     top: 15.7%;
     right: 0px;
-    background-color: #fefefe;
+    background-color: var(--background-color);
+    color: var(--font-color);
     -webkit-animation-name: animateright;
     -webkit-animation-duration: 0.4s;
     animation-name: animateright;
@@ -14,8 +15,10 @@
 
     .settings-header {
         padding: 16px;
+
         .close {
             float: right;
+
             /* font-size: 28px;
             font-weight: bold; */
             &:hover {
@@ -37,6 +40,7 @@
             font-weight: bold;
             text-align: right;
             color: var(--primary-color);
+
             &:hover {
                 cursor: pointer;
             }

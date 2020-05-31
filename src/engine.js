@@ -470,7 +470,7 @@ export const Fretboard = function (config) {
                 const rect = instance.svgContainer
                     .append('rect')
                     .attr('class', 'note')
-                    .style('stroke', '#666')
+                    .style('stroke', 'var(--detail)')
                     .attr('stroke-width', 1)
                     .attr("x", (absPitch - basePitch + 0.4) * instance.fretWidth)
                     .attr("y", (string - 1) * instance.fretHeight + YMARGIN() / 2 + 4.5)
@@ -488,7 +488,7 @@ export const Fretboard = function (config) {
                     .attr("cx", x + 0.75)
                     .attr("cy", y)
                     .attr("r", 12 * size)
-                    .style("stroke", '#666')
+                    .style("stroke", 'var(--detail)')
                     .style("fill", hexToRGB(color, opacity))
                     .on("click", () => null);
             }
@@ -503,7 +503,7 @@ export const Fretboard = function (config) {
                 .attr("font-family", "sans-serif")
                 .attr("font-size", "12px")
                 .attr('fill', '#4c5151') // '#2F4F4F' DarkSlateGrey
-            //.attr("fill", "white");
+
 
             return true;
         }
