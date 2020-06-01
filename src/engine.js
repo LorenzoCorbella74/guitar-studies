@@ -7,7 +7,7 @@ import { allNotes, allNotesEnh, COLOURS, COLOURS_MERGE, Tunings } from './consta
 
 /* -------------------------------------------------------------------------- */
 
-function getStartOctave(startNote) {
+function getStartOctave (startNote) {
     startNote = startNote.toLowerCase();
     return startNote.includes("e") ||
         startNote.includes("f") ||
@@ -18,7 +18,7 @@ function getStartOctave(startNote) {
         : 3;
 }
 
-function generateScales(notes) {
+function generateScales (notes) {
     let derived = [];
     let start = notes;
     notes.forEach(() => {
@@ -34,7 +34,7 @@ function generateScales(notes) {
     return derived;
 }
 
-function getIntervalOfNote(note, all) {
+function getIntervalOfNote (note, all) {
     let index = all.notes.findIndex(e => e === note);
     return all.intervals[index];
 }
@@ -44,7 +44,7 @@ function getIntervalOfNote(note, all) {
 // 1P	3m	4P	5P	7M
 // E	G	A	B	D#  Salto del C !!! -> 
 
-function generateStrOfNotes(arr, data) {
+function generateStrOfNotes (arr, data) {
     let numberOfStrings = 6;
     let first_note = arr[0];
     let runningOctave = getStartOctave(first_note);
@@ -82,12 +82,12 @@ function generateStrOfNotes(arr, data) {
     return outputStr;
 }
 
-export function generateFingerings(data) {
+export function generateFingerings (data) {
     let output = generateScales(data.notes);
     return output.map(e => generateStrOfNotes(e, data, data.notesForString));
 }
 /* -------------------------------------------------------------------------- */
-function asOffset(note) {
+function asOffset (note) {
     note = note.toLowerCase();
     let offset = allNotes.indexOf(note);
     if (offset === -1) {
@@ -96,7 +96,7 @@ function asOffset(note) {
     return offset;
 }
 
-function absNote(note) {
+function absNote (note) {
     let octave = note[note.length - 1];
     let pitch = asOffset(note.slice(0, -1));
     if (pitch > -1) {
@@ -111,7 +111,7 @@ function absNote(note) {
 } */
 
 // crea i colori per l'array mergiato
-export function createMergeColors(combined, source1, source2) {
+export function createMergeColors (combined, source1, source2) {
     let result = [];
     combined.forEach(note => {
         if (source1.includes(note) && source2.includes(note)) {
@@ -126,12 +126,24 @@ export function createMergeColors(combined, source1, source2) {
 }
 
 // mergia e rimuove i duplicati
-export function mergeArrays(...arrays) {
+export function mergeArrays (...arrays) {
     let jointArray = []
     arrays.forEach(array => {
         jointArray = [...jointArray, ...array]
     });
     return [...new Set([...jointArray])]
+}
+
+export function safeNotes (note) {
+    let output;
+    switch (note) {
+        case 'B#': output = 'C'; break;
+        case 'E#': output = 'F'; break;
+        case 'Fb': output = 'E'; break;
+        case 'Cb': output = 'B'; break;
+        default: output = note; break;
+    }
+    return output;
 }
 
 // where è l'elemento dentro il quale si renderizza la fretboard
@@ -142,7 +154,7 @@ export const Fretboard = function (config) {
     let id = config.id || "fretboard" + Math.floor(Math.random() * 1000000);
 
     let instance = {
-        id : id,
+        id: id,
         frets: 12,
         startFret: 0,
         strings: 6,
@@ -379,7 +391,7 @@ export const Fretboard = function (config) {
     let drawDots = function () {
         let p = instance.svgContainer.selectAll("circle").data(fretsWithDots());
 
-        function dotX(d) {
+        function dotX (d) {
             return (
                 (d - instance.startFret - 1) * instance.fretWidth +
                 instance.fretWidth / 2 +
@@ -387,7 +399,7 @@ export const Fretboard = function (config) {
             );
         }
 
-        function dotY(ylocation) {
+        function dotY (ylocation) {
             let margin = YMARGIN();
 
             if (instance.strings % 2 === 0) {
@@ -434,7 +446,7 @@ export const Fretboard = function (config) {
         return instance;
     };
 
-    function hexToRGB(h, opacity) {
+    function hexToRGB (h, opacity) {
         let r = 0, g = 0, b = 0;
 
         // 3 digits
@@ -453,7 +465,7 @@ export const Fretboard = function (config) {
         return "rgb(" + +r + "," + +g + "," + +b + "," + +opacity + ")";
     }
 
-    function paintNote(note, string, color, info, size, opacity) {
+    function paintNote (note, string, color, info, size, opacity) {
         if (string > instance.strings) {
             return false;
         }
