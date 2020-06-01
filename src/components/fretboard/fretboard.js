@@ -65,7 +65,7 @@ export default class MyFretboard {
 
     resize() {
         // console.log(window.innerHeight, window.innerWidth);
-        this.isSmall = window.innerWidth < 800;
+        this.isSmall = window.innerWidth < 1024;
         for (const key in this.fretboardIstances) {
             const fretboard = this.fretboardIstances[key];
             if (this.isSmall) {
@@ -373,6 +373,7 @@ export default class MyFretboard {
         list.appendChild(li);
         let toBeAdded = {
             id: layerId,
+            creation: new Date().toISOString(),
             parentId: parentId,
             root: data.root,
             scale: data.scale,
@@ -447,6 +448,7 @@ export default class MyFretboard {
         notes = notes.map(e => this.safeNotes(e));
         let toBeAdded = {
             id: layerId,
+            creation: new Date().toISOString(),
             parentId: parentId,
             root: data.root,
             scale: data.scale,
