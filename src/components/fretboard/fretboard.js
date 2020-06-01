@@ -18,7 +18,7 @@ export default class MyFretboard {
         this.body = document.body;
         this.body.innerHTML = `${template}`;
 
-        this.header = new Header('header', this.addFretboard.bind(this), this.removeAllFretboard.bind(this));
+        this.header = new Header('header', this.addFretboard.bind(this), this.removeAllFretboard.bind(this), this.backToList.bind(this));
         this.modal = new ModalChoice('modal', this.save.bind(this));
         this.modal_note = new ModalNote('modal-note', this.saveNote.bind(this));
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
@@ -34,6 +34,11 @@ export default class MyFretboard {
         and then for each layer use addLayer s
         */
         window.onresize = this.resize.bind(this);
+    }
+
+    backToList(){
+
+        console.log(JSON.parse(JSON.stringify(this.fretboardIstances)));
     }
 
     resize() {
@@ -147,6 +152,8 @@ export default class MyFretboard {
                 console.log(`Layer transposed ${layer.id}`, layer);
             } else {
                 layer.value = `${layer.root} ${layer.scale}`;
+                // TODO:
+                layer.fingerings = generateFingerings(layer);
             }
         }
         // layers are deselected

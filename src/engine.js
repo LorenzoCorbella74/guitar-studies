@@ -142,6 +142,7 @@ export const Fretboard = function (config) {
     let id = "fretboard-" + Math.floor(Math.random() * 1000000);
 
     let instance = {
+        id : id,
         frets: 12,
         startFret: 0,
         strings: 6,
