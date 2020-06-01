@@ -1,0 +1,59 @@
+.study-list {
+    display: flex;
+    flex-wrap: wrap;
+
+    .study-tab {
+        background: grey;
+        padding: 24px 12px;
+        width: 25%;
+        height: 250px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid var(--light-grey);
+
+        .study-info {
+            h2.study-title {
+                margin-bottom: 0.6rem;
+                color: var(--font-color);
+            }
+            h4.study-date {
+                color: var(--light-grey);
+            }
+            margin-bottom: 2rem;
+        }
+    }
+
+    .study-actions {
+        display: flex;
+        justify-content: space-evenly;
+        .study-delete-btn,
+        .study-favourite-btn {
+            margin-left: 8px;
+            margin-right: 8px;
+            font-weight: 700;
+            align-content: center;
+            font-size: 18px;
+            transition: 0.5s ease;
+
+            &:hover {
+                cursor: pointer;
+                -webkit-transform: scale(1.25);
+                -moz-transform: scale(1.25);
+                -ms-transform: scale(1.25);
+                -o-transform: scale(1.25);
+            }
+        }
+    }
+
+    @media screen and (max-width: 1200px) {
+        .study-tab {
+            width: 33.333333%;
+        }
+    }
+    @media screen and (max-width: 1024px) {
+        .study-tab {
+            width: 50%;
+        }
+    }
+}
