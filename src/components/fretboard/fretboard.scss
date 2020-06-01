@@ -25,14 +25,9 @@
     position: relative;
     top: -5px;
     right: -15px;
-    transition: 0.5s ease;
 
     &:hover {
       cursor: pointer;
-      -webkit-transform: scale(1.25);
-      -moz-transform: scale(1.25);
-      -ms-transform: scale(1.25);
-      -o-transform: scale(1.25);
     }
   }
 
@@ -135,6 +130,7 @@
 
   .scale-title {
     margin-left: 30px;
+    width: 20%;
   }
 
   .scale-table {

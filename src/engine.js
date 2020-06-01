@@ -139,7 +139,7 @@ export const Fretboard = function (config) {
     config = config || {};
     let where = config.where || "body";
 
-    let id = "fretboard-" + Math.floor(Math.random() * 1000000);
+    let id = config.id || "fretboard" + Math.floor(Math.random() * 1000000);
 
     let instance = {
         id : id,

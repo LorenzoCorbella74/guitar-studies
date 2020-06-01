@@ -33,12 +33,34 @@ export default class MyFretboard {
         If thre is an input data use addFretboard 
         and then for each layer use addLayer s
         */
+       this.generateFretboards(input);
         window.onresize = this.resize.bind(this);
     }
 
-    backToList(){
+    generateFretboards(input){
+        this.header.refs.title.textContent = input.title || 'Titolo...';
+        this.header.refs.description.value = input.description || 'Descrizione...';
+        this.header.tags = input.tags  || [];
+        this.header.refs.progress.value = input.progress || 0;
+        // TODO: 
+        for (const fret in input.frets) {
+                const fretboard = input.frets[fret];
+                this.addFretboard(fretboard);
+                fretboard.layers.forEach(l=>{
+                    this.renderLayer(l.value, l);
+                })
+        }
+    }
 
-        console.log(JSON.parse(JSON.stringify(this.fretboardIstances)));
+    backToList(){
+        let general = {
+            title: this.header.refs.title.textContent,
+            description: this.header.refs.description.value,
+            tags: this.header.tags,
+            progress: this.header.refs.progress.value,
+            frets: JSON.parse(JSON.stringify(this.fretboardIstances))
+        }
+        console.log(JSON.stringify(general));  // TODO:
     }
 
     resize() {
@@ -64,10 +86,10 @@ export default class MyFretboard {
         return { parent, id: parent.dataset.id };
     }
 
-    addFretboard() {
+    addFretboard(input) {
         var temp = document.getElementsByTagName("template")[0];
         var clone = temp.content.cloneNode(true);
-        let id = 'fretboard' + Math.floor(Math.random() * 1000000);
+        let id = input.id || 'fretboard' + Math.floor(Math.random() * 1000000);
         clone.firstElementChild.dataset.id = id;
 
         document.querySelector('.content').appendChild(clone);
@@ -85,10 +107,11 @@ export default class MyFretboard {
         fretboard.querySelector('.scale-note-btn').addEventListener('click', (evt) => this.openNoteModal.call(this, evt));
 
         this.fretboardIstances[id] = Fretboard({
+            id: id,
             where: `[data-id='${id}'] .col-output .fret`,
             fretWidth: window.innerWidth < 600 ? 34 : 46,
-            fretHeight: 32,
-            frets: window.innerWidth > 1024 ? 15 : 12
+            fretHeight: input.fretHeight || 32,
+            frets: input.frets || window.innerWidth > 1024 ? 15 : 12
         });
         this.fretboardIstances[id].drawBoard();
         this.fretboardIstances[id].layers = [];
@@ -117,6 +140,7 @@ export default class MyFretboard {
         parent.remove();
     }
 
+    // Input range for transpose
     setBubble(slider, bubble, id) {
         const val = slider.value;
         const min = slider.min ? slider.min : 0;
@@ -152,7 +176,6 @@ export default class MyFretboard {
                 console.log(`Layer transposed ${layer.id}`, layer);
             } else {
                 layer.value = `${layer.root} ${layer.scale}`;
-                // TODO:
                 layer.fingerings = generateFingerings(layer);
             }
         }
@@ -224,14 +247,17 @@ export default class MyFretboard {
 
     renderChords() {
         this.chordsList.innerHTML = '';
-        this.chords.map(item => {
-            this.chordsList.innerHTML += `<li>${item}</li>`; /* <span data-chordid="${index}">&times;</span> */
-        });
-        /* document.querySelectorAll('[data-chordid]').forEach(element => {
-            element.addEventListener('click', (evt) => {
-                // TODO: this.add(element.dataset.chordid)
+        if(this.chords){    // se è mergiato non ha generalemente accordi...
+            this.chords.map(item => {
+                this.chordsList.innerHTML += `<li>${item}</li>`; /* <span data-chordid="${index}">&times;</span> */
             });
-        }); */
+            /* document.querySelectorAll('[data-chordid]').forEach(element => {
+                element.addEventListener('click', (evt) => {
+                    // TODO: this.add(element.dataset.chordid)
+                });
+            }); */
+        }
+       
     }
 
     renderReduced(reduced, root, parentId) {
