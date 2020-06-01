@@ -5,6 +5,7 @@ import template from './fretboard.html'
 import ModalChoice from '../modal-choice/modal-choice';
 import Settings from '../settings/settings';
 import Header from '../header/header';
+import ModalNote from '../modal-note/modal-note';
 
 // Musin engines
 import { Fretboard, mergeArrays, createMergeColors, generateFingerings } from '../../engine';
@@ -19,6 +20,7 @@ export default class MyFretboard {
 
         this.header = new Header('header', this.addFretboard.bind(this), this.removeAllFretboard.bind(this));
         this.modal = new ModalChoice('modal', this.save.bind(this));
+        this.modal_note = new ModalNote('modal-note', this.saveNote.bind(this));
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
 
         this.fretboardIstances = {};
@@ -180,7 +182,12 @@ export default class MyFretboard {
         let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
         let data = this.fretboardIstances[id].layers[index];
         console.log(data);
-        // TODO:
+        this.modal_note.open(data);
+    }
+
+    saveNote(data){
+        let index = this.fretboardIstances[data.parentId].layers.findIndex(e => e.id === data.id);
+        this.fretboardIstances[data.parentId].layers[index].note = data.note;
     }
 
     toggleAssociation(evt) {
@@ -349,6 +356,7 @@ export default class MyFretboard {
             opacity: 1,
             color: 'many',
             differences: 'own',
+            note:'',
             fingering: 'all'
         };
         let data1 = Scale.get(toBeAdded.value1);
@@ -423,6 +431,7 @@ export default class MyFretboard {
             differences: 'own',
             notesForString: notes.length > 5 ? 3 : 2,
             fingering: 'all',
+            note:'',
             reduced: this.checkScale(Scale.reduced(data.scale)),
             extended: this.checkScale(Scale.extended(data.scale)),
             scaleChords: Scale.scaleChords(data.scale),
@@ -450,7 +459,7 @@ export default class MyFretboard {
         });
         this.updateTitle(layer, parentId);
         this.updateLayerInfo(toBeAdded, parentId);
-        this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente e si apre la sidebar dei settings
+        this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente quando si aggiunge
     }
 
     safeNotes(note) {
@@ -469,11 +478,11 @@ export default class MyFretboard {
         let { parent } = this.getParent(evt);
         let def = {
             parentId: parent.dataset.id,
-            type: 'scale',          // can be scale | arpeggio
+            type: 'scale',          // can be scale | arpeggio - deprecated
             whatToShow: 'degrees',  // can be notes | degrees | none
             tuning: 'E_std',
             root: 'A',
-            scale: 'dorian',
+            scale: 'dorian',        // deprecated
             arpeggio: 'min7',
             title: 'New layer',
             action: 'Save &#128076;',
