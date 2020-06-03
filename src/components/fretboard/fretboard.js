@@ -1,6 +1,8 @@
 import "./fretboard.scss";
 import template from './fretboard.html'
 
+import { state } from '../../index';
+
 // Components
 import ModalChoice from '../modal-choice/modal-choice';
 import Settings from '../settings/settings';
@@ -14,7 +16,13 @@ import { allIntervals, allScales } from '../../constants';
 
 export default class MyFretboard {
 
-    constructor(input = {}) {
+    constructor(app, input = {}) {
+        this.app = app;
+
+        this.studyId = input.studyId || Math.floor(Math.random() * 1000000);
+        this.creation = input.creation || new Date().toISOString();
+        this.favourite = false;
+
         this.body = document.body;
         this.body.innerHTML = `${template}`;
 
@@ -36,14 +44,13 @@ export default class MyFretboard {
         this.header.refs.description.value = input.description || 'Descrizione...';
         this.header.tags = input.tags || [];
         this.header.refs.progress.value = input.progress || 0;
-        this.creation = input.creation ||  new Date().toISOString();
         for (const fret in input.frets) {
             const fretboard = input.frets[fret];
             this.addFretboard(fretboard);
             fretboard.layers.forEach(l => {
-                if (l.mergeAction) {  
+                if (l.mergeAction) {
                     this.renderMergedLayer(l.data);
-                }else {
+                } else {
                     this.renderLayer(l.value, l);
                 }
             })
@@ -52,6 +59,7 @@ export default class MyFretboard {
 
     backToList () {
         let general = {
+            studyId: this.studyId,
             title: this.header.refs.title.textContent,
             description: this.header.refs.description.value,
             tags: this.header.tags,
@@ -59,7 +67,14 @@ export default class MyFretboard {
             creation: this.creation,
             frets: JSON.parse(JSON.stringify(this.fretboardIstances))
         }
-        console.log(JSON.stringify(general));  // TODO: cancellare notes dentro ogni layer
+        let currentStudyId = state.findIndex(e => e.studyId === this.studyId);
+        if(currentStudyId<-1){
+            state[currentStudyId] = general;
+        } else {
+            state.push(general)
+        }
+        this.app.changeRoute('list')
+        // console.log(JSON.stringify(general));  // TODO: cancellare notes dentro ogni layer
     }
 
     resize () {

@@ -4,20 +4,20 @@ import "./styles.css";
 import MyFretboard from './components/fretboard/fretboard';
 import List from './components/list/list';
 
-const state = [
+export const state = [
     {
-        id:'study123',
+        studyId:'study123',
         title:"prova1",
         favourite: false,
         date: '12/04/2020'
     },
     {
-        id:'study456',
+        studyId:'study456',
         title:"prova2",
         favourite: false,
         date: '16/02/2020'
     }
-]
+];
 
 window.onload = function () {
 
@@ -25,6 +25,22 @@ window.onload = function () {
     let mock2 = [];
     window.fretboard = new MyFretboard(mock2); */
 
-    new List(state);
+    new App();
+
+
+}
+
+class App {
+    constructor(){
+        this.changeRoute('list'); // loading the list as default
+    }
+
+    changeRoute(where, data){
+        if(where==='list'){
+            new List(this);
+        } else if(where ==='study'){
+            new MyFretboard(this, data);
+        }
+    }
 }
 

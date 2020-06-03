@@ -21,6 +21,10 @@
                 color: var(--light-grey);
             }
             margin-bottom: 2rem;
+
+            &:hover {
+                cursor: pointer;
+            }
         }
     }
 
