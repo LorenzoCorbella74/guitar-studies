@@ -55,7 +55,7 @@ function generateStrOfNotes (arr, data) {
     }
     let outputStr = "";
     let alreadyDone = true; // flag for not double jump pn C, C#
-    for (let ns = 0; ns < arr.length - 3; ns++) {   // per tutte le note
+    for (let ns = 0; ns < arr.length - 3; ns++) {   // per tutte le note (21-3 per 3(18) nps o 18-3 per 2nps(12))
         let note = arr[ns];
         if (note.includes('C') && ns !== 0 && ns !== 1 && !alreadyDone) {   // se si incontra un C che non sia come 1 o 2° nota di una scala e non consecutive
             runningOctave++;
@@ -198,6 +198,7 @@ export const Fretboard = function (config) {
 
     // 3) prende tutte le note e chiama l'addNote o addNoteOnString
     instance.addNotes = function (data) {
+        let uniform = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
         let { intervals, notes, id } = data;
         let index = instance.layers.findIndex(i => i.id === id);   // si recupera l'indice del layer in base alsuo id
         let whatToShow = instance.layers[index].whatToShow;
@@ -209,7 +210,7 @@ export const Fretboard = function (config) {
                 if (data.combinedColors) {
                     color = COLOURS_MERGE[data.combinedColors[i]];
                 } else {
-                    color = instance.layers[index].color === 'many' ? COLOURS[intervals[i]] : (instance.layers[index].color === 'triads' ? (intervals[i] === '1P' || intervals[i] === '3m' || intervals[i] === '3M' || intervals[i] === '5P' ? COLOURS[intervals[i]] : '#30336b') : '#30336b');/* getComputedStyle(document.documentElement).getPropertyValue('--primary-color') */;
+                    color = instance.layers[index].color === 'many' ? COLOURS[intervals[i]] : (instance.layers[index].color === 'triads' ? (intervals[i] === '1P' || intervals[i] === '3m' || intervals[i] === '3M' || intervals[i] === '5P' ? COLOURS[intervals[i]] : uniform) : uniform);
                 }
                 let note = notes[i];
                 let info = instance.layers[index].color === 'many' || instance.layers[index].color === 'triads' ? (whatToShow === 'degrees' ? intervals[i] : (whatToShow === 'notes' ? note : '')) : '';
@@ -232,10 +233,10 @@ export const Fretboard = function (config) {
                 let v = instance.layers[index].notesVisibility;
                 let visibility = [...v, ...v, ...v];
                 let color;
-                if (data.combinedColors) {
+                if (data.combinedColors && data.fingering==='all') {    // si rimuove la possibilità di avere la colorazione del merge per i singoli gradi della scala mergiata
                     color = COLOURS_MERGE[data.combinedColors[i]];
                 } else {
-                    color = instance.layers[index].color === 'many' ? COLOURS[ele.interval] : (instance.layers[index].color === 'triads' ? (ele.interval === '1P' || ele.interval === '3m' || ele.interval === '3M' || ele.interval === '5P' ? COLOURS[ele.interval] : '#30336b') : '#30336b');/* getComputedStyle(document.documentElement).getPropertyValue('--primary-color') */;
+                    color = instance.layers[index].color === 'many' ? COLOURS[ele.interval] : (instance.layers[index].color === 'triads' ? (ele.interval === '1P' || ele.interval === '3m' || ele.interval === '3M' || ele.interval === '5P' ? COLOURS[ele.interval] : uniform) : uniform);
                 }
                 let info = instance.layers[index].color === 'many' || instance.layers[index].color === 'triads' ? (whatToShow === 'degrees' ? ele.interval : (whatToShow === 'notes' ? ele.note.substring(0, ele.note.length() - 1) : '')) : '';
                 if (visibility[i]) {
