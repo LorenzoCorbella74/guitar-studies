@@ -89,7 +89,7 @@ export default class ModalChoice {
     fillForm(data) {
         this.fingering = data.fingering;
         this.parentId = data.parentId;
-        this.mergeAction = data.mergeAction;    // se è un merge
+        this.merge = data.merge;    // se è un merge
         this.startScale = data.startScale;      // la scala iniziale da mergiare
         this.id = data.id;
         this.refs.title.innerHTML = data.title;
@@ -121,11 +121,17 @@ export default class ModalChoice {
     }
 
     resetForm() {
+        this.fingering = '';
+        this.parentId = '';
+        this.merge = '';    // se è un merge
+        this.startScale = '';      // la scala iniziale da mergiare
+        this.id = '';
         // this.refs.tuning.value = '';
         this.refs.scale.value = '';
         this.refs.root.value = '';
         /* this.refs.arpeggio.value = '';
         this.resetRadio('type') */
+        this.merge= '';
         this.resetRadio('whatToShow')
     }
 
@@ -150,7 +156,7 @@ export default class ModalChoice {
             //arpeggio: this.refs.arpeggio.value,
             value: `${this.refs.root.value} ${this.refs.scale.value}`,
             // if it's a merge action
-            mergeAction: this.mergeAction,
+            merge: this.merge,
             startScale: this.startScale,
             fingering: this.fingering
         }

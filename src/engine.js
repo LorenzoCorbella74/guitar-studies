@@ -198,8 +198,8 @@ export const Fretboard = function (config) {
 
     // 3) prende tutte le note e chiama l'addNote o addNoteOnString
     instance.addNotes = function (data) {
-        let { intervals, notes, value } = data;
-        let index = instance.layers.findIndex(i => i.value === value);   // si recupera l'indice del layer in base al nome della scala FIXME: id?
+        let { intervals, notes, id } = data;
+        let index = instance.layers.findIndex(i => i.id === id);   // si recupera l'indice del layer in base alsuo id
         let whatToShow = instance.layers[index].whatToShow;
         let size = instance.layers[index].size;
         let opacity = instance.layers[index].opacity;

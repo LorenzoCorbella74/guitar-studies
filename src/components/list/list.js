@@ -25,8 +25,8 @@ export default class List {
     }
 
     getParent (evt) {
-        let parent = evt.target.closest("[data-id*='study']");
-        return { parent, id: parent.dataset.id };
+        let parent = evt.target.closest("[data-id]");
+        return { parent, id: Number(parent.dataset.id) };
     }
 
     toggleTheme () {
@@ -37,6 +37,15 @@ export default class List {
             document.body.classList.add('dark-theme');
             this.theme.innerHTML = '&#127770;'
         }
+    }
+
+    renderDate (date) {
+        let year = date.getFullYear();
+        let month = (1 + date.getMonth()).toString();
+        month = month.length > 1 ? month : '0' + month;
+        let day = date.getDate().toString();
+        day = day.length > 1 ? day : '0' + day;
+        return `${month}/${day}/${year}`;
     }
 
     renderStudy (input) {
@@ -55,7 +64,7 @@ export default class List {
         refElems.forEach((elem) => { study.refs[elem.getAttribute('ref')] = elem })
 
         study.refs.title.textContent = input.title;
-        study.refs.date.textContent = input.date;
+        study.refs.date.textContent = this.renderDate(input.creation);
         study.refs.favourite.innerHTML = input.favourite ? '&#128150;' : '&#128420;';
 
         // EVENTS
