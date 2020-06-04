@@ -9,7 +9,7 @@ import Settings from '../settings/settings';
 import Header from '../header/header';
 import ModalNote from '../modal-note/modal-note';
 
-// Musin engines
+// Music engine
 import { Fretboard, mergeArrays, createMergeColors, generateFingerings, safeNotes } from '../../engine';
 import { Note, Scale, Interval } from "@tonaljs/tonal";
 import { allIntervals, allScales } from '../../constants';
@@ -43,7 +43,9 @@ export default class MyFretboard {
         this.header.refs.title.textContent = input.title || 'Titolo...';
         this.header.refs.description.value = input.description || 'Descrizione...';
         this.header.tags = input.tags || [];
+        this.header.renderTags()
         this.header.refs.progress.value = input.progress || 0;
+        this.header.setBubbleProgress();
         for (const fret in input.frets) {
             const fretboard = input.frets[fret];
             this.addFretboard(fretboard);

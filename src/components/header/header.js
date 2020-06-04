@@ -21,12 +21,12 @@ export default class Header {
 
         // SLIDER RANGE
         const header = document.querySelector('.header');
-        const slider = header.querySelector(".progress-range .slider");
-        const bubble = header.querySelector(".progress-bubble");
-        slider.addEventListener("input", () => {
-            this.setBubbleProgress(slider, bubble);
+        this.slider = header.querySelector(".progress-range .slider");
+        this.bubble = header.querySelector(".progress-bubble");
+        this.slider.addEventListener("input", () => {
+            this.setBubbleProgress();
         });
-        this.setBubbleProgress(slider, bubble);
+        this.setBubbleProgress();
 
         // TAGS
         const txt = document.getElementById('tag-input');
@@ -74,12 +74,12 @@ export default class Header {
         document.querySelector('.header-tags-container').classList.toggle('hide');
     }
 
-    setBubbleProgress(slider, bubble) {
-        const val = slider.value;
-        const min = slider.min ? slider.min : 0;
-        const max = slider.max ? slider.max : 100;
+    setBubbleProgress() {
+        const val = this.slider.value;
+        const min = this.slider.min ? this.slider.min : 0;
+        const max = this.slider.max ? this.slider.max : 100;
         const newVal = Number(((val - min) * 100) / (max - min));
-        bubble.innerHTML = val;
+        this.bubble.innerHTML = val;
         // Sorta magic numbers based on size of the native UI thumb
         // bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.10}px))`;
     }

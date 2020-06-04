@@ -1,3 +1,28 @@
+.add-study {
+    margin-left: 2rem;
+    font-size: 1.5rem;
+    transition: 0.5s ease;
+    &:hover {
+        cursor: pointer;
+        -webkit-transform: scale(1.25);
+        -moz-transform: scale(1.25);
+        -ms-transform: scale(1.25);
+        -o-transform: scale(1.25);
+    }
+}
+
+.theme {
+    align-self: center;
+    transition: 0.5s ease;
+    &:hover {
+        cursor: pointer;
+        -webkit-transform: scale(1.25);
+        -moz-transform: scale(1.25);
+        -ms-transform: scale(1.25);
+        -o-transform: scale(1.25);
+    }
+}
+
 .study-list {
     display: flex;
     flex-wrap: wrap;
