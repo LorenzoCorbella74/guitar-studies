@@ -19,8 +19,8 @@ export default class List {
     }
 
     generateItems () {
-        this.list.forEach(el => {
-            this.renderStudy(el);
+        this.list.forEach((el, i) => {
+            this.renderStudy(el, i);
         });
     }
 
@@ -48,7 +48,15 @@ export default class List {
         return `${month}/${day}/${year}`;
     }
 
-    renderStudy (input) {
+    getIconPath(num) {
+        let imgNum = Number(num) + 1;
+        if (imgNum > 20) {
+          imgNum = imgNum % 20;
+        }
+        return imgNum;
+      }
+
+    renderStudy (input, i) {
         var temp = document.getElementsByTagName("template")[0];
         var clone = temp.content.cloneNode(true);
         let id = input.studyId || 'study' + Math.floor(Math.random() * 1000000);
@@ -66,6 +74,12 @@ export default class List {
         study.refs.title.textContent = input.title;
         study.refs.date.textContent = this.renderDate(input.creation);
         study.refs.favourite.innerHTML = input.favourite ? '&#128150;' : '&#128420;';
+
+        let studyImg = input.img || this.getIconPath(i);
+        import(`../../img/guitar${studyImg}.jpeg`).then(img => {
+            study.style.backgroundImage = `url(${img.default})`;
+            this.list[i].img = studyImg;
+        });
 
         // EVENTS
         study.querySelector('.study-info').addEventListener('click', (evt) => this.openStudy.call(this, evt));

@@ -31,10 +31,10 @@
     width: 100%;
 
     .study-tab {
-        background: grey;
+        /* background: grey; */
         padding: 24px 12px;
         width: 25%;
-        height: 250px;
+        height: 280px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -43,7 +43,7 @@
         .study-info {
             h2.study-title {
                 margin-bottom: 0.6rem;
-                color: var(--font-color);
+                color: white;
             }
             h4.study-date {
                 color: var(--light-grey);

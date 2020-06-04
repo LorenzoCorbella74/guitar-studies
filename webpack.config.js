@@ -39,7 +39,13 @@ const config = {
       {
         test: /\.html$/,
         loader: 'html-loader'
-      }
+      },
+      {
+        test: /\.(jpeg|png)$/,
+        use: {
+          loader: 'url-loader',
+        },
+      },
     ]
   },
   plugins: [
