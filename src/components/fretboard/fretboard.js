@@ -21,7 +21,7 @@ export default class MyFretboard {
 
         this.studyId = input.studyId || Math.floor(Math.random() * 1000000);
         this.creation = input.creation || new Date();
-        this.favourite = false;
+        this.favourite = input.favourite || false;
 
         this.body = document.body;
         this.body.innerHTML = `${template}`;
@@ -64,6 +64,7 @@ export default class MyFretboard {
             studyId: this.studyId,
             title: this.header.refs.title.textContent,
             description: this.header.refs.description.value,
+            favourite: this.favourite,
             tags: this.header.tags,
             progress: this.header.refs.progress.value,
             creation: this.creation,
@@ -73,21 +74,23 @@ export default class MyFretboard {
         if (currentStudyId > -1) {
             state[currentStudyId] = general;
         } else {
-            state.push(general)
+            state.push(general);
         }
-        this.app.changeRoute('list')
+        this.app.changeRoute('list');
         // console.log(JSON.stringify(general));  // TODO: cancellare notes dentro ogni layer
     }
 
     resize () {
         // console.log(window.innerHeight, window.innerWidth);
         this.isSmall = window.innerWidth < 1024;
-        for (const key in this.fretboardIstances) {
-            const fretboard = this.fretboardIstances[key];
-            if (this.isSmall) {
-                fretboard.set('fretWidth', 40);
-            } else {
-                fretboard.set('fretWidth', 50);
+        if (this.app.currentRoute === 'study') {
+            for (const key in this.fretboardIstances) {
+                const fretboard = this.fretboardIstances[key];
+                if (this.isSmall) {
+                    fretboard.set('fretWidth', 40);
+                } else {
+                    fretboard.set('fretWidth', 50);
+                }
             }
         }
     }
@@ -420,7 +423,7 @@ export default class MyFretboard {
         toBeAdded.intervals = this.getIntervalsOfMerged(toBeAdded.notes);// sono riferiti alla scala di partenza
         toBeAdded.combinedColors = createMergeColors(toBeAdded.notes, data1.notes, data2.notes);
         toBeAdded.notesForString = toBeAdded.notes.length > 5 ? 3 : 2,
-        toBeAdded.fingerings = generateFingerings(toBeAdded);
+            toBeAdded.fingerings = generateFingerings(toBeAdded);
         console.log(`Layer merged ${toBeAdded.id}`, toBeAdded);
         this.fretboardIstances[parentId].layers.push(toBeAdded);
         this.fretboardIstances[parentId].addMergeLayer(toBeAdded);

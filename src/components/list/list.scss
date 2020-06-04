@@ -26,6 +26,9 @@
 .study-list {
     display: flex;
     flex-wrap: wrap;
+    margin: 0 auto;
+    max-width: 1200px;
+    width: 100%;
 
     .study-tab {
         background: grey;

@@ -2,7 +2,7 @@
     display: flex;
     padding: 15px;
     margin: 0 auto;
-    max-width:  1200px;
+    max-width: 1200px;
     width: 100%;
     justify-content: space-between;
     border-bottom: 1px solid var(--light-grey);
@@ -27,7 +27,7 @@
                 font-size: 66%;
                 padding: 2px 8px;
                 border-radius: 3px;
-                margin: 0 12px
+                margin: 0 12px;
             }
         }
     }
@@ -95,7 +95,6 @@
             margin-bottom: 5px;
             display: inline-block;
         }
-
     }
 
     #add-general-btn,
@@ -118,11 +117,16 @@
     }
 
     @media screen and (max-width: 1200px) {
+
+        .header-title {
+            font-size: 80%;
+        }
+
         #add-general-btn,
         #remove-general-btn,
         #tags-general-btn,
         #back-btn {
             font-size: 14px;
-      }
+        }
     }
 }
