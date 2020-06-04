@@ -56,6 +56,7 @@ export default class List {
                     let parsed = JSON.parse(content)
                     state.forceSetState(parsed.data);
                     this.list = state.getState();
+                    document.querySelector('.study-list').innerHTML = '';
                     this.generateItems();
                 } catch (error) {
                     console.log('Was not possible to import the file!')
