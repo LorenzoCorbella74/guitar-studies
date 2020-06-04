@@ -11,8 +11,9 @@
     }
 }
 
-.theme {
+.theme, .save, .import {
     align-self: center;
+    margin-right: 0.5rem;;
     transition: 0.5s ease;
     &:hover {
         cursor: pointer;
@@ -31,8 +32,6 @@
     width: 100%;
 
     .study-tab {
-        /* background: grey; */
-        padding: 24px 12px;
         width: 25%;
         height: 280px;
         display: flex;
@@ -41,6 +40,8 @@
         border: 1px solid var(--light-grey);
 
         .study-info {
+            margin-left: 1rem;
+            margin-top: 1rem;
             h2.study-title {
                 margin-bottom: 0.6rem;
                 color: white;
@@ -59,6 +60,9 @@
     .study-actions {
         display: flex;
         justify-content: space-evenly;
+        background-color: rgba(210, 210, 210, 0.4);
+        padding: 25px;
+
         .study-delete-btn,
         .study-favourite-btn {
             margin-left: 8px;

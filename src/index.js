@@ -4,7 +4,6 @@ import "./styles.css";
 import MyFretboard from './components/fretboard/fretboard';
 import List from './components/list/list';
 
-export const state = [];
 
 window.onload = () => {
     new App();

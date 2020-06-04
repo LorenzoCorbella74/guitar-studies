@@ -1,7 +1,7 @@
 import "./fretboard.scss";
 import template from './fretboard.html'
 
-import { state } from '../../index';
+import state from '../../state';
 
 // Components
 import ModalChoice from '../modal-choice/modal-choice';
@@ -60,6 +60,18 @@ export default class MyFretboard {
     }
 
     backToList () {
+        let copy = JSON.parse(JSON.stringify(this.fretboardIstances));
+        for (const key in copy) {
+            const fret = copy[key]; // si rimuove tutto ciò che sarà ricreato dinamicamente
+            delete fret.notes;
+            delete copy.intervals;
+            delete copy.reduced;
+            delete copy.extended;
+            delete copy.scaleChords;
+            delete copy.modeNames;
+            delete copy.fingerings;
+            delete copy.svgContainer;
+        }
         let general = {
             studyId: this.studyId,
             title: this.header.refs.title.textContent,
@@ -68,16 +80,10 @@ export default class MyFretboard {
             tags: this.header.tags,
             progress: this.header.refs.progress.value,
             creation: this.creation,
-            frets: JSON.parse(JSON.stringify(this.fretboardIstances))
+            frets: copy
         }
-        let currentStudyId = state.findIndex(e => e.studyId === this.studyId);
-        if (currentStudyId > -1) {
-            state[currentStudyId] = general;
-        } else {
-            state.push(general);
-        }
+        state.saveOrUpdate(general);
         this.app.changeRoute('list');
-        // console.log(JSON.stringify(general));  // TODO: cancellare notes dentro ogni layer
     }
 
     resize () {

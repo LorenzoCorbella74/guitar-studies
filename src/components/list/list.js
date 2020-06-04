@@ -1,7 +1,9 @@
 import "./list.scss";
 import template from './list.html';
 
-import { state } from '../../index';
+import { APP_VERSION } from '../../constants';
+
+import state from '../../state';
 
 export default class List {
 
@@ -10,12 +12,57 @@ export default class List {
         this.body.innerHTML = `${template}`;
 
         this.app = app;
-        this.list = state;
+        this.list = state.getState();
         this.generateItems();
 
+        // Turn the theme of if the 'dark-theme' key exists in localStorage
+        if (localStorage.getItem('dark-theme')) {
+            document.body.classList.add('dark-theme');
+        }
+
+        // events
+        document.querySelector('.save').addEventListener('click', this.save.bind(this));
+        document.querySelector('.import').addEventListener('click', this.import.bind(this));
         this.theme = document.querySelector('.theme');
         this.theme.addEventListener('click', this.toggleTheme.bind(this));
         document.querySelector('.add-study').addEventListener('click', this.addStudy.bind(this));
+    }
+
+    save () {
+        let output = {
+            ver: APP_VERSION,
+            date: this.renderDate(new Date()),
+            data: this.list
+        }
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(output));
+        let dlAnchorElem = document.getElementById('downloadAnchorElem');
+        dlAnchorElem.setAttribute("href", dataStr);
+        dlAnchorElem.setAttribute("download", `frets_${this.renderDate(new Date())}.json`); // ``
+        dlAnchorElem.click();
+    }
+
+    import () {
+        let input = document.getElementById('file-input');
+        input.onchange = e => {
+            // getting a hold of the file reference
+            var file = e.target.files[0];
+            // setting up the reader
+            var reader = new FileReader();
+            reader.readAsText(file, 'UTF-8');
+            // here we tell the reader what to do when it's done reading...
+            reader.onload = readerEvent => {
+                var content = readerEvent.target.result; // this is the content!
+                try {
+                    let parsed = JSON.parse(content)
+                    state.forceSetState(parsed.data);
+                    this.list = state.getState();
+                    this.generateItems();
+                } catch (error) {
+                    console.log('Was not possible to import the file!')
+                }
+            }
+        }
+        input.click();
     }
 
     generateItems () {
@@ -32,10 +79,12 @@ export default class List {
     toggleTheme () {
         if (document.body.classList.contains('dark-theme')) {
             document.body.classList.remove('dark-theme');
+            localStorage.removeItem('dark-theme');
             this.theme.innerHTML = '&#127773;'
         } else {
             document.body.classList.add('dark-theme');
             this.theme.innerHTML = '&#127770;'
+            localStorage.setItem('dark-theme', true);
         }
     }
 
@@ -48,13 +97,21 @@ export default class List {
         return `${month}/${day}/${year}`;
     }
 
-    getIconPath(num) {
+    getIconPath (num) {
         let imgNum = Number(num) + 1;
         if (imgNum > 20) {
-          imgNum = imgNum % 20;
+            imgNum = imgNum % 20;
         }
         return imgNum;
-      }
+    }
+
+    checkDate (date) {
+        if (Object.prototype.toString.call(date) === '[object Date]') {
+            return date
+        } else {
+            return new Date(date);
+        }
+    }
 
     renderStudy (input, i) {
         var temp = document.getElementsByTagName("template")[0];
@@ -72,7 +129,7 @@ export default class List {
         refElems.forEach((elem) => { study.refs[elem.getAttribute('ref')] = elem })
 
         study.refs.title.textContent = input.title;
-        study.refs.date.textContent = this.renderDate(input.creation);
+        study.refs.date.textContent = this.renderDate(this.checkDate(input.creation));
         study.refs.favourite.innerHTML = input.favourite ? '&#128150;' : '&#128420;';
 
         let studyImg = input.img || this.getIconPath(i);
@@ -94,13 +151,15 @@ export default class List {
         let index = this.list.findIndex(e => e.studyId === id);
         this.list[index].favourite = !this.list[index].favourite;
         event.target.innerHTML = this.list[index].favourite ? '&#128150;' : '&#128420;';
+        state.forceSetState(this.list);
     }
 
     removeStudy (evt) {
         let { parent, id } = this.getParent(evt);
         let index = this.list.findIndex(e => e.studyId === id);
         this.list.splice(index, 1);
-        parent.remove()
+        parent.remove();
+        state.forceSetState(this.list);
     }
 
     openStudy (evt) {
