@@ -3,8 +3,8 @@
 :root {
   --font-color: black;
   --background-color: white;
-  --primary-color: #30336b;
-  --secondary-color: #eede4b;
+  --primary-color: #626384; /* #30336b */
+  --secondary-color: #30336b; /* #ecd92b */
   --light-grey: lightgrey;
   --detail: #666;
 }
@@ -87,7 +87,7 @@ input[type=radio] {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: VAR(--primary-color);
+  background: var(--secondary-color);
   cursor: pointer;
 }
 
@@ -95,12 +95,12 @@ input[type=radio] {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: VAR(--primary-color);
+  background: var(--secondary-color);
   cursor: pointer;
 }
 
 .bubble {
-  background: VAR(--primary-color);
+  background: var(--secondary-color);
   color: white;
   font-size: 66%;
   padding: 2px 8px;
@@ -116,7 +116,7 @@ input[type=radio] {
   position: absolute;
   width: 2px;
   height: 2px;
-  background: VAR(--primary-color);
+  background: VAR(--secondary-color);
   top: -1px;
   left: 50%;
 }

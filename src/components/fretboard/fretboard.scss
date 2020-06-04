@@ -13,7 +13,7 @@
 
 .fretboard-container {
   display: flex;
-  padding: 15px;
+  padding: 6px 15px;
   margin: 0 auto;
   max-width: 100%;
   width: 1200px;
@@ -178,6 +178,7 @@
 
 .selected {
   color: var(--secondary-color);
+  font-weight: 700;
 }
 
 .merge-btn,
@@ -235,7 +236,7 @@
     }
 
     &.selected {
-      background-color: orange;
+      background-color: var(--secondary-color);
     }
   }
 }
