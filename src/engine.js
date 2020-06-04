@@ -204,7 +204,7 @@ export const Fretboard = function (config) {
         let whatToShow = instance.layers[index].whatToShow;
         let size = instance.layers[index].size;
         let opacity = instance.layers[index].opacity;
-        if (data.fingering === 'all') {
+        if (data.fingering.length ===1 && data.fingering[0]=== 0) {
             for (let i = 0; i < notes.length; i++) {
                 let color;
                 if (data.combinedColors) {
@@ -221,23 +221,25 @@ export const Fretboard = function (config) {
                 }
             }
         } else {
-            let sequence = data.fingerings[data.fingering - 1].trim();
-            let triplets = sequence.split(" ");
             let items = [];
-            triplets.forEach((triplet) => {
-                const [string, note, interval] = triplet.split(":");
-                items.push({ string, note, interval });
+            data.fingering.forEach(fingering => {
+                let sequence = data.fingerings[fingering == 0 ? 0 : fingering - 1].trim();
+                let triplets = sequence.split(" ");
+                triplets.forEach((triplet) => {
+                    const [string, note, interval] = triplet.split(":");
+                    items.push({ string, note, interval });
+                });
             });
             for (let i = 0; i < items.length; i++) {
                 const ele = items[i];
                 let v = instance.layers[index].notesVisibility;
                 let visibility = [...v, ...v, ...v];
                 let color;
-                if (data.combinedColors && data.fingering==='all') {    // si rimuove la possibilità di avere la colorazione del merge per i singoli gradi della scala mergiata
+                /* if (data.combinedColors && data.fingering==='all') {    // si rimuove la possibilità di avere la colorazione del merge per i singoli gradi della scala mergiata
                     color = COLOURS_MERGE[data.combinedColors[i]];
-                } else {
-                    color = instance.layers[index].color === 'many' ? COLOURS[ele.interval] : (instance.layers[index].color === 'triads' ? (ele.interval === '1P' || ele.interval === '3m' || ele.interval === '3M' || ele.interval === '5P' ? COLOURS[ele.interval] : uniform) : uniform);
-                }
+                } else { */
+                color = instance.layers[index].color === 'many' ? COLOURS[ele.interval] : (instance.layers[index].color === 'triads' ? (ele.interval === '1P' || ele.interval === '3m' || ele.interval === '3M' || ele.interval === '5P' ? COLOURS[ele.interval] : uniform) : uniform);
+                //}
                 let info = instance.layers[index].color === 'many' || instance.layers[index].color === 'triads' ? (whatToShow === 'degrees' ? ele.interval : (whatToShow === 'notes' ? ele.note.substring(0, ele.note.length() - 1) : '')) : '';
                 if (visibility[i]) {
                     instance.addNoteOnString(ele.note, parseInt(ele.string), color, info, size, opacity);

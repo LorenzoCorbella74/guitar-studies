@@ -286,7 +286,7 @@ export default class MyFretboard {
             document.querySelectorAll('[data-reducedid]').forEach(element => {
                 element.addEventListener('click', evt => {
                     this.save({
-                        fingering: "all",
+                        fingering: [0],
                         parentId: parentId,
                         root: root,
                         scale: element.dataset.reducedid,
@@ -309,7 +309,7 @@ export default class MyFretboard {
             document.querySelectorAll('[data-extendedid]').forEach(element => {
                 element.addEventListener('click', evt => {
                     this.save({
-                        fingering: "all",
+                        fingering: [0],
                         parentId: parentId,
                         root: root,
                         scale: element.dataset.extendedid,
@@ -414,7 +414,7 @@ export default class MyFretboard {
             color: 'many',
             differences: 'own',
             note: '',
-            fingering: 'all',
+            fingering: [0],
             startScale: data.startScale
         };
         let data1 = Scale.get(toBeAdded.value1);
@@ -488,7 +488,7 @@ export default class MyFretboard {
             color: 'many',
             differences: 'own',
             notesForString: notes.length > 5 ? 3 : 2,
-            fingering: 'all',
+            fingering: [0],
             note: '',
             reduced: this.checkScale(Scale.reduced(data.scale)),
             extended: this.checkScale(Scale.extended(data.scale)),
@@ -532,7 +532,7 @@ export default class MyFretboard {
             arpeggio: 'min7',
             title: 'New layer',
             action: 'Save &#128076;',
-            fingering: 'all'
+            fingering: [0]
         };
         this.modal.open(def);
     }
@@ -683,9 +683,9 @@ export default class MyFretboard {
         });
         list.unshift('All');
         let fingeringList = parent.querySelector('.fingering-list');
-        fingeringList.innerHTML = list.map(e => `<span class="fingering-item">${e}</span>`).join('');
+        fingeringList.innerHTML = list.map(e => `<span class="fingering-item">${e === 0 ? 'all' : e}</span>`).join('');
 
-        fingeringList.children[data.fingering === 'all' ? 0 : data.fingering].classList.add('selected');
+        fingeringList.children[/* data.fingering === 'all' ? 0 : */ data.fingering].classList.add('selected');
 
         if (data.fingering !== 'all') {
             this.fretboardIstances[id].repaint();
@@ -696,11 +696,16 @@ export default class MyFretboard {
             const fingering = fingeringList.children[i];
             fingering.addEventListener('click', (event) => {
                 event.stopPropagation();
-                for (let item of fingeringList.children) {
+                /* for (let item of fingeringList.children) {
                     item.classList.remove('selected');
-                }
+                } */
                 fingering.classList.toggle('selected');
-                data.fingering = i === 0 ? 'all' : i;
+                // data.fingering = i === 0 ? 'all' : i;
+                if (data.fingering.includes(i)){
+                    data.fingering.splice(data.fingering.indexOf(i), 1);
+                } else {
+                    data.fingering.push(i);
+                }
                 this.fretboardIstances[id].repaint();
             });
         }
@@ -715,3 +720,4 @@ export default class MyFretboard {
         document.querySelector(`[data-id='${parentId}'] .col-output .scale-title`).innerHTML = title;
     }
 }
+
