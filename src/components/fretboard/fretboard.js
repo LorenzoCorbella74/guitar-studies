@@ -353,7 +353,7 @@ export default class MyFretboard {
 
     // callback from modal choice
     save (data) {
-        console.log('Choose modal: ', data);
+        // console.log('Choose modal: ', data);
         let { parent, id } = this.getParent(null, data.parentId);
         data.value = `${data.root} ${data.scale}`;
         if (data.merge) {   // MERGE SCALES
@@ -428,7 +428,7 @@ export default class MyFretboard {
         let data1 = Scale.get(toBeAdded.value1);
         let data2 = Scale.get(toBeAdded.value2);
         toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort();
-        toBeAdded.notesForString = data.notesForString || toBeAdded.notes.length > 5 ? 3 : 2,
+        toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
         toBeAdded.intervals = this.getIntervalsOfMerged(toBeAdded.notes);// sono riferiti alla scala di partenza
         toBeAdded.combinedColors = createMergeColors(toBeAdded.notes, data1.notes, data2.notes);
         toBeAdded.fingerings = generateFingerings(toBeAdded);
@@ -445,9 +445,7 @@ export default class MyFretboard {
         li.querySelector('.delete-btn').addEventListener('click', (event) => {
             this.deleteLayer(event, layerId, parentId);
         });
-        // this.updateTitle(label_merged_layer, parentId);
-        // this.updateLayerInfo(toBeAdded, parentId);
-        this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente e si apre la sidebar dei settings
+        this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente
     }
 
     checkScale (scales) {
@@ -495,7 +493,7 @@ export default class MyFretboard {
             opacity: 1,
             color: 'many',
             differences: 'own',
-            notesForString: data.notesForString || notes.length > 5 ? 3 : 2,
+            notesForString: data.notesForString || (notes.length > 5 ? 3 : 2),
             fingering: data.fingering || 'all',
             note: '',
             reduced: this.checkScale(Scale.reduced(data.scale)),
@@ -523,8 +521,6 @@ export default class MyFretboard {
         li.querySelector('.delete-btn').addEventListener('click', (event) => {
             this.deleteLayer(event, layerId, parentId);
         });
-        // this.updateTitle(data.value, parentId);
-        // this.updateLayerInfo(toBeAdded, parentId);
         this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente quando si aggiunge
     }
 
@@ -696,12 +692,14 @@ export default class MyFretboard {
             a++;
             return a
         });
+        let listOfOptions = [2,3,4];
         list.unshift('All');
         let fingeringList = parent.querySelector('.fingering-list');
-        let optionsFingering = parent.querySelectorAll('.layers-header div')[1];
+        let optionsFingering = parent.querySelector('.options-fingering');
         fingeringList.innerHTML = list.map(e => `<span class="fingering-item">${e}</span>`).join('');
-
         fingeringList.children[data.fingering === 'all' ? 0 : data.fingering].classList.add('selected');
+
+        optionsFingering.innerHTML = listOfOptions.map(e => `<span class="fingering-item" data-id="${e}"> ${e} </span>`).join('|') + 'nps';
 
         for (let option of optionsFingering.children) {
             if (Number(option.dataset.id) === data.notesForString) {
