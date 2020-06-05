@@ -138,7 +138,7 @@ export default class MyFretboard {
             where: `[data-id='${id}'] .col-output .fret`,
             fretWidth: window.innerWidth < 600 ? 34 : 46,
             fretHeight: input.fretHeight || 32,
-            frets: input.frets || window.innerWidth > 1024 ? 15 : 12
+            frets: input.frets || window.innerWidth > 1024 ? 16 : 12
         });
         this.fretboardIstances[id].drawBoard();
         this.fretboardIstances[id].layers = [];
@@ -423,12 +423,12 @@ export default class MyFretboard {
             differences: 'own',
             note: '',
             fingering: data.fingering || 'all',
-            startScale: data.startScale,
-            notesForString : data.notesForString || toBeAdded.notes.length > 5 ? 3 : 2,
+            startScale: data.startScale
         };
         let data1 = Scale.get(toBeAdded.value1);
         let data2 = Scale.get(toBeAdded.value2);
         toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort();
+        toBeAdded.notesForString = data.notesForString || toBeAdded.notes.length > 5 ? 3 : 2,
         toBeAdded.intervals = this.getIntervalsOfMerged(toBeAdded.notes);// sono riferiti alla scala di partenza
         toBeAdded.combinedColors = createMergeColors(toBeAdded.notes, data1.notes, data2.notes);
         toBeAdded.fingerings = generateFingerings(toBeAdded);
@@ -445,8 +445,8 @@ export default class MyFretboard {
         li.querySelector('.delete-btn').addEventListener('click', (event) => {
             this.deleteLayer(event, layerId, parentId);
         });
-        this.updateTitle(label_merged_layer, parentId);
-        this.updateLayerInfo(toBeAdded, parentId);
+        // this.updateTitle(label_merged_layer, parentId);
+        // this.updateLayerInfo(toBeAdded, parentId);
         this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente e si apre la sidebar dei settings
     }
 
@@ -523,8 +523,8 @@ export default class MyFretboard {
         li.querySelector('.delete-btn').addEventListener('click', (event) => {
             this.deleteLayer(event, layerId, parentId);
         });
-        this.updateTitle(data.value, parentId);
-        this.updateLayerInfo(toBeAdded, parentId);
+        // this.updateTitle(data.value, parentId);
+        // this.updateLayerInfo(toBeAdded, parentId);
         this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente quando si aggiunge
     }
 
@@ -676,7 +676,12 @@ export default class MyFretboard {
         selected.color = 'many';
         selected.opacity = 1;
         this.fretboardIstances[parentId].layers.push(selected);
-        this.updateTitle(selected.value, parentId);
+        if(selected.merge){
+            let title = `${selected.startScale} merged with ${selected.value}`;
+            this.updateTitle(title, parentId);
+        } else {
+            this.updateTitle(selected.value, parentId);
+        }
         this.updateLayerInfo(selected, parentId);
         this.updateFingeringBtns(event, selected);
         this.calculateAssociation(event);
