@@ -85,7 +85,7 @@ export default class MyFretboard {
             frets: copy
         }
         state.saveOrUpdate(general);
-        this.app.changeRoute('list');
+        this.app.goTo('list');
     }
 
     resize () {
@@ -422,16 +422,16 @@ export default class MyFretboard {
             color: 'many',
             differences: 'own',
             note: '',
-            fingering: 'all',
-            startScale: data.startScale
+            fingering: data.fingering || 'all',
+            startScale: data.startScale,
+            notesForString : data.notesForString || toBeAdded.notes.length > 5 ? 3 : 2,
         };
         let data1 = Scale.get(toBeAdded.value1);
         let data2 = Scale.get(toBeAdded.value2);
         toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort();
         toBeAdded.intervals = this.getIntervalsOfMerged(toBeAdded.notes);// sono riferiti alla scala di partenza
         toBeAdded.combinedColors = createMergeColors(toBeAdded.notes, data1.notes, data2.notes);
-        toBeAdded.notesForString = toBeAdded.notes.length > 5 ? 3 : 2,
-            toBeAdded.fingerings = generateFingerings(toBeAdded);
+        toBeAdded.fingerings = generateFingerings(toBeAdded);
         console.log(`Layer merged ${toBeAdded.id}`, toBeAdded);
         this.fretboardIstances[parentId].layers.push(toBeAdded);
         this.fretboardIstances[parentId].addMergeLayer(toBeAdded);
@@ -495,8 +495,8 @@ export default class MyFretboard {
             opacity: 1,
             color: 'many',
             differences: 'own',
-            notesForString: notes.length > 5 ? 3 : 2,
-            fingering: 'all',
+            notesForString: data.notesForString || notes.length > 5 ? 3 : 2,
+            fingering: data.fingering || 'all',
             note: '',
             reduced: this.checkScale(Scale.reduced(data.scale)),
             extended: this.checkScale(Scale.extended(data.scale)),
@@ -698,11 +698,19 @@ export default class MyFretboard {
 
         fingeringList.children[data.fingering === 'all' ? 0 : data.fingering].classList.add('selected');
 
+        for (let option of optionsFingering.children) {
+            if (Number(option.dataset.id) === data.notesForString) {
+                option.classList.add('selected');
+            } else {
+                option.classList.remove('selected');
+            }
+        }
+
         if (data.fingering !== 'all') {
             this.fretboardIstances[id].repaint();
         }
 
-        // EVENTS for 
+        // EVENTS for options of fingering  (2,3,4 notes for string)
         for (let i = 0; i < optionsFingering.children.length; i++) {
             const option = optionsFingering.children[i];
             option.addEventListener('click', (event) => {
@@ -717,7 +725,7 @@ export default class MyFretboard {
             });
         }
 
-        // EVENTS
+        // EVENTS for what number of fingering
         for (let i = 0; i < fingeringList.children.length; i++) {
             const fingering = fingeringList.children[i];
             fingering.addEventListener('click', (event) => {

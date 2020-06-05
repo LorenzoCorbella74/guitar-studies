@@ -4,7 +4,6 @@ import { allNotes, allNotesEnh, COLOURS, COLOURS_MERGE, Tunings } from './consta
 
 /* import { Scale } from "@tonaljs/tonal"; */
 
-
 /* -------------------------------------------------------------------------- */
 
 function getStartOctave (startNote) {
@@ -545,8 +544,7 @@ export const Fretboard = function (config) {
         instance.paint();
     };
 
-
-    /* è utile ??? cancella le note, cancella la tastiera e la ricostituisce. */
+    /* è usato nel .set() cancella le note, cancella la tastiera e la ricostituisce. */
     instance.clear = function () {
         instance.clearNotes();
         const el = document.getElementById(id);

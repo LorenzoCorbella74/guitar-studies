@@ -166,11 +166,11 @@ export default class List {
     openStudy (evt) {
         let { id } = this.getParent(evt);
         let index = this.list.findIndex(e => e.studyId === id);
-        this.app.changeRoute('study', this.list[index]);
+        this.app.goTo('study', this.list[index]);
     }
 
     addStudy (evt) {
-        this.app.changeRoute('study', {});
+        this.app.goTo('study', {});
     }
 
 }
