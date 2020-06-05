@@ -32,7 +32,7 @@
         font-weight: bold; */
         &:hover,
         &:focus {
-            color: var(--primary-color);
+            color: var(--font-color);
             text-decoration: none;
             cursor: pointer;
         }
@@ -42,7 +42,7 @@
     .save-note {
         font-weight: bold;
         text-align: right;
-        color: var(--primary-color);
+        color: var(--font-color);
 
         &:hover,
         &:focus {

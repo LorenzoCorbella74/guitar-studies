@@ -10,10 +10,10 @@
 }
 
 .dark-theme {
-  --font-color: #aafdeb;
-  --background-color: #444d63;
+  --font-color: #f2ee8a;
+  --background-color: #3e4658;
   --primary-color: #30336b;
-  --secondary-color: rgb(216, 187, 0);
+  --secondary-color: rgb(0, 178, 216);
   --light-grey: #c3c3c3;
   --detail: #fefefe;
 }
