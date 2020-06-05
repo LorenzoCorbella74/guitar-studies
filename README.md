@@ -32,6 +32,5 @@ Guitar images courtesy of [Pexels](https://www.pexels.com).
 - no BE just localstorage
 - [tonal](https://github.com/danigb/tonal)
 
-
 ## License
 This project is licensed under the MIT License.
