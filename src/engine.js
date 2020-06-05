@@ -29,7 +29,7 @@ function generateScales (notes) {
     });
     derived.unshift(derived.pop());
     derived = derived.map(e => {
-        return [...e, ...e, ...e]; // si considera 3 ottave
+        return [...e, ...e, ...e, ...e]; // si considera 4 ottave
     });
     return derived;
 }
@@ -41,8 +41,17 @@ function getIntervalOfNote (note, all) {
 
 // TODO: 
 // E minor #7M pentatonic oppure Eb phrygian dominant
-// 1P	3m	4P	5P	7M
-// E	G	A	B	D#  Salto del C !!! -> 
+
+function calculateNumOverStrings(num){
+    let out;
+    switch (num) {
+        case 3: out = 18;break;
+        case 4: out = 24;break;
+        case 2: out = 12;break;
+        default:out = 18;break;
+    }
+    return out;
+}
 
 function generateStrOfNotes (arr, data) {
     let numberOfStrings = 6;
@@ -55,7 +64,7 @@ function generateStrOfNotes (arr, data) {
     }
     let outputStr = "";
     let alreadyDone = true; // flag for not double jump pn C, C#
-    for (let ns = 0; ns < arr.length - 3; ns++) {   // per tutte le note (21-3 per 3(18) nps o 18-3 per 2nps(12))
+    for (let ns = 0; ns < calculateNumOverStrings(data.notesForString); ns++) {   // per tutte le note (21-3 per 3(18) nps o 18-3 per 2nps(12)) per tutte le note (28-4 per 3(24) nps o 18-3 per 2nps(12))
         let note = arr[ns];
         if (note.includes('C') && ns !== 0 && ns !== 1 && !alreadyDone) {   // se si incontra un C che non sia come 1 o 2° nota di una scala e non consecutive
             runningOctave++;
@@ -231,7 +240,7 @@ export const Fretboard = function (config) {
             for (let i = 0; i < items.length; i++) {
                 const ele = items[i];
                 let v = instance.layers[index].notesVisibility;
-                let visibility = [...v, ...v, ...v];
+                let visibility = [...v, ...v, ...v, ...v];
                 let color;
                 if (data.combinedColors && data.fingering==='all') {    // si rimuove la possibilità di avere la colorazione del merge per i singoli gradi della scala mergiata
                     color = COLOURS_MERGE[data.combinedColors[i]];
@@ -255,16 +264,6 @@ export const Fretboard = function (config) {
     instance.addLayer = function (data) {
         instance.addNotes(data);
     };
-
-    // TODO: accordi e scale 3 note per stringa
-    // genera una scala a partire da una sequenza di stringa:nota -> utile per gli accordi
-    /* instance.placeNotes = function (sequence) {
-        let pairs = sequence.split(" ");
-        pairs.forEach(function (pair, i) {
-            const [string, note] = pair.split(":");
-            instance.addNoteOnString(note, parseInt(string)); // info, size, opacity
-        });
-    }; */
 
     // pulisce cancellando tutte le note e le informazioni delle note 
     instance.clearNotes = function () {

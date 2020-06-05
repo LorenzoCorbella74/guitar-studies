@@ -64,13 +64,15 @@ export default class MyFretboard {
         for (const key in copy) {
             const fret = copy[key]; // si rimuove tutto ciò che sarà ricreato dinamicamente
             delete fret.notes;
-            delete copy.intervals;
-            delete copy.reduced;
-            delete copy.extended;
-            delete copy.scaleChords;
-            delete copy.modeNames;
-            delete copy.fingerings;
-            delete copy.svgContainer;
+            delete fret.svgContainer;
+            fret.layers.forEach(element => {
+                delete element.intervals;
+                delete element.reduced;
+                delete element.extended;
+                delete element.scaleChords;
+                delete element.modeNames;
+                delete element.fingerings;
+            });
         }
         let general = {
             studyId: this.studyId,
@@ -669,8 +671,10 @@ export default class MyFretboard {
         let selected = this.fretboardIstances[parentId].layers.splice(index, 1)[0];
         this.fretboardIstances[parentId].layers.forEach(layer => {
             layer.color = 'one';
+            layer.opacity = 0.35;
         });
         selected.color = 'many';
+        selected.opacity = 1;
         this.fretboardIstances[parentId].layers.push(selected);
         this.updateTitle(selected.value, parentId);
         this.updateLayerInfo(selected, parentId);
@@ -689,12 +693,28 @@ export default class MyFretboard {
         });
         list.unshift('All');
         let fingeringList = parent.querySelector('.fingering-list');
+        let optionsFingering = parent.querySelectorAll('.layers-header div')[1];
         fingeringList.innerHTML = list.map(e => `<span class="fingering-item">${e}</span>`).join('');
 
         fingeringList.children[data.fingering === 'all' ? 0 : data.fingering].classList.add('selected');
 
         if (data.fingering !== 'all') {
             this.fretboardIstances[id].repaint();
+        }
+
+        // EVENTS for 
+        for (let i = 0; i < optionsFingering.children.length; i++) {
+            const option = optionsFingering.children[i];
+            option.addEventListener('click', (event) => {
+                event.stopPropagation();
+                for (let item of optionsFingering.children) {
+                    item.classList.remove('selected');
+                }
+                option.classList.toggle('selected');
+                data.notesForString = Number(option.dataset.id);
+                data.fingerings = generateFingerings(data);
+                this.fretboardIstances[id].repaint();
+            });
         }
 
         // EVENTS
