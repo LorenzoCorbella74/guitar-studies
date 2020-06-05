@@ -138,7 +138,7 @@ export default class MyFretboard {
             where: `[data-id='${id}'] .col-output .fret`,
             fretWidth: window.innerWidth < 600 ? 34 : 46,
             fretHeight: input.fretHeight || 32,
-            frets: input.frets || window.innerWidth > 1024 ? 16 : 12
+            frets: input.frets || window.innerWidth > 1024 ? 15 : 12
         });
         this.fretboardIstances[id].drawBoard();
         this.fretboardIstances[id].layers = [];
