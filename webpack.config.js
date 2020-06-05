@@ -51,7 +51,8 @@ const config = {
   plugins: [
     new HtmlWebpackPlugin({
       appMountId: 'app',
-      filename: 'index.html'
+      filename: 'index.html',
+      title:'Guitar fretboards'
     }),
     new MiniCssExtractPlugin()
   ]
