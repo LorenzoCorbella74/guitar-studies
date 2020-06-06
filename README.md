@@ -15,22 +15,25 @@ For a demo please go [here](https://laughing-mccarthy-3ab279.netlify.app/).
 Guitar images courtesy of [Pexels](https://www.pexels.com).  
 
 ## Features
-- [x] can display fingerings according to tuning, root, scales (2,3,4 notes per strings)
-- [x] labels with notes'names or degrees
-- [x] can merge scale/arpeggios to have a graphical comparison of the notes in common and distint on each scale. 
+- [x] can display fingerings according to tuning, root, scales 
+- [x] scale fingerings are shown on the entire fretboard or for single mode of the scale with 2, 3 and 4 notes for string.
+- [x] labels with notes'names or degrees and settings panel to customize notes' size and opacity.
+- [x] can merge scales with a graphical comparison of the notes in common and distint on each scale. 
+- [x] fast switch between scale and relative arpeggio
 - [x] responsive svg fretboards
 - [x] persistence with localstorage with save and import functionalities
+- [ ] can play guitar scales via [soundfont-player](https://github.com/danigb/soundfont-player)
 - [ ] Modal interchange table
 - [ ] Circle of Fifths
 - [ ] Chord progressions  
-- [ ] can play guitar scales and chord progressions via [soundfont-player](https://github.com/danigb/soundfont-player)
 
 ## Built With
-- HTML5
+- HTML5, SASS
 - no icons just HTML5 EMOJI !!
-- no FE Frameworks!!!! just Vanilla ES6 Javascript
-- no BE just localstorage
+- no FE Frameworks, just Vanilla ES6 Javascript !!
+- no BE just localstorage !!
 - [tonal](https://github.com/danigb/tonal)
+- Webpack 4
 
 ## License
 This project is licensed under the MIT License.

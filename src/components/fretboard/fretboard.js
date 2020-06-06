@@ -130,6 +130,7 @@ export default class MyFretboard {
         fretboard.querySelector('.transpose-btn').addEventListener('click', (evt) => this.transposeLayers.call(this, evt));
         fretboard.querySelector('.remove-fret-btn').addEventListener('click', (evt) => this.removeFretboard.call(this, evt));
         fretboard.querySelector('.scale-info-btn').addEventListener('click', (evt) => this.toggleAssociation.call(this, evt));
+        fretboard.querySelector('.scale-toggle-btn').addEventListener('click', (evt) => this.toggleScale.call(this, evt));
         fretboard.querySelector('.scale-play-btn').addEventListener('click', (evt) => this.playScale.call(this, evt));
         fretboard.querySelector('.scale-note-btn').addEventListener('click', (evt) => this.openNoteModal.call(this, evt));
 
@@ -230,9 +231,24 @@ export default class MyFretboard {
     playScale (evt) {
         let { id } = this.getParent(evt);
         let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
-        let data = this.fretboardIstances[id].layers[index];
-        console.log(data);
-        // TODO:
+        let layer = this.fretboardIstances[id].layers[index];
+        console.log(layer); // TODO:
+    }
+
+    toggleScale (evt) {
+        let { parent, id } = this.getParent(evt);
+        let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
+        let layer = this.fretboardIstances[id].layers[index];
+        parent.querySelector('.scale-toggle-btn').innerHTML = layer.type === 'scale' ? '&#127925;' : '&#127926;';
+        if (layer.type === 'scale') {
+            layer.notesVisibility = layer.intervals.map(e => (e.includes('1') || e.includes('3') || e.includes('5') || e.includes('7')) ? 1 : 0);
+            layer.type = 'arpeggio';
+        } else {
+            layer.notesVisibility = this.getNoteVisibilityRange(layer.notes);
+            layer.type = 'scale';
+        }
+        this.fretboardIstances[id].repaint();
+        this.updateLayerInfo(layer, id);
     }
 
     openNoteModal (evt) {
@@ -415,12 +431,12 @@ export default class MyFretboard {
             merge: true,
             notesVisibility: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // TODO:,
             tuning: data.tuning,
-            type: data.type,
+            type: data.type || 'scale',
             whatToShow: data.whatToShow,
             size: data.size || 1,
             opacity: data.opacity || 1,
             color: data.color || 'many',
-            differences: data.differences ||'own',
+            differences: data.differences || 'own',
             note: '',   // testo info 
             fingering: data.fingering || 'all',
             startScale: data.startScale
@@ -487,12 +503,12 @@ export default class MyFretboard {
             visible: data.visible || true,
             notesVisibility: this.getNoteVisibilityRange(notes),
             tuning: data.tuning,
-            type: data.type,
+            type: data.type || 'scale',
             whatToShow: data.whatToShow,
             size: data.size || 1,
             opacity: data.opacity || 1,
             color: data.color || 'many',
-            differences: data.differences ||'own',
+            differences: data.differences || 'own',
             notesForString: data.notesForString || (notes.length > 5 ? 3 : 2),
             fingering: data.fingering || 'all',
             note: '',
@@ -605,6 +621,7 @@ export default class MyFretboard {
         this.removeFingeringBtn(parent);
         parent.querySelector('.settings-btn').style.visibility = 'hidden';
         parent.querySelector('.scale-info-btn').style.visibility = 'hidden';
+        parent.querySelector('.scale-toggle-btn').style.visibility = 'hidden';
         parent.querySelector('.scale-play-btn').style.visibility = 'hidden';
         parent.querySelector('.scale-note-btn').style.visibility = 'hidden';
     }
@@ -655,6 +672,7 @@ export default class MyFretboard {
         // BTN
         parent.querySelector('.settings-btn').style.visibility = 'inherit';
         parent.querySelector('.scale-info-btn').style.visibility = 'inherit';
+        parent.querySelector('.scale-toggle-btn').style.visibility = 'inherit';
         parent.querySelector('.scale-play-btn').style.visibility = 'inherit';
         parent.querySelector('.scale-note-btn').style.visibility = 'inherit';
 
@@ -667,12 +685,12 @@ export default class MyFretboard {
         let selected = this.fretboardIstances[parentId].layers.splice(index, 1)[0];
         this.fretboardIstances[parentId].layers.forEach(layer => {
             layer.color = 'one';
-            layer.opacity = 0.35;
+            layer.opacity = 0.25;
         });
         selected.color = 'many';
         selected.opacity = 1;
         this.fretboardIstances[parentId].layers.push(selected);
-        if(selected.merge){
+        if (selected.merge) {
             let title = `${selected.startScale} merged with ${selected.value}`;
             this.updateTitle(title, parentId);
         } else {
@@ -692,7 +710,7 @@ export default class MyFretboard {
             a++;
             return a
         });
-        let listOfOptions = [2,3,4];
+        let listOfOptions = [2, 3, 4];
         list.unshift('All');
         let fingeringList = parent.querySelector('.fingering-list');
         let optionsFingering = parent.querySelector('.options-fingering');
