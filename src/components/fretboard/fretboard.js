@@ -90,7 +90,7 @@ export default class MyFretboard {
 
     resize () {
         // console.log(window.innerHeight, window.innerWidth);
-        this.isSmall = window.innerWidth < 1024;
+        this.isSmall = window.innerWidth < 1025;
         if (this.app.currentRoute === 'study') {
             for (const key in this.fretboardIstances) {
                 const fretboard = this.fretboardIstances[key];
@@ -139,7 +139,7 @@ export default class MyFretboard {
             where: `[data-id='${id}'] .col-output .fret`,
             fretWidth: window.innerWidth < 600 ? 34 : 46,
             fretHeight: input.fretHeight || 32,
-            frets: input.frets || window.innerWidth > 1024 ? 15 : 12
+            frets: input.frets || window.innerWidth > 1025 ? 15 : 12
         });
         this.fretboardIstances[id].drawBoard();
         this.fretboardIstances[id].layers = [];
@@ -544,12 +544,12 @@ export default class MyFretboard {
         let { parent } = this.getParent(evt);
         let def = {
             parentId: parent.dataset.id,
-            type: 'scale',          // can be scale | arpeggio - deprecated
+            type: 'scale',          // can be scale | arpeggio 
             whatToShow: 'degrees',  // can be notes | degrees | none
             tuning: 'E_std',
             root: 'A',
-            scale: 'dorian',        // deprecated
-            arpeggio: 'min7',
+            scale: 'dorian',      
+            arpeggio: 'min7',         // deprecated
             title: 'New layer',
             action: 'Save &#128076;',
             fingering: 'all'
@@ -700,7 +700,6 @@ export default class MyFretboard {
         this.updateFingeringBtns(event, selected);
         this.calculateAssociation(event);
         this.fretboardIstances[parentId].repaint();
-        // this.settings.open(this.fretboardIstances[parentId].layers[index], this.fretboardIstances[parentId]);
     }
 
     updateFingeringBtns (event, data) {
