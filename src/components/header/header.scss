@@ -4,6 +4,9 @@
     margin: 0 auto;
     max-width: 1200px;
     width: 100%;
+    position: sticky;
+    top: 0;
+    transition: top 0.65s; /* Transition effect when sliding down (and up) */
     justify-content: space-between;
     border-bottom: 1px solid var(--light-grey);
     background-color: var(--background-color);

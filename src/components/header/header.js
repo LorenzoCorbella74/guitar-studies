@@ -7,6 +7,7 @@ export default class Header {
 
         this.element = document.getElementById(placeholderId);
         this.element.innerHTML = template;  // Load template into placeholder element
+        this.prevScrollpos = window.pageYOffset;
 
         // Find all refs in component
         this.refs = {}
@@ -18,6 +19,16 @@ export default class Header {
         document.getElementById('remove-general-btn').addEventListener('click', removeCallback);
         document.getElementById('back-btn').addEventListener('click', backToListCallback);
         document.getElementById('tags-general-btn').addEventListener('click', this.toggleTabsPanel.bind(this));
+
+        window.onscroll = () => {
+            var currentScrollPos = window.pageYOffset;
+            if (this.prevScrollpos > currentScrollPos) {
+                this.element.style.top = '0';
+            } else {
+                this.element.style.top = '-98px';
+            }
+            this.prevScrollpos = currentScrollPos;
+        }
 
         // SLIDER RANGE
         const header = document.querySelector('.header');
@@ -52,7 +63,7 @@ export default class Header {
         this.renderTags();
     }
 
-    renderTags() {
+    renderTags () {
         this.taglist.innerHTML = '';
         this.tags.map((item, index) => {
             this.taglist.innerHTML += `<li>${item} <span data-tagid="${index}">&times;</span></li>`;
@@ -64,17 +75,17 @@ export default class Header {
         });
     }
 
-    removeTag(i) {
+    removeTag (i) {
         this.tags = this.tags.filter(item => this.tags.indexOf(item) != i);
         this.renderTags();
     }
 
-    toggleTabsPanel() {
+    toggleTabsPanel () {
         document.querySelector('.header-description').classList.toggle('hide');
         document.querySelector('.header-tags-container').classList.toggle('hide');
     }
 
-    setBubbleProgress() {
+    setBubbleProgress () {
         const val = this.slider.value;
         const min = this.slider.min ? this.slider.min : 0;
         const max = this.slider.max ? this.slider.max : 100;
