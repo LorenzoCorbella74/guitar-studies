@@ -246,7 +246,7 @@ export const Fretboard = function (config) {
                 } else {
                     color = instance.layers[index].color === 'many' ? COLOURS[ele.interval] : (instance.layers[index].color === 'triads' ? (ele.interval === '1P' || ele.interval === '3m' || ele.interval === '3M' || ele.interval === '5P' ? COLOURS[ele.interval] : uniform) : uniform);
                 }
-                let info = instance.layers[index].color === 'many' || instance.layers[index].color === 'triads' ? (whatToShow === 'degrees' ? ele.interval : (whatToShow === 'notes' ? ele.note.substring(0, ele.note.length() - 1) : '')) : '';
+                let info = instance.layers[index].color === 'many' || instance.layers[index].color === 'triads' ? (whatToShow === 'degrees' ? ele.interval : (whatToShow === 'notes' ? ele.note.substring(0, ele.note.length - 1) : '')) : '';
                 if (visibility[i]) {
                     instance.addNoteOnString(ele.note, parseInt(ele.string), color, info, size, opacity);
                 }

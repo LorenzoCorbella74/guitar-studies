@@ -319,12 +319,13 @@
   overflow: visible;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
+  font-size: 80%;
 }
 
-/* .dropdown:hover .dropdown-content{
+.dropdown:hover .dropdown-content{
   display: flex;
   flex-direction: column;
-} */
+}
 
 .dropdown-content span {
   padding: 6px 2px;
@@ -335,7 +336,7 @@
   font-weight: 700;
 }
 
-.show {
+/* .show {
   display: flex;
   flex-direction: column;
-}
+} */

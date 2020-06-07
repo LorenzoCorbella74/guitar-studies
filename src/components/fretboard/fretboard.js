@@ -530,29 +530,29 @@ export default class MyFretboard {
         this.fretboardIstances[parentId].addLayer(toBeAdded);
         this.fretboardIstances[parentId].paint();
 
-        li.querySelector('.dropbtn').addEventListener('click', (event) => {
+        /* li.querySelector('.dropbtn').addEventListener('click', (event) => {
             li.querySelector('.dropdown-content').classList.toggle("show");
-        });
+        }); */
         li.querySelector('.layer-label').addEventListener('click', (event) => {
             this.selectLayer(event, layerId, parentId);
         });
         li.querySelector('.merge-btn').addEventListener('click', (event) => {
-            li.querySelector('.dropdown-content').classList.toggle("show");
+            // li.querySelector('.dropdown-content').classList.toggle("show");
             this.mergeLayer(event, layerId, parentId);
         });
         li.querySelector('.edit-btn').addEventListener('click', (event) => {
-            li.querySelector('.dropdown-content').classList.toggle("show");
+            // li.querySelector('.dropdown-content').classList.toggle("show");
             this.editLayer(event, layerId, parentId);
         });
         li.querySelector('.visibility-btn').addEventListener('click', (event) => {
             this.toggleLayerVisibility(event, layerId, parentId);
         });
         li.querySelector('.delete-btn').addEventListener('click', (event) => {
-            li.querySelector('.dropdown-content').classList.toggle("show");
+            // li.querySelector('.dropdown-content').classList.toggle("show");
             this.deleteLayer(event, layerId, parentId);
         });
         li.querySelector('.move-btn').addEventListener('click', (event) => {
-            li.querySelector('.dropdown-content').classList.toggle("show");
+            // li.querySelector('.dropdown-content').classList.toggle("show");
             this.makeNewFretWith(event, layerId, parentId);
         });
         this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente quando si aggiunge
