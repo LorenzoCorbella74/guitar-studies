@@ -154,6 +154,8 @@ export default class MyFretboard {
             this.setBubble(slider, bubble, id);
         });
         this.setBubble(slider, bubble, id);
+
+        return fretboard;
     }
 
     removeAllFretboard () {
@@ -484,11 +486,16 @@ export default class MyFretboard {
         li.dataset.id = layerId;
         li.innerHTML = `
             <span class="layer-label">${data.value}</span>
-            <span class="merge-btn"> &#128279; </span>
-            <span class="edit-btn"> &#128295; </span>
             <span class="visibility-btn"> &#9899; </span>
-            <span class="delete-btn"> &#128298; </span>
-            `;
+            <div class="dropdown">
+                <div class="dropbtn">&#128296;</div>
+                <div class="dropdown-content">
+                <span class="edit-btn"> &#128295; Edit</span>
+                <span class="delete-btn"> &#128298; Delete</span>
+                <span class="merge-btn"> &#128279; Merge with </span>
+                <span class="move-btn"> &#9193; Make new fret with</span>
+                </div>
+            </div>`;
         list.appendChild(li);
         let { notes, intervals } = Scale.get(data.value);
         notes = notes.map(e => safeNotes(e));
@@ -522,20 +529,31 @@ export default class MyFretboard {
         this.fretboardIstances[parentId].layers.push(toBeAdded);
         this.fretboardIstances[parentId].addLayer(toBeAdded);
         this.fretboardIstances[parentId].paint();
+
+        li.querySelector('.dropbtn').addEventListener('click', (event) => {
+            li.querySelector('.dropdown-content').classList.toggle("show");
+        });
         li.querySelector('.layer-label').addEventListener('click', (event) => {
             this.selectLayer(event, layerId, parentId);
         });
         li.querySelector('.merge-btn').addEventListener('click', (event) => {
+            li.querySelector('.dropdown-content').classList.toggle("show");
             this.mergeLayer(event, layerId, parentId);
         });
         li.querySelector('.edit-btn').addEventListener('click', (event) => {
+            li.querySelector('.dropdown-content').classList.toggle("show");
             this.editLayer(event, layerId, parentId);
         });
         li.querySelector('.visibility-btn').addEventListener('click', (event) => {
             this.toggleLayerVisibility(event, layerId, parentId);
         });
         li.querySelector('.delete-btn').addEventListener('click', (event) => {
+            li.querySelector('.dropdown-content').classList.toggle("show");
             this.deleteLayer(event, layerId, parentId);
+        });
+        li.querySelector('.move-btn').addEventListener('click', (event) => {
+            li.querySelector('.dropdown-content').classList.toggle("show");
+            this.makeNewFretWith(event, layerId, parentId);
         });
         this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente quando si aggiunge
     }
@@ -548,7 +566,7 @@ export default class MyFretboard {
             whatToShow: 'degrees',  // can be notes | degrees | none
             tuning: 'E_std',
             root: 'A',
-            scale: 'dorian',      
+            scale: 'dorian',
             arpeggio: 'min7',         // deprecated
             title: 'New layer',
             action: 'Save &#128076;',
@@ -663,6 +681,14 @@ export default class MyFretboard {
         this.updateTitle('', parentId);
         this.updateLayerInfo(null, parentId);
         this.removeFingeringBtn(parent);
+    }
+
+    makeNewFretWith (evt, id, parentId) {
+        let theOneToReplicate = Object.assign({}, this.fretboardIstances[parentId].layers.find(s => s.id === id));
+        let fretboard = this.addFretboard({});
+        delete theOneToReplicate.id;    // fresh new layer
+        theOneToReplicate.parentId = fretboard.dataset.id;  // in the new parent fret
+        this.renderLayer(theOneToReplicate);
     }
 
     selectLayer (event, id, parentId) {

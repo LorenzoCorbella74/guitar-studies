@@ -184,15 +184,22 @@
 
 .merge-btn,
 .edit-btn,
+.move-btn,
 .delete-btn,
 .visibility-btn,
 .settings-btn {
   align-content: flex-start;
   margin-left: 8px;
   margin-right: 8px;
+  font-weight: 400;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.visibility-btn {
   font-weight: 700;
   transition: 0.5s ease;
-
   &:hover {
     cursor: pointer;
     -webkit-transform: scale(1.25);
@@ -284,4 +291,51 @@
   .note {
     border-radius: 4px;
   }
+}
+
+.dropbtn {
+  transition: 0.5s ease;
+}
+
+.dropbtn:hover,
+.dropbtn:focus {
+  cursor: pointer;
+  -webkit-transform: scale(1.25);
+  -moz-transform: scale(1.25);
+  -ms-transform: scale(1.25);
+  -o-transform: scale(1.25);
+}
+
+/* .dropdown {
+  position: relative;
+} */
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: var(--background-color);
+  color: var(--font-color);
+  min-width: 160px;
+  overflow: visible;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* .dropdown:hover .dropdown-content{
+  display: flex;
+  flex-direction: column;
+} */
+
+.dropdown-content span {
+  padding: 6px 2px;
+}
+
+.dropdown-content span:hover {
+  color: var(--secondary-color);
+  font-weight: 700;
+}
+
+.show {
+  display: flex;
+  flex-direction: column;
 }
