@@ -9,6 +9,9 @@ import Settings from '../settings/settings';
 import Header from '../header/header';
 import ModalNote from '../modal-note/modal-note';
 
+
+import { ac } from '../../index';
+
 // Music engine
 import { Fretboard, mergeArrays, createMergeColors, generateFingerings, safeNotes } from '../../engine';
 import { Note, Scale, Interval } from "@tonaljs/tonal";
@@ -234,7 +237,27 @@ export default class MyFretboard {
         let { id } = this.getParent(evt);
         let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
         let layer = this.fretboardIstances[id].layers[index];
-        console.log(layer); // TODO:
+        // console.log(layer);
+        let num = layer.fingering === 'all' ? 0 : layer.fingering-1;
+        let sequence = layer.fingerings[num].trim();
+        let triplets = sequence.split(" ");
+        let notes = [];
+        triplets.forEach((triplet) => {
+            const [string, note, interval] = triplet.split(":");
+            notes.push(note);
+        });
+
+        let scaleDIS = notes;
+        let scaleASC = notes.slice(0).reverse();
+        scaleASC.shift();
+        let scaleToBePlayed = scaleDIS.concat(scaleASC);
+        console.log(scaleToBePlayed);
+        let time = ac.currentTime + 0.22;
+        scaleToBePlayed.forEach(note => {
+            // console.log("Scheduling...", note, time);
+            this.app.guitarSounds.play(note, time, 0.22);
+            time += 0.22;
+        });
     }
 
     toggleScale (evt) {
@@ -493,7 +516,7 @@ export default class MyFretboard {
                 <span class="edit-btn"> &#128295; Edit</span>
                 <span class="delete-btn"> &#128298; Delete</span>
                 <span class="merge-btn"> &#128279; Merge with </span>
-                <span class="move-btn"> &#9193; Make new fret with</span>
+                <span class="move-btn"> &#127381; Make new fret with</span>
                 </div>
             </div>`;
         list.appendChild(li);

@@ -48,6 +48,7 @@ button {
   padding: 12px 20px;
   margin-top: 4px;
   margin-bottom: 4px;
+  color: var(--font-color);
 }
 
 textarea {
@@ -135,4 +136,45 @@ input[type="radio"] {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--contrast);
+}
+
+
+/* -----    dropdown  ----- */
+.dropdown{
+  align-self: center;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: var(--background-color);
+  color: var(--font-color);
+  min-width: 160px;
+  overflow: visible;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  font-size: 80%;
+}
+
+.dropdown:hover .dropdown-content{
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-content span {
+  padding: 6px 2px;
+}
+
+.dropdown-content span:hover {
+  color: var(--secondary-color);
+  font-weight: 700;
+}
+
+#loading-container {
+  position: absolute;
+  letter-spacing: 0.8rem;
+  text-align: center;
+  top: 40%;
+  width: 100%;
+  text-transform: uppercase;
 }

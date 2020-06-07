@@ -14,7 +14,8 @@
   },
   "dependencies": {
     "@tonaljs/tonal": "^4.0.0",
-    "d3-selection": "^1.4.1"
+    "d3-selection": "^1.4.1",
+    "soundfont-player": "^0.12.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",

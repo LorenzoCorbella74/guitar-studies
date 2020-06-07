@@ -81,10 +81,10 @@ export default class List {
         if (document.body.classList.contains('dark-theme')) {
             document.body.classList.remove('dark-theme');
             localStorage.removeItem('dark-theme');
-            this.theme.innerHTML = '&#127773;'
+            this.theme.innerHTML = '&#127773; Change theme'
         } else {
             document.body.classList.add('dark-theme');
-            this.theme.innerHTML = '&#127770;'
+            this.theme.innerHTML = '&#127770; Change theme'
             localStorage.setItem('dark-theme', true);
         }
     }
