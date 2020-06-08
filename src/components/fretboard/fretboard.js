@@ -238,7 +238,7 @@ export default class MyFretboard {
         let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
         let layer = this.fretboardIstances[id].layers[index];
         // console.log(layer);
-        let num = layer.fingering === 'all' ? 0 : layer.fingering-1;
+        let num = layer.fingering === 'all' ? 0 : layer.fingering - 1;
         let sequence = layer.fingerings[num].trim();
         let triplets = sequence.split(" ");
         let notes = [];
@@ -246,9 +246,15 @@ export default class MyFretboard {
             const [string, note, interval] = triplet.split(":");
             notes.push(note);
         });
+         let scaleDIS, scaleASC;
+        /*if (short) { */
+            scaleDIS = notes.splice(0, layer.notes.length + 1);
+            scaleASC = scaleDIS.slice(0).reverse();
+        /* } else {
+            scaleDIS = notes;
+            scaleASC = notes.slice(0).reverse();
+        } */
 
-        let scaleDIS = notes;
-        let scaleASC = notes.slice(0).reverse();
         scaleASC.shift();
         let scaleToBePlayed = scaleDIS.concat(scaleASC);
         console.log(scaleToBePlayed);
