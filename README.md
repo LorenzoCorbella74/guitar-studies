@@ -1,6 +1,8 @@
 # GUITAR FRETBOARDS 2
 
 ![tastiera](./docs/app.PNG)
+![tastiera](./docs/app2.PNG)
+
 
 ![](https://img.shields.io/badge/type-JS_Library-brightgreen.svg "Project type")
 ![](https://img.shields.io/github/repo-size/LorenzoCorbella74/guitar-fretboards "Repository size")

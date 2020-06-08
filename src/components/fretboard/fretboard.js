@@ -25,6 +25,7 @@ export default class MyFretboard {
         this.studyId = input.studyId || Math.floor(Math.random() * 1000000);
         this.creation = input.creation || new Date();
         this.favourite = input.favourite || false;
+        this.img = input.img;
 
         this.body = document.body;
         this.body.innerHTML = `${template}`;
@@ -62,6 +63,14 @@ export default class MyFretboard {
         }
     }
 
+    getIconPath () {
+        let imgNum = Math.floor(Math.random() * 20) +1;
+        if (imgNum > 20) {
+            imgNum = imgNum % 20;
+        }
+        return imgNum;
+    }
+
     backToList () {
         let copy = JSON.parse(JSON.stringify(this.fretboardIstances));
         for (const key in copy) {
@@ -79,6 +88,7 @@ export default class MyFretboard {
         }
         let general = {
             studyId: this.studyId,
+            img: this.img || this.getIconPath(),
             title: this.header.refs.title.textContent,
             description: this.header.refs.description.value,
             favourite: this.favourite,
@@ -246,10 +256,10 @@ export default class MyFretboard {
             const [string, note, interval] = triplet.split(":");
             notes.push(note);
         });
-         let scaleDIS, scaleASC;
+        let scaleDIS, scaleASC;
         /*if (short) { */
-            scaleDIS = notes.splice(0, layer.notes.length + 1);
-            scaleASC = scaleDIS.slice(0).reverse();
+        scaleDIS = notes.splice(0, layer.notes.length + 1);
+        scaleASC = scaleDIS.slice(0).reverse();
         /* } else {
             scaleDIS = notes;
             scaleASC = notes.slice(0).reverse();

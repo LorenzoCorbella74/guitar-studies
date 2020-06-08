@@ -13,6 +13,7 @@ export default class List {
 
         this.app = app;
         this.list = state.getState();
+        this.listToBeDisplayed = this.list;
         this.generateItems();
 
         // Turn the theme of if the 'dark-theme' key exists in localStorage
@@ -20,12 +21,49 @@ export default class List {
             document.body.classList.add('dark-theme');
         }
 
+        this.favouriteFlag = true;
+
         // events
         document.querySelector('.save').addEventListener('click', this.save.bind(this));
         document.querySelector('.import').addEventListener('click', this.import.bind(this));
         this.theme = document.querySelector('.theme');
         this.theme.addEventListener('click', this.toggleTheme.bind(this));
         document.querySelector('.add-study').addEventListener('click', this.addStudy.bind(this));
+        document.querySelector('.order-by-date').addEventListener('click', this.orderByDate.bind(this));
+        document.querySelector('.order-by-progress').addEventListener('click', this.orderByProgress.bind(this));
+        document.querySelector('.study-favourite-filter').addEventListener('click', this.filterFavourite.bind(this));
+        document.querySelector('.search').addEventListener('input', (evt) => this.search.call(this, evt));
+    }
+
+    orderByDate () {
+        document.querySelector('.study-list').innerHTML = '';
+        this.listToBeDisplayed = this.list.sort((a, b) => {
+            let dateA = new Date(a.creation);
+            let dateB = new Date(b.creation);
+            return dateA.getTime() - dateB.getTime();
+        });
+        this.generateItems();
+    }
+
+    orderByProgress () {
+        document.querySelector('.study-list').innerHTML = '';
+        this.listToBeDisplayed = this.list.sort((a, b) => a.progress - b.progress);
+        this.generateItems();
+    }
+
+    filterFavourite () {
+        document.querySelector('.study-list').innerHTML = '';
+        this.listToBeDisplayed = this.list.filter(item => item.favourite === this.favouriteFlag);
+        this.favouriteFlag = !this.favouriteFlag;
+        document.querySelector('.study-favourite-filter').innerHTML= this.favouriteFlag? '&#128150;' : '&#128420;';
+        this.generateItems();
+    }
+
+    search (evt) {
+        let text = evt.target.value.toLowerCase();
+        document.querySelector('.study-list').innerHTML = '';
+        this.listToBeDisplayed = this.list.filter(e => (e.title.toLowerCase().includes(text) || e.description.toLowerCase().includes(text) || e.tags.some(e => e.toLowerCase().includes(text))));
+        this.generateItems();
     }
 
     save () {
@@ -67,7 +105,7 @@ export default class List {
     }
 
     generateItems () {
-        this.list.forEach((el, i) => {
+        this.listToBeDisplayed.forEach((el, i) => {
             this.renderStudy(el, i);
         });
     }
@@ -98,14 +136,6 @@ export default class List {
         return `${month}/${day}/${year}`;
     }
 
-    getIconPath (num) {
-        let imgNum = Number(num) + 1;
-        if (imgNum > 20) {
-            imgNum = imgNum % 20;
-        }
-        return imgNum;
-    }
-
     checkDate (date) {
         if (Object.prototype.toString.call(date) === '[object Date]') {
             return date
@@ -114,7 +144,7 @@ export default class List {
         }
     }
 
-    renderStudy (input, i) {
+    renderStudy (input) {
         var temp = document.getElementsByTagName("template")[0];
         var clone = temp.content.cloneNode(true);
         let id = input.studyId || 'study' + Math.floor(Math.random() * 1000000);
@@ -130,13 +160,12 @@ export default class List {
         refElems.forEach((elem) => { study.refs[elem.getAttribute('ref')] = elem })
 
         study.refs.title.textContent = input.title;
+        study.refs.progress.textContent = `${input.progress}%`;
         study.refs.date.textContent = this.renderDate(this.checkDate(input.creation));
         study.refs.favourite.innerHTML = input.favourite ? '&#128150;' : '&#128420;';
 
-        let studyImg = input.img || this.getIconPath(i);
-        import(`../../img/guitar${studyImg}.jpeg`).then(img => {
+        import(`../../img/guitar${input.img}.jpeg`).then(img => {
             study.style.backgroundImage = `url(${img.default})`;
-            this.list[i].img = studyImg;
         });
 
         // EVENTS

@@ -3,15 +3,16 @@
         <h2>&#127928; GUITAR STUDIES</h2>
     </div>
     <span class="add-study"> &#10133;</span>
+    <span class="study-favourite-filter"> &#128150; </span>
     <span class="order-by-date"> &#128197; </span>
     <span class="order-by-progress">&#128200; </span>
     <div class="filter-text">
-        <input  type="text" ref="search" placeholder="Filter by..." >
-        <span class="search">&#128270; </span>
+        <input  type="text" class="search" ref="search" placeholder="Filter by..." >
+        <span class="search-btn">&#128270; </span>
     </div>
 
     <div class="dropdown">
-        <div class="dropbtn">&#128207;</div>
+        <div class="dropbtn" style="font-size: 2rem;">&#128207;</div>
         <div class="dropdown-content">
             <span class="save"> &#128190; Save</span>
             <span class="import">&#128229; Import</span>
@@ -33,9 +34,13 @@
 <template>
     <div class="study-tab">
         <div class="study-info">
-            <h2 class="study-title" ref="title">Titolo</h2>
-            <h4 class="study-date" ref="date">12/04/2020</h4>
+            <div>
+                <h2 class="study-title" ref="title">Titolo</h2>
+                <h4 class="study-date" ref="date">12/04/2020</h4>
+            </div>
+            <div class="study-progress" ref="progress">23%</div>
         </div>
+        
         <div class="study-actions">
             <span class="study-favourite-btn" ref="favourite"> &#128420; </span> <!-- selezionato &#128150; -->
             <span class="study-delete-btn"> &#128163;</span>

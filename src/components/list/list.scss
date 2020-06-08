@@ -14,6 +14,7 @@
 }
 
 .add-study,
+.study-favourite-filter,
 .order-by-date,
 .order-by-progress {
     transition: 0.5s ease;
@@ -31,6 +32,7 @@
     font-size: 1.5rem;
 }
 
+.study-favourite-filter,
 .order-by-date,
 .order-by-progress {
     /* display: inline-block; */
@@ -47,7 +49,11 @@
     }
     .search {
         margin: 0 0.5rem;
-        align-self: center;;
+        align-self: center;
+    }
+    .search-btn {
+        position: relative;
+        right: 2.5rem;
     }
 }
 
@@ -77,6 +83,10 @@
         border: 1px solid var(--light-grey);
 
         .study-info {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-left: 1rem;
             margin-top: 1rem;
             h2.study-title {
@@ -90,6 +100,15 @@
 
             &:hover {
                 cursor: pointer;
+            }
+
+            .study-progress {
+                margin-right: 1rem;
+                color: var(--font-color);
+                background-color: rgba(210, 210, 210, 0.4);
+                padding: 5px;
+                border-radius: 5px;
+                font-weight: 700;
             }
         }
     }
