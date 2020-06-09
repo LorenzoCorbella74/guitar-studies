@@ -16,11 +16,6 @@ export default class List {
         this.listToBeDisplayed = this.list;
         this.generateItems();
 
-        // Turn the theme of if the 'dark-theme' key exists in localStorage
-        if (localStorage.getItem('dark-theme')) {
-            document.body.classList.add('dark-theme');
-        }
-
         this.favouriteFlag = true;
 
         // events

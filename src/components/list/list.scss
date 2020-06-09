@@ -81,6 +81,11 @@
         flex-direction: column;
         justify-content: space-between;
         border: 1px solid var(--light-grey);
+        transition: border 0.25s ease-in;
+        &:hover {
+            border-color: var(--font-color);
+            border-width: 4px;
+        }
 
         .study-info {
             display: flex;

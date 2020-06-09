@@ -10,6 +10,12 @@ export const ac = new AudioContext();
 
 class App {
     constructor() {
+        
+        // Turn the theme of if the 'dark-theme' key exists in localStorage
+        if (localStorage.getItem('dark-theme')) {
+            document.body.classList.add('dark-theme');
+        }
+
         this.start();
         this.guitarSounds = null;
     }
@@ -21,13 +27,14 @@ class App {
                 <h4>Loading sounds</h4>
             </div>`;
 
-        Soundfont.instrument(ac, 'acoustic_guitar_steel').then( guitarDownloaded => { 
+        Soundfont.instrument(ac, 'acoustic_guitar_steel').then(guitarDownloaded => {
             this.guitarSounds = guitarDownloaded;
             this.goTo('list'); // list as default
         });
     }
 
     goTo (where, data) {
+        document.body.classList.add('fade');
         if (where === 'list') {
             this.currentRoute = 'list';
             new List(this);
@@ -35,6 +42,7 @@ class App {
             this.currentRoute = 'study';
             new MyFretboard(this, data);
         }
+        document.body.classList.remove('fade');
     }
 }
 
