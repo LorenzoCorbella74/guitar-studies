@@ -64,7 +64,7 @@ export default class MyFretboard {
     }
 
     getIconPath () {
-        let imgNum = Math.floor(Math.random() * 20) +1;
+        let imgNum = Math.floor(Math.random() * 20) + 1;
         if (imgNum > 20) {
             imgNum = imgNum % 20;
         }
@@ -442,7 +442,9 @@ export default class MyFretboard {
             intervals.push(Interval.distance(root, notes[i]));
         }
         // TODO: spostare quelle 3m prima di 3M, etc
-        return intervals.sort();
+        return intervals.sort((a,b)=>{
+            return a-b;
+        });
     }
 
     renderMergedLayer (data) {
@@ -468,9 +470,8 @@ export default class MyFretboard {
             value: data.value,
             value1: data.startScale,
             value2: data.value,
-            visible: true,
+            visible: data.visible || true,
             merge: true,
-            notesVisibility: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // TODO:,
             tuning: data.tuning,
             type: data.type || 'scale',
             whatToShow: data.whatToShow,
@@ -484,7 +485,8 @@ export default class MyFretboard {
         };
         let data1 = Scale.get(toBeAdded.value1);
         let data2 = Scale.get(toBeAdded.value2);
-        toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort();
+        toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort((a, b) => a - b);
+        toBeAdded.notesVisibility =  data.notesVisibility || this.getNoteVisibilityRange(toBeAdded.notes),
         toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
         toBeAdded.intervals = this.getIntervalsOfMerged(toBeAdded.notes);// sono riferiti alla scala di partenza
         toBeAdded.combinedColors = createMergeColors(toBeAdded.notes, data1.notes, data2.notes);
@@ -547,7 +549,7 @@ export default class MyFretboard {
             notes: notes,
             intervals: intervals,
             visible: data.visible || true,
-            notesVisibility: this.getNoteVisibilityRange(notes),
+            notesVisibility: data.notesVisibility || this.getNoteVisibilityRange(notes),
             tuning: data.tuning,
             type: data.type || 'scale',
             whatToShow: data.whatToShow,
@@ -569,29 +571,22 @@ export default class MyFretboard {
         this.fretboardIstances[parentId].addLayer(toBeAdded);
         this.fretboardIstances[parentId].paint();
 
-        /* li.querySelector('.dropbtn').addEventListener('click', (event) => {
-            li.querySelector('.dropdown-content').classList.toggle("show");
-        }); */
         li.querySelector('.layer-label').addEventListener('click', (event) => {
             this.selectLayer(event, layerId, parentId);
         });
         li.querySelector('.merge-btn').addEventListener('click', (event) => {
-            // li.querySelector('.dropdown-content').classList.toggle("show");
             this.mergeLayer(event, layerId, parentId);
         });
         li.querySelector('.edit-btn').addEventListener('click', (event) => {
-            // li.querySelector('.dropdown-content').classList.toggle("show");
             this.editLayer(event, layerId, parentId);
         });
         li.querySelector('.visibility-btn').addEventListener('click', (event) => {
             this.toggleLayerVisibility(event, layerId, parentId);
         });
         li.querySelector('.delete-btn').addEventListener('click', (event) => {
-            // li.querySelector('.dropdown-content').classList.toggle("show");
             this.deleteLayer(event, layerId, parentId);
         });
         li.querySelector('.move-btn').addEventListener('click', (event) => {
-            // li.querySelector('.dropdown-content').classList.toggle("show");
             this.makeNewFretWith(event, layerId, parentId);
         });
         this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente quando si aggiunge
@@ -625,14 +620,14 @@ export default class MyFretboard {
                 const elementN = noteNames.children[i];
                 elementN.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    this.fretboardIstances[id].updateLayer(i, info.value);
+                    this.fretboardIstances[id].updateLayer(i, info.id);
                     elementN.classList.toggle('disabled');
                     elementD.classList.toggle('disabled');
                 });
                 const elementD = degrees.children[i];
                 elementD.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    this.fretboardIstances[id].updateLayer(i, info.value);
+                    this.fretboardIstances[id].updateLayer(i, info.id);
                     elementN.classList.toggle('disabled');
                     elementD.classList.toggle('disabled');
                 });
@@ -819,7 +814,7 @@ export default class MyFretboard {
                     item.classList.remove('selected');
                 }
                 fingering.classList.toggle('selected');
-                data.fingering = i === 0 ? 'all' : i;
+            data.fingering = i === 0 ? 'all' : i;
                 this.fretboardIstances[id].repaint();
             });
         }

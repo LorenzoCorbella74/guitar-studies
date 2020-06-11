@@ -41,13 +41,13 @@ function getIntervalOfNote (note, all) {
 // TODO: 
 // E minor #7M pentatonic oppure Eb phrygian dominant
 
-function calculateNumOverStrings(num){
+function calculateNumOverStrings (num) {
     let out;
     switch (num) {
-        case 3: out = 18;break;
-        case 4: out = 24;break;
-        case 2: out = 12;break;
-        default:out = 18;break;
+        case 3: out = 18; break;
+        case 4: out = 24; break;
+        case 2: out = 12; break;
+        default: out = 18; break;
     }
     return out;
 }
@@ -241,7 +241,7 @@ export const Fretboard = function (config) {
                 let v = instance.layers[index].notesVisibility;
                 let visibility = [...v, ...v, ...v, ...v];
                 let color;
-                if (data.combinedColors && data.fingering==='all') {    // si rimuove la possibilità di avere la colorazione del merge per i singoli gradi della scala mergiata
+                if (data.combinedColors && data.fingering === 'all') {    // si rimuove la possibilità di avere la colorazione del merge per i singoli gradi della scala mergiata
                     color = COLOURS_MERGE[data.combinedColors[i]];
                 } else {
                     color = instance.layers[index].color === 'many' ? COLOURS[ele.interval] : (instance.layers[index].color === 'triads' ? (ele.interval === '1P' || ele.interval === '3m' || ele.interval === '3M' || ele.interval === '5P' ? COLOURS[ele.interval] : uniform) : uniform);
@@ -271,10 +271,16 @@ export const Fretboard = function (config) {
         instance.svgContainer.selectAll(".note-info").remove();
     };
 
-    instance.updateLayer = function (index, scaleName) {
-        let indexScale = instance.layers.findIndex(n => n.value === scaleName);
-        let my = instance.layers[indexScale].notesVisibility[index];
-        instance.layers[indexScale].notesVisibility[index] = my ? 0 : 1;
+    // index è l'indice della nota scelta (zero based)
+    // fingering è 'all',1,2,3,4,5,6,7...
+    // se index è 2 e fingering è 3, vuol dire 3° nota partendo dalla 3°indice
+    instance.updateLayer = function (index, id) {
+        let indexScale = instance.layers.findIndex(n => n.id === id);
+        let l = instance.layers[indexScale];
+        let correctedIndex = index - (l.fingering === 'all' ? 0 : l.fingering - 1);
+        let newIndex = correctedIndex <0 ? l.notesVisibility.length +  correctedIndex : correctedIndex;
+        let my = l.notesVisibility[newIndex];
+        l.notesVisibility[newIndex] = my ? 0 : 1;
         instance.repaint();
     }
 
