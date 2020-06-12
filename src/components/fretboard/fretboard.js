@@ -534,6 +534,7 @@ export default class MyFretboard {
                 <span class="edit-btn"> &#128295; Edit</span>
                 <span class="delete-btn"> &#128298; Delete</span>
                 <span class="merge-btn"> &#128279; Merge with </span>
+                <span class="clone-btn"> &#128108; Clone </span>
                 <span class="move-btn"> &#127381; Make new fret with</span>
                 </div>
             </div>`;
@@ -576,6 +577,9 @@ export default class MyFretboard {
         });
         li.querySelector('.merge-btn').addEventListener('click', (event) => {
             this.mergeLayer(event, layerId, parentId);
+        });
+        li.querySelector('.clone-btn').addEventListener('click', (event) => {
+            this.cloneLayer(toBeAdded);
         });
         li.querySelector('.edit-btn').addEventListener('click', (event) => {
             this.editLayer(event, layerId, parentId);
@@ -684,6 +688,12 @@ export default class MyFretboard {
         selected.title = 'Edit layer';
         selected.action = 'Update &#128076;';
         this.modal.open(selected);
+    }
+
+    cloneLayer(base){
+        let copy = Object.assign({}, base);
+        delete copy.id;
+        this.renderLayer(copy);
     }
 
     mergeLayer (evt, layerId) {
