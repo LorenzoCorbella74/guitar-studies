@@ -634,14 +634,14 @@ export default class MyFretboard {
             }
             if (info.differences !== 'own') {   // TODO: check
                 let original, compare;
-                if (info.value.includes('merged')) {
+                if  (info.value.includes('merged')) {
                     original = info.notes;
                 } else {
                     original = Scale.get(info.value).notes;
                     original = original.map(e => safeNotes(e));
                 }
                 if (info.differences.includes('merged')) {
-                    let o = this.fretboardIstances[id].layers.find(e => e.value === info.differences);
+                    let o = this.fretboardIstances[id].layers.find(e => `${e.startScale} merged with ${e.value}` === info.differences);
                     compare = o.notes;
                 } else {
                     compare = Scale.get(info.differences).notes;

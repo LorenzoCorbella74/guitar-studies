@@ -106,8 +106,14 @@ export default class Settings {
         for (var i = 0; i < options.length; i++) {
             var opt = options[i];
             var el = document.createElement("option");
-            el.textContent = opt.value;
-            el.value = opt.value;
+            let o;
+            if(opt.merge){
+                o = `${opt.startScale} merged with ${opt.value}`;
+            } else {
+                o = opt.value;
+            }
+            el.textContent = o;
+            el.value = o;
             select.appendChild(el);
         }
     }
