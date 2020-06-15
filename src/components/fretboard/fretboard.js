@@ -30,7 +30,12 @@ export default class MyFretboard {
         this.body = document.body;
         this.body.innerHTML = `${template}`;
 
-        this.header = new Header('header', this.addFretboard.bind(this), this.removeAllFretboard.bind(this), this.backToList.bind(this));
+        this.header = new Header('header',
+            this.addFretboard.bind(this),
+            this.removeAllFretboard.bind(this),
+            this.backToList.bind(this),
+            this.backToList.bind(this, false)
+        );
         this.modal = new ModalChoice('modal', this.save.bind(this));
         this.modal_note = new ModalNote('modal-note', this.saveNote.bind(this));
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
@@ -71,7 +76,7 @@ export default class MyFretboard {
         return imgNum;
     }
 
-    backToList () {
+    backToList (noredirect) {
         let copy = JSON.parse(JSON.stringify(this.fretboardIstances));
         for (const key in copy) {
             const fret = copy[key]; // si rimuove tutto ciò che sarà ricreato dinamicamente
@@ -98,7 +103,9 @@ export default class MyFretboard {
             frets: copy
         }
         state.saveOrUpdate(general);
-        this.app.goTo('list');
+        if (noredirect && 'cancelable' in noredirect) {
+            this.app.goTo('list');
+        }
     }
 
     resize () {
@@ -303,6 +310,8 @@ export default class MyFretboard {
     saveNote (data) {
         let index = this.fretboardIstances[data.parentId].layers.findIndex(e => e.id === data.id);
         this.fretboardIstances[data.parentId].layers[index].note = data.note;
+        let { parent } = this.getParent(null, data.parentId);
+        parent.querySelector(`.scale-note-btn`).innerHTML = data.note.length>0? '&#128221;': '&#128196;';
     }
 
     toggleAssociation (evt) {
@@ -442,8 +451,8 @@ export default class MyFretboard {
             intervals.push(Interval.distance(root, notes[i]));
         }
         // TODO: spostare quelle 3m prima di 3M, etc
-        return intervals.sort((a,b)=>{
-            return a-b;
+        return intervals.sort((a, b) => {
+            return a - b;
         });
     }
 
@@ -479,15 +488,15 @@ export default class MyFretboard {
             opacity: data.opacity || 1,
             color: data.color || 'many',
             differences: data.differences || 'own',
-            note: '',   // testo info 
+            note: data.note || '',   // testo info 
             fingering: data.fingering || 'all',
             startScale: data.startScale
         };
         let data1 = Scale.get(toBeAdded.value1);
         let data2 = Scale.get(toBeAdded.value2);
         toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort((a, b) => a - b);
-        toBeAdded.notesVisibility =  data.notesVisibility || this.getNoteVisibilityRange(toBeAdded.notes),
-        toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
+        toBeAdded.notesVisibility = data.notesVisibility || this.getNoteVisibilityRange(toBeAdded.notes),
+            toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
         toBeAdded.intervals = this.getIntervalsOfMerged(toBeAdded.notes);// sono riferiti alla scala di partenza
         toBeAdded.combinedColors = createMergeColors(toBeAdded.notes, data1.notes, data2.notes);
         toBeAdded.fingerings = generateFingerings(toBeAdded);
@@ -560,7 +569,7 @@ export default class MyFretboard {
             differences: data.differences || 'own',
             notesForString: data.notesForString || (notes.length > 5 ? 3 : 2),
             fingering: data.fingering || 'all',
-            note: '',
+            note: data.note || '',   // testo info 
             reduced: this.checkScale(Scale.reduced(data.scale)),
             extended: this.checkScale(Scale.extended(data.scale)),
             scaleChords: Scale.scaleChords(data.scale),
@@ -638,7 +647,7 @@ export default class MyFretboard {
             }
             if (info.differences !== 'own') {   // TODO: check
                 let original, compare;
-                if  (info.value.includes('merged')) {
+                if (info.value.includes('merged')) {
                     original = info.notes;
                 } else {
                     original = Scale.get(info.value).notes;
@@ -690,7 +699,7 @@ export default class MyFretboard {
         this.modal.open(selected);
     }
 
-    cloneLayer(base){
+    cloneLayer (base) {
         let copy = Object.assign({}, base);
         delete copy.id;
         this.renderLayer(copy);
@@ -824,7 +833,7 @@ export default class MyFretboard {
                     item.classList.remove('selected');
                 }
                 fingering.classList.toggle('selected');
-            data.fingering = i === 0 ? 'all' : i;
+                data.fingering = i === 0 ? 'all' : i;
                 this.fretboardIstances[id].repaint();
             });
         }
