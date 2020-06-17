@@ -2,7 +2,7 @@ import * as d3 from "d3-selection";
 
 import { allNotes, allNotesEnh, COLOURS, COLOURS_MERGE, Tunings } from './constants';
 
-/* import { Scale } from "@tonaljs/tonal"; */
+import { Scale, Key, Note } from "@tonaljs/tonal";
 
 /* -------------------------------------------------------------------------- */
 
@@ -31,6 +31,53 @@ function generateScales (notes) {
         return [...e, ...e, ...e, ...e]; // si considera 4 ottave
     });
     return derived;
+}
+
+function generateChord (notes) {
+    let derived = [];
+    let start = notes;
+    notes.forEach((mode, i) => {
+        let newArr = [...start];
+        newArr.push(newArr.shift());
+        derived.push(newArr);
+        start = newArr;
+    });
+    derived.unshift(derived.pop());
+    return derived;
+}
+
+export function generateChordsForModalInterchange (start) {
+    let types = ["maj7", "m7", "m7", "maj7", "7", "m7", "m7b5"];
+    let scales = [
+        "major",
+        "dorian",
+        "phrygian",
+        "lydian",
+        "mixolydian",
+        "minor",
+        "locrian"
+    ];
+    let CHORDS = generateChord(types);
+    let output = [];
+    scales.forEach((scale, index) => {
+        let info = Scale.get(`${start} ${scale}`);
+        info.chords = CHORDS[index].map(
+            (e, noteindex) => `${info.notes[noteindex]}${e}`
+        );
+        let { name, intervals, type, tonic, notes, chords } = info;
+        output.push({ name, intervals, type, tonic, notes, chords });
+    });
+    return output;
+}
+
+export function generateCircleOfFith () {
+    let beginning = "Gb";
+    let noteFifths = [beginning];
+    for (let i = 0; i < 12; i++) {
+        beginning = Note.transpose(beginning, "5P");
+        noteFifths.push(beginning);
+    }
+    return noteFifths.map(e => Key.majorKey(e));
 }
 
 function getIntervalOfNote (note, all) {
@@ -278,7 +325,7 @@ export const Fretboard = function (config) {
         let indexScale = instance.layers.findIndex(n => n.id === id);
         let l = instance.layers[indexScale];
         let correctedIndex = index - (l.fingering === 'all' ? 0 : l.fingering - 1);
-        let newIndex = correctedIndex <0 ? l.notesVisibility.length +  correctedIndex : correctedIndex;
+        let newIndex = correctedIndex < 0 ? l.notesVisibility.length + correctedIndex : correctedIndex;
         let my = l.notesVisibility[newIndex];
         l.notesVisibility[newIndex] = my ? 0 : 1;
         instance.repaint();
