@@ -8,7 +8,7 @@ import ModalChoice from '../modal-choice/modal-choice';
 import Settings from '../settings/settings';
 import Header from '../header/header';
 import ModalNote from '../modal-note/modal-note';
-
+import ModalInterchange from '../modal-interchange/modal-interchange';
 
 import { ac } from '../../index';
 
@@ -34,10 +34,12 @@ export default class MyFretboard {
             this.addFretboard.bind(this),
             this.removeAllFretboard.bind(this),
             this.backToList.bind(this),
-            this.backToList.bind(this, false)
+            this.backToList.bind(this, false),
+            this.openModalInterchange.bind(this)
         );
         this.modal = new ModalChoice('modal', this.save.bind(this));
         this.modal_note = new ModalNote('modal-note', this.saveNote.bind(this));
+        this.modal_interchange = new ModalInterchange('modal-interchange');
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
 
         this.fretboardIstances = {};
@@ -299,6 +301,12 @@ export default class MyFretboard {
         this.updateLayerInfo(layer, id);
     }
 
+    /*  ----------------------------- "MODAL INTERCHANGE" MODAL ----------------------------- */
+    openModalInterchange () {
+        this.modal_interchange.open();
+    }
+    /*  -----------------------------     LAYER NOTES MODAL     ----------------------------- */
+
     openNoteModal (evt) {
         let { id } = this.getParent(evt);
         let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
@@ -313,6 +321,8 @@ export default class MyFretboard {
         let { parent } = this.getParent(null, data.parentId);
         parent.querySelector(`.scale-note-btn`).innerHTML = data.note.length>0? '&#128221;': '&#128196;';
     }
+
+     /*  ----------------------------- LAYER NOTES MODAL ----------------------------- */
 
     toggleAssociation (evt) {
         let { parent } = this.getParent(evt);

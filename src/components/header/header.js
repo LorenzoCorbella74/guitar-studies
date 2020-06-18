@@ -3,7 +3,7 @@ import template from './header.html';
 
 export default class Header {
 
-    constructor(placeholderId, addCallback, removeCallback, backToListCallback, saveCallback) {
+    constructor(placeholderId, addCallback, removeCallback, backToListCallback, saveCallback, interchangeCallback) {
 
         this.element = document.getElementById(placeholderId);
         this.element.innerHTML = template;  // Load template into placeholder element
@@ -20,6 +20,7 @@ export default class Header {
         document.getElementById('back-btn').addEventListener('click', backToListCallback);
         document.getElementById('save-btn').addEventListener('click', saveCallback);
         document.getElementById('tags-general-btn').addEventListener('click', this.toggleTabsPanel.bind(this));
+        document.getElementById('interchange-btn').addEventListener('click', interchangeCallback);
 
         window.onscroll = () => {
             var currentScrollPos = window.pageYOffset;
