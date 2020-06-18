@@ -27,9 +27,6 @@
     /* The Close Button */
     .close-note {
         float: right;
-
-        /*         font-size: 28px;
-        font-weight: bold; */
         &:hover,
         &:focus {
             color: var(--font-color);
@@ -50,3 +47,5 @@
         }
     }
 }
+
+/* La media query è ereditata dalla modal-choice così come l'animazione...*/

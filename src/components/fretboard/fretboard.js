@@ -645,15 +645,15 @@ export default class MyFretboard {
                     elementD.classList.toggle('disabled');
                 });
             }
-            if (info.differences !== 'own') {   // TODO: check
+            if (info.differences !== 'own') {   
                 let original, compare;
-                if (info.value.includes('merged')) {
+                if (info.value1 && info.value2) {   // se quella di partenza è una scala mergiata
                     original = info.notes;
                 } else {
                     original = Scale.get(info.value).notes;
                     original = original.map(e => safeNotes(e));
                 }
-                if (info.differences.includes('merged')) {
+                if (info.differences.includes('merged')) {  // se quella di confronto  è una scala mergiata
                     let o = this.fretboardIstances[id].layers.find(e => `${e.startScale} merged with ${e.value}` === info.differences);
                     compare = o.notes;
                 } else {

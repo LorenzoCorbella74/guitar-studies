@@ -70,16 +70,19 @@
 }
 
 /* Media Query for Tablets Ipads portrait mode */
-/* @media only screen and (min-width: 481) and (max-width: 1024px) {
-    .modal-content {
-        margin: 0;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-} */
+@media only screen and (max-width: 768px) {
+    
+        .modal-content {
+            margin: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+    
+}
 
 /* Add Animation */
 @-webkit-keyframes animatetop {
