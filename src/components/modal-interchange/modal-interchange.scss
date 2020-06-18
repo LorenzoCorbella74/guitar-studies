@@ -23,8 +23,7 @@
 }
 
 .modal-content {
-
-    width: 640px;
+    width: 768px;
 
     /* The Close Button */
     .close-interchange {
@@ -36,6 +35,53 @@
             cursor: pointer;
         }
     }
+
+    .interchange-table, .comparison-table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 100%;
+        /* border: 1px solid #ddd; */
+
+        th,
+        td {
+            text-align: left;
+            padding: 8px 16px;
+        }
+
+        .interchange-header {
+            font-weight: 700;
+        }
+        .interchange-row {
+            // TODO:
+        }
+
+       /*  tr:hover {
+            background-color: #f2f2f2;
+        } */
+
+        .table-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .table-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .notes-row{
+            border-bottom: 1px solid var(--light-grey);
+        }
+    }
 }
 
 /* La media query è ereditata dalla modal-choice così come l'animazione...*/
+/* Media Query for Tablets Ipads portrait mode */
+@media only screen and (max-width: 767px) {
+    .interchange-table {
+        th,
+        td {
+            text-align: left;
+            padding: 4px, 8px;
+        }
+    }
+}
