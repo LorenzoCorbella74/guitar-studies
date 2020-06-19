@@ -482,9 +482,10 @@ export default class MyFretboard {
         li.classList.add('scale');
         li.dataset.id = layerId;
         let label_merged_layer = `${data.startScale} merged with ${data.value}`;
+        let visibility = data.visible || data.visible === false ? data.visible : true;
         li.innerHTML = `
             <span class="layer-label">${label_merged_layer}</span>
-            <span class="visibility-btn"> ${data.visible? '&#9899;':'&#9898;'}  </span>
+            <span class="visibility-btn"> ${visibility? '&#9899;':'&#9898;'}  </span>
             <span class="delete-btn"> &#128298; </span>
             `;
         list.appendChild(li);
@@ -496,7 +497,7 @@ export default class MyFretboard {
             value: data.value,
             value1: data.startScale,
             value2: data.value,
-            visible: data.visible || data.visible === false ? data.visible : true,
+            visible: visibility,
             merge: true,
             tuning: data.tuning,
             type: data.type || 'scale',
@@ -551,9 +552,10 @@ export default class MyFretboard {
         let li = document.createElement('li');
         li.classList.add('scale');
         li.dataset.id = layerId;
+        let visibility = data.visible || data.visible === false ? data.visible : true;
         li.innerHTML = `
             <span class="layer-label">${data.value}</span>
-            <span class="visibility-btn"> ${data.visible ? '&#9899;':'&#9898;'} </span>
+            <span class="visibility-btn"> ${visibility ? '&#9899;':'&#9898;'} </span>
             <div class="dropdown">
                 <div class="dropbtn">&#128296;</div>
                 <div class="dropdown-content">
@@ -575,7 +577,7 @@ export default class MyFretboard {
             value: data.value,
             notes: notes,
             intervals: intervals,
-            visible: data.visible || data.visible === false ? data.visible : true,
+            visible: visibility,
             notesVisibility: data.notesVisibility || this.getNoteVisibilityRange(notes),
             tuning: data.tuning,
             type: data.type || 'scale',
