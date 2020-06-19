@@ -38,7 +38,6 @@ export default class MyFretboard {
             this.backToList.bind(this, false),
             this.openModalInterchange.bind(this),
             this.openModalFifth.bind(this)
-
         );
         this.modal = new ModalChoice('modal', this.save.bind(this));
         this.modal_note = new ModalNote('modal-note', this.saveNote.bind(this));
@@ -55,8 +54,8 @@ export default class MyFretboard {
     }
 
     generateFretboards (input) {
-        this.header.refs.title.textContent = input.title || 'Titolo...';
-        this.header.refs.description.value = input.description || 'Descrizione...';
+        this.header.refs.title.textContent = input.title || 'Add title...';
+        this.header.refs.description.value = input.description || 'Add Description...';
         this.header.tags = input.tags || [];
         this.header.renderTags()
         this.header.refs.progress.value = input.progress || 0;
@@ -327,10 +326,10 @@ export default class MyFretboard {
         let index = this.fretboardIstances[data.parentId].layers.findIndex(e => e.id === data.id);
         this.fretboardIstances[data.parentId].layers[index].note = data.note;
         let { parent } = this.getParent(null, data.parentId);
-        parent.querySelector(`.scale-note-btn`).innerHTML = data.note.length>0? '&#128221;': '&#128196;';
+        parent.querySelector(`.scale-note-btn`).innerHTML = data.note.length > 0 ? '&#128221;' : '&#128196;';
     }
 
-     /*  ----------------------------- LAYER NOTES MODAL ----------------------------- */
+    /*  ----------------------------- LAYER NOTES MODAL ----------------------------- */
 
     toggleAssociation (evt) {
         let { parent } = this.getParent(evt);
@@ -485,7 +484,7 @@ export default class MyFretboard {
         let label_merged_layer = `${data.startScale} merged with ${data.value}`;
         li.innerHTML = `
             <span class="layer-label">${label_merged_layer}</span>
-            <span class="visibility-btn"> &#9899; </span>
+            <span class="visibility-btn"> ${data.visible? '&#9899;':'&#9898;'}  </span>
             <span class="delete-btn"> &#128298; </span>
             `;
         list.appendChild(li);
@@ -497,7 +496,7 @@ export default class MyFretboard {
             value: data.value,
             value1: data.startScale,
             value2: data.value,
-            visible: data.visible || true,
+            visible: data.visible || data.visible === false ? data.visible : true,
             merge: true,
             tuning: data.tuning,
             type: data.type || 'scale',
@@ -514,7 +513,7 @@ export default class MyFretboard {
         let data2 = Scale.get(toBeAdded.value2);
         toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort((a, b) => a - b);
         toBeAdded.notesVisibility = data.notesVisibility || this.getNoteVisibilityRange(toBeAdded.notes),
-            toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
+        toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
         toBeAdded.intervals = this.getIntervalsOfMerged(toBeAdded.notes);// sono riferiti alla scala di partenza
         toBeAdded.combinedColors = createMergeColors(toBeAdded.notes, data1.notes, data2.notes);
         toBeAdded.fingerings = generateFingerings(toBeAdded);
@@ -554,7 +553,7 @@ export default class MyFretboard {
         li.dataset.id = layerId;
         li.innerHTML = `
             <span class="layer-label">${data.value}</span>
-            <span class="visibility-btn"> &#9899; </span>
+            <span class="visibility-btn"> ${data.visible ? '&#9899;':'&#9898;'} </span>
             <div class="dropdown">
                 <div class="dropbtn">&#128296;</div>
                 <div class="dropdown-content">
@@ -576,7 +575,7 @@ export default class MyFretboard {
             value: data.value,
             notes: notes,
             intervals: intervals,
-            visible: data.visible || true,
+            visible: data.visible || data.visible === false ? data.visible : true,
             notesVisibility: data.notesVisibility || this.getNoteVisibilityRange(notes),
             tuning: data.tuning,
             type: data.type || 'scale',
@@ -663,7 +662,7 @@ export default class MyFretboard {
                     elementD.classList.toggle('disabled');
                 });
             }
-            if (info.differences !== 'own') {   
+            if (info.differences !== 'own') {
                 let original, compare;
                 if (info.value1 && info.value2) {   // se quella di partenza è una scala mergiata
                     original = info.notes;
