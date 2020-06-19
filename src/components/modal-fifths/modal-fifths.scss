@@ -1,5 +1,5 @@
 /* The Modal (background) */
-#modal-interchange {
+#modal-fifths {
     display: none;
     /* Hidden by default */
     position: fixed;
@@ -26,7 +26,7 @@
     width: 768px;
 
     /* The Close Button */
-    .close-interchange {
+    .close-fifths {
         float: right;
         &:hover,
         &:focus {
@@ -36,7 +36,7 @@
         }
     }
 
-    .interchange-table, .comparison-table {
+    .fifths-table, .comparison-table {
         border-collapse: collapse;
         border-spacing: 0;
         width: 100%;
@@ -48,10 +48,10 @@
             padding: 6px 16px;
         }
 
-        .interchange-header {
+        .fifths-header {
             font-weight: 700;
         }
-        .interchange-row {
+        .fifths-row {
             // TODO:
         }
 
@@ -77,7 +77,7 @@
 /* La media query è ereditata dalla modal-choice così come l'animazione...*/
 /* Media Query for Tablets Ipads portrait mode */
 @media only screen and (max-width: 767px) {
-    .interchange-table {
+    .fifths-table {
         th,
         td {
             text-align: left;

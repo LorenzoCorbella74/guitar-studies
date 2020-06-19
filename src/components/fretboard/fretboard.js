@@ -9,6 +9,7 @@ import Settings from '../settings/settings';
 import Header from '../header/header';
 import ModalNote from '../modal-note/modal-note';
 import ModalInterchange from '../modal-interchange/modal-interchange';
+import ModalFifths from "../modal-fifths/modal-fifths";
 
 import { ac } from '../../index';
 
@@ -35,11 +36,14 @@ export default class MyFretboard {
             this.removeAllFretboard.bind(this),
             this.backToList.bind(this),
             this.backToList.bind(this, false),
-            this.openModalInterchange.bind(this)
+            this.openModalInterchange.bind(this),
+            this.openModalFifth.bind(this)
+
         );
         this.modal = new ModalChoice('modal', this.save.bind(this));
         this.modal_note = new ModalNote('modal-note', this.saveNote.bind(this));
         this.modal_interchange = new ModalInterchange('modal-interchange');
+        this.modal_fifths = new ModalFifths('modal-fifths');
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
 
         this.fretboardIstances = {};
@@ -304,6 +308,10 @@ export default class MyFretboard {
     /*  ----------------------------- "MODAL INTERCHANGE" MODAL ----------------------------- */
     openModalInterchange () {
         this.modal_interchange.open();
+    }
+    /*  ----------------------------- "CIRCLE OF FIFTHS" MODAL ----------------------------- */
+    openModalFifth () {
+        this.modal_fifths.open();
     }
     /*  -----------------------------     LAYER NOTES MODAL     ----------------------------- */
 

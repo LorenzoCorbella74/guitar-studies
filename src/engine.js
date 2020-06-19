@@ -46,20 +46,27 @@ function generateChord (notes) {
     return derived;
 }
 
+function shiftChord (types, shift) {
+    let copy = [...types];
+    let cut = copy.splice(0, shift);
+    return [...copy, ...cut];
+}
+
+let CHORDSTYPES = ["maj7", "m7", "m7", "maj7", "7", "m7", "m7b5"];
+let SCALETYPES = [
+    "major",
+    "dorian",
+    "phrygian",
+    "lydian",
+    "mixolydian",
+    "minor",
+    "locrian"
+];
+
 export function generateChordsForModalInterchange (start) {
-    let types = ["maj7", "m7", "m7", "maj7", "7", "m7", "m7b5"];
-    let scales = [
-        "major",
-        "dorian",
-        "phrygian",
-        "lydian",
-        "mixolydian",
-        "minor",
-        "locrian"
-    ];
-    let CHORDS = generateChord(types);
+    let CHORDS = generateChord(CHORDSTYPES);
     let output = [];
-    scales.forEach((scale, index) => {
+    SCALETYPES.forEach((scale, index) => {
         let info = Scale.get(`${start} ${scale}`);
         info.chords = CHORDS[index].map(
             (e, noteindex) => `${info.notes[noteindex]}${e}`
@@ -70,14 +77,20 @@ export function generateChordsForModalInterchange (start) {
     return output;
 }
 
-export function generateCircleOfFith () {
+export function generateCircleOfFifths (scale) {
     let beginning = "Gb";
+    let scaleIndex = SCALETYPES.findIndex(e => e === scale);
+    let generatedChords = shiftChord(CHORDSTYPES, scaleIndex);
     let noteFifths = [beginning];
     for (let i = 0; i < 12; i++) {
         beginning = Note.transpose(beginning, "5P");
         noteFifths.push(beginning);
     }
-    return noteFifths.map(e => Key.majorKey(e));
+    let output = noteFifths.map(e => Scale.get(`${e} ${scale}`));
+    output.forEach(element => {
+        element.chords = element.notes.map((e, i) => `${e}${generatedChords[i]}`);
+    });
+    return output;
 }
 
 function getIntervalOfNote (note, all) {
