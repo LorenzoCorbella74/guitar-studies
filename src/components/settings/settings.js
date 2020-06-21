@@ -86,14 +86,14 @@ export default class Settings {
             const bubble = wrap.querySelector(".bubble");
             this.setBubble(range, bubble);
         });
-        this.configureForm(data);
+        /* this.configureForm(data); */
     }
 
-    configureForm (data) {
+    /* configureForm (data) {
         let others = this.guitar.layers.filter(e => e.id !== this.id);
         this.fillOptions('differences', others);
         this.refs.differences.value = data.differences;
-    }
+    } */
 
     fillOptions (id, options) {
         var select = document.getElementById(id);
@@ -134,7 +134,7 @@ export default class Settings {
             parentId: this.parentId,
             size: this.refs.size.value,
             opacity: this.refs.opacity.value,
-            differences: this.refs.differences.value,
+            /* differences: this.refs.differences.value, */
             whatToShow: this.getRadioValue('whatToShow'),   // can be notes | degrees | none
             color: this.getRadioValue('color')              // can be one | triads | many
         }

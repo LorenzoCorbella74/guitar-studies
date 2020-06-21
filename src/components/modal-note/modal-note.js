@@ -29,8 +29,7 @@ export default class ModalNote {
 
     fillForm(data) {
         this.id = data.id;
-        this.parentId = data.parentId;
-        this.refs.note.innerHTML = data.note;        
+        this.refs.note.value = data.note;        
     }
 
     open(data) {
@@ -45,7 +44,6 @@ export default class ModalNote {
     save() {
         this.data = {
             id: this.id,
-            parentId: this.parentId,
             note: this.refs.note.value,
         }
         this.element.style.display = "none";

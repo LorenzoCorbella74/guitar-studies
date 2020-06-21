@@ -157,7 +157,8 @@ export default class MyFretboard {
         fretboard.querySelector('.scale-info-btn').addEventListener('click', (evt) => this.toggleAssociation.call(this, evt));
         fretboard.querySelector('.scale-toggle-btn').addEventListener('click', (evt) => this.toggleScale.call(this, evt));
         fretboard.querySelector('.scale-play-btn').addEventListener('click', (evt) => this.playScale.call(this, evt));
-        fretboard.querySelector('.scale-note-btn').addEventListener('click', (evt) => this.openNoteModal.call(this, evt));
+        fretboard.querySelector('.note-btn').addEventListener('click', (evt) => this.openNoteModal.call(this, evt));
+        fretboard.querySelector('.toggle-btn').addEventListener('click', (evt) => this.togglePanel.call(this, evt));
 
         this.fretboardIstances[id] = Fretboard({
             id: id,
@@ -169,6 +170,9 @@ export default class MyFretboard {
         this.fretboardIstances[id].drawBoard();
         this.fretboardIstances[id].layers = [];
         this.fretboardIstances[id].selectedIndex = null;
+        this.fretboardIstances[id].visible = true;
+        this.fretboardIstances[id].note = input.note || '',   // testo info 
+            fretboard.querySelector(`.note-btn`).innerHTML = this.fretboardIstances[id].note.length > 0 ? '&#128221;' : '&#128196;';
 
         fretboard.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
@@ -195,6 +199,16 @@ export default class MyFretboard {
         let { parent, id } = this.getParent(evt);
         parent.remove();                    // remove the html element
         delete this.fretboardIstances[id]; // remove the model
+    }
+
+
+    togglePanel (evt) {
+        let { parent, id } = this.getParent(evt);
+        this.fretboardIstances[id].visible = !this.fretboardIstances[id].visible;
+        parent.querySelector('.col-output-two').classList.toggle('hide');
+        parent.querySelector('.col-output').classList.toggle('hide');
+        let btn = parent.querySelector(`.toggle-btn`)
+        btn.innerHTML = this.fretboardIstances[id].visible ? '&#9899;' : '&#9898;';
     }
 
     // Input range for transpose
@@ -259,7 +273,6 @@ export default class MyFretboard {
         let { id } = this.getParent(evt);
         let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
         let layer = this.fretboardIstances[id].layers[index];
-        // console.log(layer);
         let num = layer.fingering === 'all' ? 0 : layer.fingering - 1;
         let sequence = layer.fingerings[num].trim();
         let triplets = sequence.split(" ");
@@ -269,14 +282,8 @@ export default class MyFretboard {
             notes.push(note);
         });
         let scaleDIS, scaleASC;
-        /*if (short) { */
         scaleDIS = notes.splice(0, layer.notes.length + 1);
         scaleASC = scaleDIS.slice(0).reverse();
-        /* } else {
-            scaleDIS = notes;
-            scaleASC = notes.slice(0).reverse();
-        } */
-
         scaleASC.shift();
         let scaleToBePlayed = scaleDIS.concat(scaleASC);
         console.log(scaleToBePlayed);
@@ -316,20 +323,74 @@ export default class MyFretboard {
 
     openNoteModal (evt) {
         let { id } = this.getParent(evt);
-        let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
-        let data = this.fretboardIstances[id].layers[index];
-        console.log(data);
+        let data = this.fretboardIstances[id];
         this.modal_note.open(data);
     }
 
     saveNote (data) {
-        let index = this.fretboardIstances[data.parentId].layers.findIndex(e => e.id === data.id);
-        this.fretboardIstances[data.parentId].layers[index].note = data.note;
-        let { parent } = this.getParent(null, data.parentId);
-        parent.querySelector(`.scale-note-btn`).innerHTML = data.note.length > 0 ? '&#128221;' : '&#128196;';
+        this.fretboardIstances[data.id].note = data.note;
+        let { parent } = this.getParent(null, data.id);
+        parent.querySelector(`.note-btn`).innerHTML = data.note.length > 0 ? '&#128221;' : '&#128196;';
     }
 
     /*  ----------------------------- LAYER NOTES MODAL ----------------------------- */
+
+    calculateComparison (evt) {
+        let { parent, id } = this.getParent(evt);
+        let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
+        this.comparisonTable = parent.querySelector('.col-output-two .comparison-table');
+        this.renderComparison(parent, id, index);
+    }
+
+    renderComparison (parent, id, index) {
+        this.comparisonTable.innerHTML = '';
+        let base = this.fretboardIstances[id].layers[index];
+        base.intervalsFromSelected = base.intervals;
+        let otherThanBase = this.fretboardIstances[id].layers.filter((e, i) => i !== index && e.visible);   // solo le scale visibili
+        otherThanBase.forEach(element => {
+            element.intervalsFromSelected = element.notes.map(e => Interval.distance(base.root, e))
+        });
+        console.log('comparison list....', this.fretboardIstances[id].layers, base, otherThanBase);
+        this.renderTable([base]);
+        this.renderTable(otherThanBase, base);
+    }
+
+    renderTable (array, base) {
+        for (let i = 0; i < array.length; i++) {
+            const row = array[i];
+            let intervalRow = document.createElement('tr');
+            intervalRow.classList.add('intervals-row');
+            intervalRow.innerHTML = `<td></td>` + `${row.intervalsFromSelected.map((e, i) => `<td>${e}</td>`).join('')}`;
+            this.comparisonTable.appendChild(intervalRow);
+            let notesRow = document.createElement('tr');
+            notesRow.classList.add('notes-row');
+            let name;
+            if (row.merge) {
+                name = `${row.startScale} merged with ${row.value}`;
+            } else {
+                name = row.value;
+            }
+            notesRow.innerHTML = `<td class="comparison-header">${name}</td>` + `${row.notes.map((e, i) => `<td >${e}</td>`).join('')}`;
+            this.comparisonTable.appendChild(notesRow);
+        }
+        if (base) {
+            let rows = this.comparisonTable.querySelectorAll('.notes-row');
+            if (rows.length > 1) {
+                rows.forEach((row, index) => {
+                    if (index) {
+                        let notes = row.querySelectorAll('td');
+                        notes.forEach((note, i) => {
+                            if (i !== 0) {
+                                if (!base.notes.includes(note.textContent)) {
+                                    note.classList.add('red');
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    }
 
     toggleAssociation (evt) {
         let { parent } = this.getParent(evt);
@@ -357,15 +418,9 @@ export default class MyFretboard {
         this.chordsList.innerHTML = '';
         if (this.chords) {    // se è mergiato non ha generalemente accordi...
             this.chords.map(item => {
-                this.chordsList.innerHTML += `<li>${item}</li>`; /* <span data-chordid="${index}">&times;</span> */
+                this.chordsList.innerHTML += `<li>${item}</li>`;
             });
-            /* document.querySelectorAll('[data-chordid]').forEach(element => {
-                element.addEventListener('click', (evt) => {
-                    // TODO: this.add(element.dataset.chordid)
-                });
-            }); */
         }
-
     }
 
     renderReduced (reduced, root, parentId) {
@@ -388,7 +443,6 @@ export default class MyFretboard {
                 });
             });
         }
-
     }
 
     renderExtended (extended, root, parentId) {
@@ -411,7 +465,6 @@ export default class MyFretboard {
                 });
             });
         }
-
     }
 
     getNoteVisibilityRange (notes) {
@@ -426,7 +479,6 @@ export default class MyFretboard {
 
     // callback from settings panel
     updateLayerSettings (data) {
-        // console.log(data);
         let id = data.parentId;
         let toBeUpdate = this.fretboardIstances[id].layers.findIndex(e => e.id === data.id);
         this.fretboardIstances[id].layers[toBeUpdate] = Object.assign(this.fretboardIstances[id].layers[toBeUpdate], data);
@@ -455,7 +507,7 @@ export default class MyFretboard {
             this.fretboardIstances[id].repaint();
             this.updateTitle(data.value, id);
             this.updateLayerInfo(this.fretboardIstances[id].layers[toBeUpdate], id);
-            this.selectLayer({ target: parent }, data.id, id);  // si seleziona automaticamente e si apre la sidebar dei settings
+            this.selectLayer({ target: parent }, data.id, id);  // si seleziona automaticamente
         } else {        // SAVE NEW
             this.renderLayer(data);
         }
@@ -485,7 +537,7 @@ export default class MyFretboard {
         let visibility = data.visible || data.visible === false ? data.visible : true;
         li.innerHTML = `
             <span class="layer-label">${label_merged_layer}</span>
-            <span class="visibility-btn"> ${visibility? '&#9899;':'&#9898;'}  </span>
+            <span class="visibility-btn"> ${visibility ? '&#9899;' : '&#9898;'}  </span>
             <span class="delete-btn"> &#128298; </span>
             `;
         list.appendChild(li);
@@ -505,8 +557,6 @@ export default class MyFretboard {
             size: data.size || 1,
             opacity: data.opacity || 1,
             color: data.color || 'many',
-            differences: data.differences || 'own',
-            note: data.note || '',   // testo info 
             fingering: data.fingering || 'all',
             startScale: data.startScale
         };
@@ -514,7 +564,7 @@ export default class MyFretboard {
         let data2 = Scale.get(toBeAdded.value2);
         toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort((a, b) => a - b);
         toBeAdded.notesVisibility = data.notesVisibility || this.getNoteVisibilityRange(toBeAdded.notes),
-        toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
+            toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
         toBeAdded.intervals = this.getIntervalsOfMerged(toBeAdded.notes);// sono riferiti alla scala di partenza
         toBeAdded.combinedColors = createMergeColors(toBeAdded.notes, data1.notes, data2.notes);
         toBeAdded.fingerings = generateFingerings(toBeAdded);
@@ -555,7 +605,7 @@ export default class MyFretboard {
         let visibility = data.visible || data.visible === false ? data.visible : true;
         li.innerHTML = `
             <span class="layer-label">${data.value}</span>
-            <span class="visibility-btn"> ${visibility ? '&#9899;':'&#9898;'} </span>
+            <span class="visibility-btn"> ${visibility ? '&#9899;' : '&#9898;'} </span>
             <div class="dropdown">
                 <div class="dropbtn">&#128296;</div>
                 <div class="dropdown-content">
@@ -585,10 +635,8 @@ export default class MyFretboard {
             size: data.size || 1,
             opacity: data.opacity || 1,
             color: data.color || 'many',
-            differences: data.differences || 'own',
             notesForString: data.notesForString || (notes.length > 5 ? 3 : 2),
             fingering: data.fingering || 'all',
-            note: data.note || '',   // testo info 
             reduced: this.checkScale(Scale.reduced(data.scale)),
             extended: this.checkScale(Scale.extended(data.scale)),
             scaleChords: Scale.scaleChords(data.scale),
@@ -664,28 +712,6 @@ export default class MyFretboard {
                     elementD.classList.toggle('disabled');
                 });
             }
-            if (info.differences !== 'own') {
-                let original, compare;
-                if (info.value1 && info.value2) {   // se quella di partenza è una scala mergiata
-                    original = info.notes;
-                } else {
-                    original = Scale.get(info.value).notes;
-                    original = original.map(e => safeNotes(e));
-                }
-                if (info.differences.includes('merged')) {  // se quella di confronto  è una scala mergiata
-                    let o = this.fretboardIstances[id].layers.find(e => `${e.startScale} merged with ${e.value}` === info.differences);
-                    compare = o.notes;
-                } else {
-                    compare = Scale.get(info.differences).notes;
-                    compare = compare.map(e => safeNotes(e));
-                }
-                let comparison = original.map(e => compare.includes(e) ? 1 : 0);
-                parent.querySelectorAll('.label-notes').forEach((element, i) => {
-                    if (!comparison[i]) {
-                        element.classList.add('red')
-                    }
-                });
-            }
         } else {
             degrees.innerHTML = '';
             noteNames.innerHTML = '';
@@ -707,7 +733,8 @@ export default class MyFretboard {
         parent.querySelector('.scale-info-btn').style.visibility = 'hidden';
         parent.querySelector('.scale-toggle-btn').style.visibility = 'hidden';
         parent.querySelector('.scale-play-btn').style.visibility = 'hidden';
-        parent.querySelector('.scale-note-btn').style.visibility = 'hidden';
+        parent.querySelector('.note-btn').style.visibility = 'hidden';
+        this.calculateComparison(evt);
     }
 
     editLayer (evt, layerId) {
@@ -753,6 +780,7 @@ export default class MyFretboard {
         this.updateTitle('', parentId);
         this.updateLayerInfo(null, parentId);
         this.removeFingeringBtn(parent);
+        this.calculateComparison({ target: parentId }); // FIXME: ???
     }
 
     makeNewFretWith (evt, id, parentId) {
@@ -772,7 +800,7 @@ export default class MyFretboard {
         parent.querySelector('.scale-info-btn').style.visibility = 'inherit';
         parent.querySelector('.scale-toggle-btn').style.visibility = 'inherit';
         parent.querySelector('.scale-play-btn').style.visibility = 'inherit';
-        parent.querySelector('.scale-note-btn').style.visibility = 'inherit';
+        parent.querySelector('.note-btn').style.visibility = 'inherit';
 
         parent.querySelectorAll('.scale').forEach(element => {
             element.classList.remove('selected');
@@ -797,6 +825,7 @@ export default class MyFretboard {
         this.updateLayerInfo(selected, parentId);
         this.updateFingeringBtns(event, selected);
         this.calculateAssociation(event);
+        this.calculateComparison(event);
         this.fretboardIstances[parentId].repaint();
     }
 

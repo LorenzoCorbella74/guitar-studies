@@ -41,7 +41,7 @@ body.fade {
 }
 
 .hide {
-  display: none;
+  display: none !important;
 }
 
 /*  FORM ELEMENTS */

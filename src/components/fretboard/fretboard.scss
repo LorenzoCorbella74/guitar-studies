@@ -119,6 +119,40 @@
       }
     }
   }
+
+  .col-output-two {
+    width: 70%;
+    width: 70%;
+    height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    h4 {
+      margin-left: 30px;
+    }
+
+    .comparison-table {
+      margin-left: 16px;
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+
+      th,
+      td {
+        text-align: left;
+        padding: 6px 16px;
+      }
+
+      .intervals-row {
+        font-weight: 700;
+      }
+      .comparison-header {
+      }
+      .notes-row {
+        /* border-bottom: 1px solid var(--light-grey); */
+      }
+    }
+  }
 }
 
 .scale-info {
@@ -153,7 +187,7 @@
 .scale-info-btn,
 .scale-toggle-btn,
 .scale-play-btn,
-.scale-note-btn {
+.note-btn {
   margin-left: 12px;
 
   &:hover {
@@ -214,7 +248,7 @@
 .scale-info-btn,
 .scale-toggle-btn,
 .scale-play-btn,
-.scale-note-btn {
+.note-btn {
   visibility: hidden;
 }
 
@@ -306,5 +340,3 @@
   -ms-transform: scale(1.25);
   -o-transform: scale(1.25);
 }
-
-
