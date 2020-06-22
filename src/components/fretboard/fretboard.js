@@ -302,9 +302,12 @@ export default class MyFretboard {
         parent.querySelector('.scale-toggle-btn').innerHTML = layer.type === 'scale' ? '&#127925;' : '&#127926;';
         if (layer.type === 'scale') {
             layer.notesVisibility = layer.intervals.map(e => (e.includes('1') || e.includes('3') || e.includes('5') || e.includes('7')) ? 1 : 0);
+            layer.copynotesVisibility = [...layer.notesVisibility];
+            layer.notesVisibility = this.transformByFingering(layer.copynotesVisibility, layer.fingering);
             layer.type = 'arpeggio';
         } else {
             layer.notesVisibility = this.getNoteVisibilityRange(layer.notes);
+            layer.copynotesVisibility = [...layer.notesVisibility];
             layer.type = 'scale';
         }
         this.fretboardIstances[id].repaint();
@@ -564,7 +567,8 @@ export default class MyFretboard {
         let data2 = Scale.get(toBeAdded.value2);
         toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort((a, b) => a - b);
         toBeAdded.notesVisibility = data.notesVisibility || this.getNoteVisibilityRange(toBeAdded.notes),
-            toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
+        toBeAdded.copynotesVisibility = [...toBeAdded.notesVisibility];
+        toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
         toBeAdded.intervals = this.getIntervalsOfMerged(toBeAdded.notes);// sono riferiti alla scala di partenza
         toBeAdded.combinedColors = createMergeColors(toBeAdded.notes, data1.notes, data2.notes);
         toBeAdded.fingerings = generateFingerings(toBeAdded);
@@ -643,6 +647,7 @@ export default class MyFretboard {
             modeNames: Scale.modeNames(data.scale)
         };
         toBeAdded.fingerings = generateFingerings(toBeAdded);
+        toBeAdded.copynotesVisibility = [...toBeAdded.notesVisibility];
         console.log(`Layer ${toBeAdded.id}`, toBeAdded);
         this.fretboardIstances[parentId].layers.push(toBeAdded);
         this.fretboardIstances[parentId].addLayer(toBeAdded);
@@ -654,7 +659,7 @@ export default class MyFretboard {
         li.querySelector('.merge-btn').addEventListener('click', (event) => {
             this.mergeLayer(event, layerId, parentId);
         });
-        li.querySelector('.clone-btn').addEventListener('click', (event) => {
+        li.querySelector('.clone-btn').addEventListener('click', () => {
             this.cloneLayer(toBeAdded);
         });
         li.querySelector('.edit-btn').addEventListener('click', (event) => {
@@ -694,8 +699,8 @@ export default class MyFretboard {
         let degrees = parent.querySelector('.degrees')
         let noteNames = parent.querySelector('.notes')
         if (info) {
-            degrees.innerHTML = info.intervals.map((e, i) => `<td class="${info.notesVisibility[i] ? '' : 'disabled'}">${e}</td>`).join('');
-            noteNames.innerHTML = info.notes.map((e, i) => `<td class="label-notes ${info.notesVisibility[i] ? '' : 'disabled'}">${e}</td>`).join('');
+            degrees.innerHTML = info.intervals.map((e, i) => `<td class="${info.copynotesVisibility[i] ? '' : 'disabled'}">${e}</td>`).join('');
+            noteNames.innerHTML = info.notes.map((e, i) => `<td class="label-notes ${info.copynotesVisibility[i] ? '' : 'disabled'}">${e}</td>`).join('');
             for (let i = 0; i < noteNames.children.length; i++) {
                 const elementN = noteNames.children[i];
                 elementN.addEventListener('click', (event) => {
@@ -875,16 +880,24 @@ export default class MyFretboard {
         // EVENTS for what number of fingering
         for (let i = 0; i < fingeringList.children.length; i++) {
             const fingering = fingeringList.children[i];
-            fingering.addEventListener('click', (event) => {
+            fingering.addEventListener('mouseenter', (event) => {
                 event.stopPropagation();
                 for (let item of fingeringList.children) {
                     item.classList.remove('selected');
                 }
                 fingering.classList.toggle('selected');
                 data.fingering = i === 0 ? 'all' : i;
+                data.notesVisibility = this.transformByFingering(data.copynotesVisibility, data.fingering);
                 this.fretboardIstances[id].repaint();
             });
         }
+    }
+
+    transformByFingering (arr, fingering) {
+        fingering = fingering === 'all' ? 0 : fingering - 1;
+        let copy = [...arr];
+        let cut = copy.splice(0, fingering);
+        return [...copy, ...cut];
     }
 
     removeFingeringBtn (parent) {
