@@ -4,18 +4,78 @@
   --font-color: black;
   --background-color: white;
   --primary-color: #626384; /* #30336b */
-  --secondary-color: #4ea40b; /* #ecd92b #30336b*/
+  --secondary-color: #4ea40b; /* #35daae; verde acqua - #a4950b; arancione - #ecd92b giallo */
   --light-grey: lightgrey;
   --detail: #666;
 }
 
 .dark-theme {
-  --font-color: #f2ee8a;
+  --font-color: #c4ebff;
   --background-color: #3e4658;
-  --primary-color: #30336b;
-  --secondary-color: rgb(0, 178, 216);
-  --light-grey: #c3c3c3;
+  --primary-color: #3b3c4f;
+  --secondary-color: #ecd92b;
+  --light-grey: #989898;
   --detail: #fefefe;
+}
+
+.default-theme {
+  --fretboard: var(--background-color);
+  --fretboard_side: var(--light-grey);
+  --inlays: var(--light-grey);
+  --frets: var(--light-grey);
+  --strings: var(--light-grey);
+  --scale_highlight_note_background: var(--light-grey);
+  --scale_highlight_note_text: white;
+}
+
+.tanclassic-theme {
+  --fretboard: #f3e08c;
+  --fretboard_side: #fff7b2;
+  --inlays: #fff;
+  --frets: #444;
+  --strings: #555;
+  --scale_highlight_note_background: #555;
+  --scale_highlight_note_text: white;
+}
+
+.orange-theme {
+  --fretboard: #e9b775;
+  --fretboard_side: #f7cc97;
+  --inlays: #fff;
+  --frets: #ddd;
+  --strings: #555;
+  --scale_highlight_note_background: #555;
+  --scale_highlight_note_text: white;
+}
+
+.darkgray-theme {
+  --fretboard: #333;
+  --fretboard_side: #222;
+  --inlays: #fff;
+  --frets: lightgray;
+  --strings: #777;
+  --scale_highlight_note_background: #555;
+  --scale_highlight_note_text: white;
+}
+
+.tinteddark-theme {
+  --fretboard: #433;
+  --fretboard_side: #322;
+  --inlays: #fff;
+  --frets: lightgray;
+  --strings: #777;
+  --scale_highlight_note_background: black;
+  --scale_highlight_note_text: white;
+}
+
+.gildeddark-theme {
+  --fretboard: #381411;
+  --fretboard_side: #1c0000;
+  --inlays: #fff;
+  --frets: #eae8c2;
+  --strings: #e0dc98;
+  --scale_highlight_note_background: black;
+  --scale_highlight_note_text: #ffffaa;
 }
 
 * {

@@ -16,6 +16,13 @@ class App {
             document.body.classList.add('dark-theme');
         }
 
+        let guitar_style = localStorage.getItem('fretboard-theme');
+        if (guitar_style) {
+            document.body.classList.add(`${guitar_style}-theme`);
+        } else {
+            document.body.classList.add('default-theme'); 
+        }
+
         this.start();
         this.guitarSounds = null;
     }

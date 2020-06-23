@@ -28,6 +28,31 @@ export default class List {
         document.querySelector('.order-by-progress').addEventListener('click', this.orderByProgress.bind(this));
         document.querySelector('.study-favourite-filter').addEventListener('click', this.filterFavourite.bind(this));
         document.querySelector('.search').addEventListener('input', (evt) => this.search.call(this, evt));
+
+        let guitar_style = localStorage.getItem('fretboard-theme');
+        for (let item of document.querySelector('.fretboard-style-theme').children) {
+            if (item.dataset.style === guitar_style) {
+                item.classList.add('selected-theme');
+                break;
+            }
+        }
+
+        document.querySelector('.fretboard-style-theme').addEventListener('click', (evt) => {
+            for (let item of document.querySelector('.fretboard-style-theme').children) {
+                item.classList.remove('selected-theme');
+            }
+            evt.target.classList.toggle('selected-theme');
+            this.setTheme(evt.target.dataset.style)
+        });
+    }
+
+    setTheme (theme) {
+        let classes = document.body.classList.value;
+        let match = classes.match(/\w+-theme/g);
+        document.body.classList.remove(match);
+        localStorage.removeItem('fretboard-theme');
+        document.body.classList.add(`${theme}-theme`);
+        localStorage.setItem('fretboard-theme', theme);
     }
 
     orderByDate () {
@@ -50,7 +75,7 @@ export default class List {
         document.querySelector('.study-list').innerHTML = '';
         this.listToBeDisplayed = this.list.filter(item => item.favourite === this.favouriteFlag);
         this.favouriteFlag = !this.favouriteFlag;
-        document.querySelector('.study-favourite-filter').innerHTML= this.favouriteFlag? '&#128150;' : '&#128420;';
+        document.querySelector('.study-favourite-filter').innerHTML = this.favouriteFlag ? '&#128150;' : '&#128420;';
         this.generateItems();
     }
 

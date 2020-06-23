@@ -2,7 +2,7 @@ import * as d3 from "d3-selection";
 
 import { allNotes, allNotesEnh, COLOURS, COLOURS_MERGE, Tunings } from './constants';
 
-import { Scale,  Note } from "@tonaljs/tonal";
+import { Scale, Note } from "@tonaljs/tonal";
 
 /* -------------------------------------------------------------------------- */
 
@@ -395,6 +395,17 @@ export const Fretboard = function (config) {
     };
 
     let drawFrets = function () {
+        const rect = instance.svgContainer
+            .append('rect')
+            .attr('class', 'fretboardpanel')
+            .style('stroke', 'var(--fretboard_side)')
+            .attr('stroke-width', 1)
+            .attr("x", 50 + 'px')
+            .attr("y", 32 + 'px')
+            .attr("width", fretboardWidth())
+            .attr("height", fretboardHeight())
+            .style("fill", 'var(--fretboard)')
+
         for (let i = instance.startFret; i <= instance.frets; i++) {
             // BEWARE: the coordinate system for SVG elements uses a transformation
             // for lefties, however the HTML elements we use for fret numbers and
@@ -411,7 +422,7 @@ export const Fretboard = function (config) {
                 .attr("y1", YMARGIN())
                 .attr("x2", x)
                 .attr("y2", YMARGIN() + fretboardHeight())
-                .attr("stroke", "lightgray")
+                .attr("stroke", 'var(--frets)')
                 .attr("stroke-width", i === 0 ? 8 : 2);
             // number
             d3.select("#" + id)
@@ -420,6 +431,8 @@ export const Fretboard = function (config) {
                 .style("top", fretboardHeight() + YMARGIN() + 5 + "px")
                 .style("left", fretNumX - 4 + "px")
                 .text(i);
+
+
         }
     };
 
@@ -432,7 +445,7 @@ export const Fretboard = function (config) {
                 .attr("y1", i * instance.fretHeight + 1 + YMARGIN())
                 .attr("x2", XMARGIN() + fretboardWidth())
                 .attr("y2", i * instance.fretHeight + 1 + YMARGIN())
-                .attr("stroke", "lightgray")
+                .attr("stroke", "var(--strings)")
                 .attr("stroke-width", 1);
 
             const stringsLetter = instance.svgContainer
@@ -479,7 +492,7 @@ export const Fretboard = function (config) {
             .attr("cx", dotX)
             .attr("cy", dotY(2))
             .attr("r", 4)
-            .style("fill", "#ddd");
+            .style("fill", "var(--inlays)");
 
         p = instance.svgContainer.selectAll(".octave").data(fretsWithDoubleDots());
 
@@ -489,14 +502,14 @@ export const Fretboard = function (config) {
             .attr("cx", dotX)
             .attr("cy", dotY(3))
             .attr("r", 4)
-            .style("fill", "#ddd");
+            .style("fill", "var(--inlays)");
         p.enter()
             .append("circle")
             .attr("class", "octave")
             .attr("cx", dotX)
             .attr("cy", dotY(1))
             .attr("r", 4)
-            .style("fill", "#ddd");
+            .style("fill", "var(--inlays)");
     };
 
     instance.drawBoard = function () {
@@ -547,12 +560,11 @@ export const Fretboard = function (config) {
                     .attr('class', 'note')
                     .style('stroke', 'var(--detail)')
                     .attr('stroke-width', 1)
-                    .attr("x", (absPitch - basePitch + 0.40/size) * instance.fretWidth + 'px')
-                    .attr("y", (string - 1) * instance.fretHeight + YMARGIN()/size / 2 + 4.5 + 'px')
+                    .attr("x", (absPitch - basePitch + 0.40 / size) * instance.fretWidth + 'px')
+                    .attr("y", (string - 1) * instance.fretHeight + YMARGIN() / size / 2 + 4.5 + 'px')
                     .attr("width", 24 * size)
                     .attr("height", 24 * size)
                     .attr("rx", 8)
-
                     .style("fill", hexToRGB(color, opacity))
                     .on('click', () => null/* instance.playNote(note) */);
             } else {

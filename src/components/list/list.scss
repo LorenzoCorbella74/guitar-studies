@@ -67,6 +67,48 @@
     }
 }
 
+.fretboard-style-theme {
+    margin-left: 0.5rem;
+}
+
+.default {
+    background-color: var(--background-color);
+}
+
+.tanclassic {
+    background-color: #f3e08c;
+}
+.orange {
+    background-color: #e8b16b;
+}
+
+.darkgray {
+    background-color: #333;
+}
+
+.tinteddark {
+    background-color: #433;
+}
+
+.gildeddark {
+    background-color: #381411;
+}
+
+.dot {
+    border: 1px solid var(--detail);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.selected-theme {
+    border: 2px solid var(--secondary-color);
+    font-weight: 700;
+}
+
 .study-list {
     display: flex;
     flex-wrap: wrap;
