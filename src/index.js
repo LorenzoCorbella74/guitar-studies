@@ -18,9 +18,9 @@ class App {
 
         let guitar_style = localStorage.getItem('fretboard-theme');
         if (guitar_style) {
-            document.body.classList.add(`${guitar_style}-theme`);
+            document.body.classList.add(`${guitar_style}-style`);
         } else {
-            document.body.classList.add('default-theme'); 
+            document.body.classList.add('default-style'); 
         }
 
         this.start();

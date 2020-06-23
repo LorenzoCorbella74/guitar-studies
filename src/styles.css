@@ -18,7 +18,7 @@
   --detail: #fefefe;
 }
 
-.default-theme {
+.default-style {
   --fretboard: var(--background-color);
   --fretboard_side: var(--light-grey);
   --inlays: var(--light-grey);
@@ -28,17 +28,17 @@
   --scale_highlight_note_text: white;
 }
 
-.tanclassic-theme {
+.tanclassic-style {
   --fretboard: #f3e08c;
   --fretboard_side: #fff7b2;
   --inlays: #fff;
-  --frets: #444;
+  --frets: var(--light-grey);
   --strings: #555;
   --scale_highlight_note_background: #555;
   --scale_highlight_note_text: white;
 }
 
-.orange-theme {
+.orange-style {
   --fretboard: #e9b775;
   --fretboard_side: #f7cc97;
   --inlays: #fff;
@@ -48,7 +48,7 @@
   --scale_highlight_note_text: white;
 }
 
-.darkgray-theme {
+.darkgray-style {
   --fretboard: #333;
   --fretboard_side: #222;
   --inlays: #fff;
@@ -58,7 +58,7 @@
   --scale_highlight_note_text: white;
 }
 
-.tinteddark-theme {
+.tinteddark-style {
   --fretboard: #433;
   --fretboard_side: #322;
   --inlays: #fff;
@@ -68,7 +68,7 @@
   --scale_highlight_note_text: white;
 }
 
-.gildeddark-theme {
+.gildeddark-style {
   --fretboard: #381411;
   --fretboard_side: #1c0000;
   --inlays: #fff;

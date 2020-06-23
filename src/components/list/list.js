@@ -37,21 +37,23 @@ export default class List {
             }
         }
 
-        document.querySelector('.fretboard-style-theme').addEventListener('click', (evt) => {
-            for (let item of document.querySelector('.fretboard-style-theme').children) {
-                item.classList.remove('selected-theme');
-            }
-            evt.target.classList.toggle('selected-theme');
-            this.setTheme(evt.target.dataset.style)
+        document.querySelectorAll('.fretboard-style-theme .dot').forEach(element => {
+            element.addEventListener('click', (evt) => {
+                for (let item of document.querySelector('.fretboard-style-theme').children) {
+                    item.classList.remove('selected-theme');
+                }
+                element.classList.toggle('selected-theme');
+                this.setTheme(evt.target.dataset.style)
+            });
         });
     }
 
     setTheme (theme) {
         let classes = document.body.classList.value;
-        let match = classes.match(/\w+-theme/g);
+        let match = classes.match(/\w+-style/g);
         document.body.classList.remove(match);
         localStorage.removeItem('fretboard-theme');
-        document.body.classList.add(`${theme}-theme`);
+        document.body.classList.add(`${theme}-style`);
         localStorage.setItem('fretboard-theme', theme);
     }
 

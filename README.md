@@ -16,9 +16,11 @@ For a demo go [here](https://laughing-mccarthy-3ab279.netlify.app/).
 
 Guitar images courtesy of [Pexels](https://www.pexels.com).  
 
-## Features
-- [x] filterable guitar studies by tags, favourites, progress status, creation date or free text
-- [x] can display fingerings according to tuning, root, scales 
+
+GUITAR FRETBOARDS 2 is based on two pages: the study list page and the single study page. In the former it is possible to select a single study or filter guitar studies by tags, favourites, progress status, creation date or free text. On the study page it' possible to organise the study on multiple fretboards each based on multiple layers representing scales or arpeggios: each layer has multiple available actions ( visibility on/off, delete clone, send to new fretboard, ...)
+<!-- ![tastiera](./docs/app6.PNG). -->
+## Features and usage
+- [x] To note down precious study information a Fretboard info panel is available.
 - [x] scale fingerings are shown on the entire fretboard or for single modes of the scale with 2, 3 and 4 notes per string.
 - [x] labels with notes'names or degrees and settings panel to customize notes' size and opacity for better overlapping.
 - [x] can merge scales with a graphical comparison of the notes in common and distint on each scale. 
