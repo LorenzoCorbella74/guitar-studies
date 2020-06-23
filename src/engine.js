@@ -2,7 +2,7 @@ import * as d3 from "d3-selection";
 
 import { allNotes, allNotesEnh, COLOURS, COLOURS_MERGE, Tunings } from './constants';
 
-import { Scale, Key, Note } from "@tonaljs/tonal";
+import { Scale,  Note } from "@tonaljs/tonal";
 
 /* -------------------------------------------------------------------------- */
 
@@ -97,9 +97,6 @@ function getIntervalOfNote (note, all) {
     let index = all.notes.findIndex(e => e === note);
     return all.intervals[index];
 }
-
-// TODO: 
-// E minor #7M pentatonic oppure Eb phrygian dominant
 
 function calculateNumOverStrings (num) {
     let out;
@@ -550,8 +547,8 @@ export const Fretboard = function (config) {
                     .attr('class', 'note')
                     .style('stroke', 'var(--detail)')
                     .attr('stroke-width', 1)
-                    .attr("x", (absPitch - basePitch + 0.4) * instance.fretWidth)
-                    .attr("y", (string - 1) * instance.fretHeight + YMARGIN() / 2 + 4.5)
+                    .attr("x", (absPitch - basePitch + 0.40/size) * instance.fretWidth + 'px')
+                    .attr("y", (string - 1) * instance.fretHeight + YMARGIN()/size / 2 + 4.5 + 'px')
                     .attr("width", 24 * size)
                     .attr("height", 24 * size)
                     .attr("rx", 8)
