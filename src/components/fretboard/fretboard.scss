@@ -72,6 +72,10 @@
       margin-left: 24px;
       justify-content: space-between;
 
+      .extended, .reduced {
+        margin-right: 8px;
+      }
+
       ul.reduced-list,
       ul.extended-list,
       ul.chords-list {
