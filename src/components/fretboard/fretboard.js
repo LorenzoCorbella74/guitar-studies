@@ -94,6 +94,7 @@ export default class MyFretboard {
                 delete element.scaleChords;
                 delete element.modeNames;
                 delete element.fingerings;
+                delete element.copynotesVisibility
             });
         }
         let general = {
@@ -170,9 +171,16 @@ export default class MyFretboard {
         this.fretboardIstances[id].drawBoard();
         this.fretboardIstances[id].layers = [];
         this.fretboardIstances[id].selectedIndex = null;
-        this.fretboardIstances[id].visible = true;
+        this.fretboardIstances[id].visible = input.visible === false ? false : true;
         this.fretboardIstances[id].note = input.note || '',   // testo info 
             fretboard.querySelector(`.note-btn`).innerHTML = this.fretboardIstances[id].note.length > 0 ? '&#128221;' : '&#128196;';
+
+        if (!this.fretboardIstances[id].visible) {
+            fretboard.querySelector('.col-output-two').classList.toggle('hide');
+            fretboard.querySelector('.col-output').classList.toggle('hide');
+            let btn = fretboard.querySelector(`.toggle-btn`)
+            btn.innerHTML = this.fretboardIstances[id].visible ? '&#9899;' : '&#9898;';
+        }
 
         fretboard.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
