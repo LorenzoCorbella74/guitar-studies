@@ -23,16 +23,16 @@ Guitar images courtesy of [Pexels](https://www.pexels.com).
 - [x] labels with notes'names or degrees and settings panel to customize notes' size and opacity for better overlapping.
 - [x] can merge scales with a graphical comparison of the notes in common and distint on each scale. 
 - [x] fast switch between scale and relative arpeggio
+- [x] Summary panel for comparing notes' scales  
 - [x] responsive svg fretboards
 - [x] configurable light and dark themes
 - [x] configurable 6 guitar fretboard styles
 - [x] persistence with localstorage with save and import functionalities
 - [x] can play guitar scales via [soundfont-player](https://github.com/danigb/soundfont-player)
-![tastiera](./docs/app3.PNG)
 - [x] Modal interchange table
+![tastiera](./docs/app3.PNG)
 - [x] Circle of Fifths
 ![tastiera](./docs/app4.PNG)
-- [ ] Chord progressions  
 
 ## Built With
 - HTML5, SASS
