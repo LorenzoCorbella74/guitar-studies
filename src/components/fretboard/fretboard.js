@@ -344,7 +344,7 @@ export default class MyFretboard {
         parent.querySelector(`.note-btn`).innerHTML = data.note.length > 0 ? '&#128221;' : '&#128196;';
     }
 
-    /*  ----------------------------- LAYER NOTES MODAL ----------------------------- */
+    /*  ----------------------------- COMPARISON PANEL ----------------------------- */
 
     calculateComparison (parent, id) {
         let index = this.fretboardIstances[id].layers.findIndex(e => e.id === this.fretboardIstances[id].selectedIndex);
@@ -405,6 +405,8 @@ export default class MyFretboard {
             }
         }
     }
+
+    /*  ----------------------------- DETAIL FOOTER (CHORDS, REDUCED, EXTENDED) ----------------------------- */
 
     toggleAssociation (evt) {
         let { parent } = this.getParent(evt);
@@ -526,6 +528,29 @@ export default class MyFretboard {
         }
     }
 
+    compare (a, b) {
+        if (a[0] < b[0]) {
+            return -1;
+        }
+        if (a[0] > b[0]) {
+            return 1;
+        }
+        if (a[1] == 'b') {
+            return -1;
+        }
+        if (b[1] == 'b') {
+            return 1;
+        }
+        if (a[1] == '#') {
+            return 1;
+        }
+        if (b[1] == '#') {
+            return -1;
+        }
+        // a deve essere uguale a b
+        return 0;
+    }
+
     getIntervalsOfMerged (notes) {
         let root = notes[0];
         let intervals = [];
@@ -533,9 +558,7 @@ export default class MyFretboard {
             intervals.push(Interval.distance(root, notes[i]));
         }
         // TODO: spostare quelle 3m prima di 3M, etc
-        return intervals.sort((a, b) => {
-            return a - b;
-        });
+        return intervals;
     }
 
     renderMergedLayer (data) {
@@ -575,9 +598,9 @@ export default class MyFretboard {
         };
         let data1 = Scale.get(toBeAdded.value1);
         let data2 = Scale.get(toBeAdded.value2);
-        toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort((a, b) => a - b);
+        toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort(this.compare);
         toBeAdded.notesVisibility = data.notesVisibility || this.getNoteVisibilityRange(toBeAdded.notes),
-            toBeAdded.copynotesVisibility = [...toBeAdded.notesVisibility];
+        toBeAdded.copynotesVisibility = [...toBeAdded.notesVisibility];
         toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
         toBeAdded.intervals = this.getIntervalsOfMerged(toBeAdded.notes);// sono riferiti alla scala di partenza
         toBeAdded.combinedColors = createMergeColors(toBeAdded.notes, data1.notes, data2.notes);
