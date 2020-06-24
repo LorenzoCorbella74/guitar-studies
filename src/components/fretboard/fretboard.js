@@ -557,8 +557,15 @@ export default class MyFretboard {
         for (let i = 0; i < notes.length; i++) {
             intervals.push(Interval.distance(root, notes[i]));
         }
-        // TODO: spostare quelle 3m prima di 3M, etc
         return intervals;
+    }
+
+    moveToRoot({notes, value1}){
+        let root = value1.split(' ')[0];
+        let index = notes.indexOf(root);
+        let copy = [...notes];
+        let cut = copy.splice(0, index);
+        return [...copy, ...cut];
     }
 
     renderMergedLayer (data) {
@@ -599,6 +606,7 @@ export default class MyFretboard {
         let data1 = Scale.get(toBeAdded.value1);
         let data2 = Scale.get(toBeAdded.value2);
         toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort(this.compare);
+        toBeAdded.notes = this.moveToRoot(toBeAdded);
         toBeAdded.notesVisibility = data.notesVisibility || this.getNoteVisibilityRange(toBeAdded.notes),
         toBeAdded.copynotesVisibility = [...toBeAdded.notesVisibility];
         toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
