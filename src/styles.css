@@ -28,6 +28,15 @@
   --scale_highlight_note_text: white;
 }
 
+.tan-style {
+  --fretboard: #efd4a5;
+  --fretboard_side: #fff7b2;
+  --inlays: #fff;
+  --frets: #cab0b0;
+  --strings: #555;
+  --scale_highlight_note_background: #555;
+  --scale_highlight_note_text: white;
+}
 .tanclassic-style {
   --fretboard: #d8ac85;
   --fretboard_side: #fff7b2;

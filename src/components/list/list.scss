@@ -75,6 +75,9 @@
     background-color: var(--background-color);
 }
 
+.tan {
+    background-color: #efd4a5;
+}
 .tanclassic {
     background-color: #d8ac85; /* #f3e08c; */
 }
@@ -97,9 +100,9 @@
 .dot {
     border: 1px solid var(--detail);
     border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    margin-right: 6px;
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
     display: inline-block;
     cursor: pointer;
 }
