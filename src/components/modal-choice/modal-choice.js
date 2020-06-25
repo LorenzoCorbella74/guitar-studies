@@ -70,7 +70,7 @@ export default class ModalChoice {
         }
     }
 
-    getRadioValue(name) {
+    getRadioValue (name) {
         let radioElements = document.getElementsByName(name);
         for (let i = 0; i < radioElements.length; i++) {
             if (radioElements[i].name === name && radioElements[i].checked) {
@@ -97,16 +97,13 @@ export default class ModalChoice {
         this.refs.tuning.value = data.tuning;
         this.refs.scale.value = data.scale;
         this.refs.root.value = data.root;
-        // this.refs.arpeggio.value = data.arpeggio;
-        // this.setRadioValue('type', data.type);
-        this.setRadioValue('whatToShow', data.whatToShow);
+        this.setRadioValue('whatToShow-choice', data.whatToShow);
     }
 
     configureForm() {
         this.fillOptions('scale', optionsScales);
         this.fillOptions('tuning', optionsTuning);
         this.fillOptions('root', optionsNotes);
-        // this.fillOptions('arpeggio', optionsArp);
     }
 
     fillOptions(id, options) {
@@ -129,10 +126,8 @@ export default class ModalChoice {
         // this.refs.tuning.value = '';
         this.refs.scale.value = '';
         this.refs.root.value = '';
-        /* this.refs.arpeggio.value = '';
-        this.resetRadio('type') */
         this.merge= '';
-        this.resetRadio('whatToShow')
+        this.resetRadio('whatToShow-choice')
     }
 
     open(data) {
@@ -145,15 +140,16 @@ export default class ModalChoice {
     }
 
     save() {
+        if([this.refs.tuning.value,this.refs.root.value, this.refs.scale.value].some(e=>e.includes('Choose'))){
+            return 
+        }
         this.data = {
             id: this.id,
             parentId: this.parentId,
-            type: this.getRadioValue('type'),               // can be scale | arpeggio
-            whatToShow: this.getRadioValue('whatToShow'),   // can be notes | degrees
+            whatToShow: this.getRadioValue('whatToShow-choice'),   // can be notes | degrees
             tuning: this.refs.tuning.value,
             root: this.refs.root.value,
             scale: this.refs.scale.value,
-            //arpeggio: this.refs.arpeggio.value,
             value: `${this.refs.root.value} ${this.refs.scale.value}`,
             // if it's a merge action
             merge: this.merge,

@@ -246,6 +246,9 @@ export default class MyFretboard {
 
     transposeLayers (evt) {
         let { parent, id } = this.getParent(evt);
+        if(this.fretboardIstances[id].layers.length==0 || !this.selectedInterval[id]){
+            return;
+        }
         for (let i = 0; i < this.fretboardIstances[id].layers.length; i++) {
             const layer = this.fretboardIstances[id].layers[i];
             layer.root = Note.transpose(layer.root, this.selectedInterval[id]);
