@@ -105,10 +105,20 @@
     margin-right: 4px;
     display: inline-block;
     cursor: pointer;
+    &:hover {
+        border: 1px solid var(--secondary-color);
+    }
+}
+
+.dropdown-menu {
+    right: 2rem;
+    top: 2.8rem;
+    padding: 6px;
 }
 
 .selected-theme {
-    border: 2px solid var(--secondary-color);
+    border-radius: unset;
+    border: 1px solid var(--secondary-color);
     font-weight: 700;
 }
 

@@ -8,7 +8,8 @@ import state from '../../state';
 export default class List {
 
     constructor(app) {
-        this.body = document.body;
+        document.getElementById('loading-container').classList.add('hide');
+        this.body = document.getElementById('content');
         this.body.innerHTML = `${template}`;
 
         this.app = app;
@@ -207,11 +208,17 @@ export default class List {
     }
 
     removeStudy (evt) {
+        this.app.confirmModal.style.display = "block";
+        this.app.setCallback(this.doRemoveStudy.bind(this, evt));
+    }
+
+    doRemoveStudy (evt) {
         let { parent, id } = this.getParent(evt);
         let index = this.list.findIndex(e => e.studyId === id);
         this.list.splice(index, 1);
         parent.remove();
         state.forceSetState(this.list);
+        this.app.confirmModal.style.display = "none";
     }
 
     openStudy (evt) {

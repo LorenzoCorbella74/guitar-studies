@@ -28,7 +28,7 @@ export default class MyFretboard {
         this.favourite = input.favourite || false;
         this.img = input.img;
 
-        this.body = document.body;
+        this.body = document.getElementById('content');
         this.body.innerHTML = `${template}`;
 
         this.header = new Header('header',
@@ -97,7 +97,7 @@ export default class MyFretboard {
                 delete element.copynotesVisibility
             });
         }
-        let general = {
+        state.saveOrUpdate({
             studyId: this.studyId,
             img: this.img || this.getIconPath(),
             title: this.header.refs.title.textContent,
@@ -107,9 +107,8 @@ export default class MyFretboard {
             progress: this.header.refs.progress.value,
             creation: this.creation,
             frets: copy
-        }
-        state.saveOrUpdate(general);
-        if (noredirect && 'cancelable' in noredirect) {
+        });
+        if (noredirect && 'cancelable' in noredirect) { // "save" btn or "back to list" btn
             this.app.goTo('list');
         }
     }
@@ -196,19 +195,28 @@ export default class MyFretboard {
     }
 
     removeAllFretboard () {
-        let fretboards = document.querySelectorAll('.fretboard-container')
+        this.app.confirmModal.style.display = "block";
+        this.app.setCallback(this.doRemoveAllFretboard.bind(this));
+    }
+    doRemoveAllFretboard () {
+        let fretboards = document.querySelectorAll('.fretboard-container');
         fretboards.forEach(element => {
             element.remove();           // remove the html element
         });
         this.fretboardIstances = {};    // remove the model
+        this.app.confirmModal.style.display = "none";
     }
 
     removeFretboard (evt) {
+        this.app.confirmModal.style.display = "block";
+        this.app.setCallback(this.doRemoveFretboard.bind(this, evt));
+    }
+    doRemoveFretboard (evt) {
         let { parent, id } = this.getParent(evt);
         parent.remove();                    // remove the html element
         delete this.fretboardIstances[id]; // remove the model
+        this.app.confirmModal.style.display = "none";
     }
-
 
     togglePanel (evt) {
         let { parent, id } = this.getParent(evt);
@@ -257,19 +265,29 @@ export default class MyFretboard {
                 layer.fingerings = generateFingerings(layer);
             }
         }
-        // layers are deselected
-        parent.querySelectorAll('.scale').forEach(element => {
-            element.classList.remove('selected');
-        });
-        // updating labels
-        parent.querySelectorAll('.scale').forEach((element, index) => {
-            element.querySelector('.layer-label').innerHTML = this.fretboardIstances[id].layers[index].value;
-        });
-        // Layer info are removed
-        this.updateTitle('', id);
-        this.updateLayerInfo(null, id);
-        // repaint layers
-        this.fretboardIstances[id].repaint();
+        let prevLayerId = this.fretboardIstances[id].layers.length > 0 ? this.fretboardIstances[id].layers[0].id : null;
+        if (prevLayerId) {
+            // updating labels
+            parent.querySelectorAll('.scale').forEach((element, index) => {
+                element.querySelector('.layer-label').innerHTML = this.fretboardIstances[id].layers[index].value;
+            });
+            this.selectLayer(evt, prevLayerId, id);
+        } else {
+            parent.querySelector('.settings-btn').style.visibility = 'hidden';
+            parent.querySelector('.scale-info-btn').style.visibility = 'hidden';
+            parent.querySelector('.scale-toggle-btn').style.visibility = 'hidden';
+            parent.querySelector('.scale-play-btn').style.visibility = 'hidden';
+            parent.querySelector('.note-btn').style.visibility = 'hidden';
+            let panel = parent.querySelector('.info');
+            panel.style.visibility = 'hidden';
+            this.fretboardIstances[id].selectedIndex = null;
+            this.fretboardIstances[id].repaint();
+            this.updateTitle('', id);
+            this.updateLayerInfo(null, id);
+            this.removeFingeringBtn(parent);
+            this.calculateComparison(parent, id);
+            this.calculateAssociation(parent, id);
+        }
         // resetting range
         const slider = parent.querySelector(".slidecontainer .slider");
         const bubble = parent.querySelector(".slidecontainer .bubble");
@@ -560,7 +578,7 @@ export default class MyFretboard {
         return intervals;
     }
 
-    moveToRoot({notes, value1}){
+    moveToRoot ({ notes, value1 }) {
         let root = value1.split(' ')[0];
         let index = notes.indexOf(root);
         let copy = [...notes];
@@ -608,7 +626,7 @@ export default class MyFretboard {
         toBeAdded.notes = mergeArrays(data1.notes.map(e => safeNotes(e)), data2.notes.map(e => safeNotes(e))).sort(this.compare);
         toBeAdded.notes = this.moveToRoot(toBeAdded);
         toBeAdded.notesVisibility = data.notesVisibility || this.getNoteVisibilityRange(toBeAdded.notes),
-        toBeAdded.copynotesVisibility = [...toBeAdded.notesVisibility];
+            toBeAdded.copynotesVisibility = [...toBeAdded.notesVisibility];
         toBeAdded.notesForString = data.notesForString || (toBeAdded.notes.length > 5 ? 3 : 2);
         toBeAdded.intervals = this.getIntervalsOfMerged(toBeAdded.notes);// sono riferiti alla scala di partenza
         toBeAdded.combinedColors = createMergeColors(toBeAdded.notes, data1.notes, data2.notes);
@@ -765,6 +783,10 @@ export default class MyFretboard {
     }
 
     removeLayers (evt) {
+        this.app.confirmModal.style.display = "block";
+        this.app.setCallback(this.doRemoveLayers.bind(this, evt));
+    }
+    doRemoveLayers (evt) {
         let { parent, id } = this.getParent(evt);
         const list = parent.querySelector('.list');
         while (list.hasChildNodes()) {
@@ -782,6 +804,7 @@ export default class MyFretboard {
         parent.querySelector('.scale-play-btn').style.visibility = 'hidden';
         parent.querySelector('.note-btn').style.visibility = 'hidden';
         this.calculateComparison(parent, id);
+        this.app.confirmModal.style.display = "none";
     }
 
     editLayer (evt, layerId) {
@@ -954,8 +977,7 @@ export default class MyFretboard {
     }
 
     removeFingeringBtn (parent) {
-        let fingeringList = parent.querySelector('.fingering-list');
-        fingeringList.innerHTML = '';
+        parent.querySelector('.fingering-list').innerHTML = '';
     }
 
     updateTitle (title, parentId) {

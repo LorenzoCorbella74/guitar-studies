@@ -1,43 +1,57 @@
-import "./styles.css";
+import "./styles.scss";
+import template from './index.html';
 
 // Components
 import MyFretboard from './components/fretboard/fretboard';
 import List from './components/list/list';
 
+// SOUNDS
 import Soundfont from 'soundfont-player';
-
 export const ac = new AudioContext();
 
 class App {
     constructor() {
-        
-        // Turn the theme of if the 'dark-theme' key exists in localStorage
+
+        // SOUNDS
+        this.guitarSounds = null;
+
+        // SETTINGS
         if (localStorage.getItem('dark-theme')) {
             document.body.classList.add('dark-theme');
         }
-
         let guitar_style = localStorage.getItem('fretboard-theme');
         if (guitar_style) {
             document.body.classList.add(`${guitar_style}-style`);
         } else {
-            document.body.classList.add('default-style'); 
+            document.body.classList.add('default-style');
         }
 
         this.start();
-        this.guitarSounds = null;
     }
 
     start () {
-        document.body.innerHTML = `
-            <div id="loading-container">
-                <h1>Guitar studies</h1>
-                <h4>Loading sounds</h4>
-            </div>`;
+        document.body.innerHTML = `${template}`;
 
+        this.confirmModal = document.getElementById('confirm-modal');
+        // "no" event
+        this.confirmModal.querySelector('.close-confirm').addEventListener('click', (evt)=>{
+            evt.stopPropagation();
+            this.confirmModal.style.display = "none";
+        })
+        // "ok" event
+        this.confirmModal.callback = ()=> null;
+        this.confirmModal.querySelector('.save-confirm').addEventListener('click', (evt)=>{
+            evt.stopPropagation();
+            this.confirmModal.callback();
+        })
         Soundfont.instrument(ac, 'acoustic_guitar_steel').then(guitarDownloaded => {
             this.guitarSounds = guitarDownloaded;
             this.goTo('list'); // list as default
         });
+    }
+
+    setCallback(callback){
+        this.confirmModal.callback = callback;
     }
 
     goTo (where, data) {
