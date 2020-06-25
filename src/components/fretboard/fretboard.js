@@ -878,6 +878,7 @@ export default class MyFretboard {
     }
 
     selectLayer (event, id, parentId) {
+        this.settings.close();
         let { parent } = this.getParent(null, parentId);
         this.fretboardIstances[parentId].selectedIndex = id; // id del layer
         // BTN
