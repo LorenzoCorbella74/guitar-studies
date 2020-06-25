@@ -60,16 +60,20 @@ export default class MyFretboard {
         this.header.renderTags()
         this.header.refs.progress.value = input.progress || 0;
         this.header.setBubbleProgress();
-        for (const fret in input.frets) {
-            const fretboard = input.frets[fret];
-            this.addFretboard(fretboard);
-            fretboard.layers.forEach(l => {
-                if (l.merge) {
-                    this.renderMergedLayer(l);
-                } else {
-                    this.renderLayer(l);
-                }
-            })
+        if (input.frets && Object.keys(input.frets).length > 0) {
+            for (const fret in input.frets) {
+                const fretboard = input.frets[fret];
+                this.addFretboard(fretboard);
+                fretboard.layers.forEach(l => {
+                    if (l.merge) {
+                        this.renderMergedLayer(l);
+                    } else {
+                        this.renderLayer(l);
+                    }
+                })
+            }
+        } else {
+            this.addFretboard({}); // create one fretboard if empty
         }
     }
 
@@ -144,7 +148,7 @@ export default class MyFretboard {
         let id = input.id || 'fretboard' + Math.floor(Math.random() * 1000000);
         clone.firstElementChild.dataset.id = id;
 
-        document.querySelector('.content').appendChild(clone);
+        document.querySelector('.fretboard-content').appendChild(clone);
 
         let fretboard = document.querySelector(`[data-id='${id}']`);
 
@@ -246,7 +250,7 @@ export default class MyFretboard {
 
     transposeLayers (evt) {
         let { parent, id } = this.getParent(evt);
-        if(this.fretboardIstances[id].layers.length==0 || !this.selectedInterval[id]){
+        if (this.fretboardIstances[id].layers.length == 0 || !this.selectedInterval[id]) {
             return;
         }
         for (let i = 0; i < this.fretboardIstances[id].layers.length; i++) {
@@ -739,8 +743,8 @@ export default class MyFretboard {
         this.selectLayer({ target: parent }, layerId, parentId);  // si seleziona automaticamente quando si aggiunge
     }
 
-    addLayer (evt) {
-        let { parent } = this.getParent(evt);
+    addLayer (evt, parentId) {
+        let { parent } = this.getParent(evt, parentId);
         let def = {
             parentId: parent.dataset.id,
             type: 'scale',          // can be scale | arpeggio 

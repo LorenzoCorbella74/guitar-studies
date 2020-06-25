@@ -13,8 +13,8 @@ export default class List {
         this.body.innerHTML = `${template}`;
 
         this.app = app;
-        this.list = state.getState();
-        this.listToBeDisplayed = this.list;
+        this.list = state.getState();           // lista da stato
+        this.listToBeDisplayed = this.list;     // lista da filtrare
         this.generateItems();
 
         this.favouriteFlag = true;
