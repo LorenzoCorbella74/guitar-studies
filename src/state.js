@@ -9,7 +9,7 @@ class State {
         }
     }
 
-    forceSetState (payload) {
+    updateState (payload) {
         this.state.studies = payload;
         localStorage.setItem('frets', JSON.stringify(this.state.studies));
     }
@@ -21,10 +21,10 @@ class State {
     saveOrUpdate (payload) {
         let currentStudyId = this.state.studies.findIndex(e => e.studyId === payload.studyId);
         if (currentStudyId > -1) {
-            this.state.studies[currentStudyId] = payload;
+            this.state.studies[currentStudyId] = payload;   // update
         }
         else {
-            this.state.studies.push(payload);
+            this.state.studies.push(payload);               // create
         }
         localStorage.setItem('frets', JSON.stringify(this.state.studies));
     }

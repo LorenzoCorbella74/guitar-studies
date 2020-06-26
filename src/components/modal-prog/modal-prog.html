@@ -1,0 +1,87 @@
+<div class="modal-content big">
+    <div class="modal-header">
+        <span class="close-mp">&#128128;</span>
+        <h2 ref="title">Progression setup</h2>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div style="display: flex;">
+                <div style="flex: 1;margin: 0 2px">
+                    <div style="display: flex;">
+                        <div style="flex:1;">
+                            <h4>Title</h4>
+                            <input type="text" name="title_mp" ref="title_mp" placeholder="Add a title">
+                        </div>
+                        <div style="flex:0.25;">
+                            <h4 style="margin-left: 10px;">BPM</h4>
+                            <input type="number" name="bpm_mp" ref="bpm_mp">
+                        </div>
+                    </div>
+
+                    <h4>Description</h4>
+                    <textarea name="description" id="description_mp" rows="2" ref="description_mp"
+                        placeholder="Add a description"></textarea>
+
+                    <h4>Ritmo </h4>
+                    <select id="ritmos_mp" ref="ritmo_mp">
+                        <option>Choose the ritmo...</option>
+                    </select>
+
+                    <div
+                        class="choice-panel">
+                        <div style="flex: 1;">
+                            <h4>Root</h4>
+                            <select id="root_mp" ref="root_mp">
+                                <option>Choose the root...</option>
+                            </select>
+
+                            <h4>Chords</h4>
+                            <select id="chord_mp" ref="chord_mp">
+                                <option>Choose the root...</option>
+                            </select>
+
+                            <h4>Time Signatures</h4>
+                            <select id="timeSignature_mp" ref="timeSignature_mp">
+                                <option>Choose the time Signature...</option>
+                            </select>
+                        </div>
+                        <div style="align-self: center; margin-left: 1rem;">
+                            <span class="add-mp">&#10133;</span>
+                            <span class="save-item hide"> &#128190;</span>
+                        </div>
+                    </div>
+
+                </div>
+                <div style="flex: 1;margin: 0 1.5rem">
+                    <div style="display: flex; justify-content: space-between;">
+                        <h4>Transpose all </h4>
+                        <div>
+                            <span class="transpose-mp"> &#128073; </span>
+                        </div>
+                    </div>
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="11" value="0" class="slider" id="interval_mp"
+                            ref="interval_mp">
+                        <output class="bubble"></output>
+                    </div>
+                    <br>
+                    <div class="item-list">
+                        <!-- PLACEHOLDER for ITEMS -->
+                    </div>
+                </div>
+            </div>
+        </form>
+        <h4 ref="action" class="save-mp">Save &#128076;</h4>
+    </div>
+</div>
+
+<template id="item">
+    <div class="progression-item">
+        <div class="progression-time" ref="time"></div>
+        <div class="progression-chord" ref="chord"></div>
+        <div class="progression-actions">
+            <span class="item-edit-btn"> &#128295; </span>
+            <span class="item-delete-btn">&#128298;</span>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,105 @@
+/* The Modal (background) */
+#modal-prog {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 10;
+    /* Sit on top */
+    padding-top: 60px;
+    /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    .item-list {
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        height: 426px;
+        overflow: auto;
+    }
+
+    /* The Close Button */
+    .close-mp {
+        float: right;
+        &:hover,
+        &:focus {
+            cursor: pointer;
+        }
+    }
+
+    /* The save Button */
+    .save-mp {
+        text-align: right;
+
+        &:hover,
+        &:focus {
+            cursor: pointer;
+        }
+    }
+
+    /* The + / save Button */
+    .add-mp,
+    .save-item {
+        font-size: 1.6rem;
+        &:hover,
+        &:focus {
+            cursor: pointer;
+        }
+    }
+
+    .choice-panel {
+        display: flex;
+        padding: 1rem;
+        border: 2px dashed var(--primary-color);
+        margin-top: 1rem;
+        border-radius: 8px;
+    }
+}
+
+.progression-item {
+    background-color: var(--primary-color);
+    color: var(--light-grey);
+    align-self: start;
+    padding: 0.5rem;
+    width: 48%;
+    height: 40px;
+    border-radius: 8px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+
+    .progression-time {
+        margin-left: 4px;
+    }
+    .progression-chord {
+        margin-left: 4px;
+    }
+    .progression-actions {
+        margin-left: 4px;
+    }
+    .item-edit-btn,
+    .item-delete-btn {
+        cursor: pointer;
+    }
+}
+
+.selected-item {
+    background-color: var(--secondary-color);
+    color: white;
+    font-weight: 700;
+}

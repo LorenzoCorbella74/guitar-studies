@@ -10,6 +10,7 @@ import Header from '../header/header';
 import ModalNote from '../modal-note/modal-note';
 import ModalInterchange from '../modal-interchange/modal-interchange';
 import ModalFifths from "../modal-fifths/modal-fifths";
+import Progressions from "../progressions/progressions";
 
 import { ac } from '../../index';
 
@@ -32,25 +33,42 @@ export default class MyFretboard {
         this.body.innerHTML = `${template}`;
 
         this.header = new Header('header',
-            this.addFretboard.bind(this),
+            this.add.bind(this),
             this.removeAllFretboard.bind(this),
             this.backToList.bind(this),
             this.backToList.bind(this, false),
             this.openModalInterchange.bind(this),
-            this.openModalFifth.bind(this)
+            this.openModalFifth.bind(this),
+            this.toggleMode.bind(this)
         );
         this.modal = new ModalChoice('modal', this.save.bind(this));
         this.modal_note = new ModalNote('modal-note', this.saveNote.bind(this));
         this.modal_interchange = new ModalInterchange('modal-interchange');
         this.modal_fifths = new ModalFifths('modal-fifths');
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
+        this.progressions = new Progressions(this.app, this.studyId, input.progs );
 
         this.fretboardIstances = {};
         this.selectedInterval = [];
 
+        this.mode = input.mode || 'fretboard'; // can be 'fretboard' or 'progressions'
+        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? 'FRETs' : 'PROGs';
+        if (this.mode === 'progressions') {
+            document.querySelector('.fretboard-content').classList.toggle('hide');
+            document.querySelector('.progression-content').classList.toggle('hide');
+        }
+
         this.generateFretboards(input);
+        this.generateProgressions(input);
 
         window.onresize = this.resize.bind(this);
+    }
+
+    toggleMode () {
+        this.mode = this.mode === 'fretboard' ? 'progressions' : 'fretboard';
+        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? 'FRETs' : 'PROGs';
+        document.querySelector('.fretboard-content').classList.toggle('hide');
+        document.querySelector('.progression-content').classList.toggle('hide');
     }
 
     generateFretboards (input) {
@@ -77,6 +95,12 @@ export default class MyFretboard {
         }
     }
 
+    generateProgressions (input) {
+        if (input.progs && input.progs.length > 0) {
+            this.progressions.generateItems(input.progs);
+        }
+    }
+
     getIconPath () {
         let imgNum = Math.floor(Math.random() * 20) + 1;
         if (imgNum > 20) {
@@ -87,6 +111,7 @@ export default class MyFretboard {
 
     backToList (noredirect) {
         let copy = JSON.parse(JSON.stringify(this.fretboardIstances));
+        let progressions = JSON.parse(JSON.stringify(this.progressions.list));
         for (const key in copy) {
             const fret = copy[key]; // si rimuove tutto ciò che sarà ricreato dinamicamente
             delete fret.notes;
@@ -107,10 +132,12 @@ export default class MyFretboard {
             title: this.header.refs.title.textContent,
             description: this.header.refs.description.value,
             favourite: this.favourite,
+            mode: this.mode,
             tags: this.header.tags,
             progress: this.header.refs.progress.value,
             creation: this.creation,
-            frets: copy
+            frets: copy,
+            progs: progressions
         });
         if (noredirect && 'cancelable' in noredirect) { // "save" btn or "back to list" btn
             this.app.goTo('list');
@@ -142,8 +169,16 @@ export default class MyFretboard {
         return { parent, id: parent.dataset.id };
     }
 
+    add(input){
+        if(this.mode==='fretboard'){
+            this.addFretboard(input);
+        } else {
+            this.progressions.addProgression();
+        }
+    }
+
     addFretboard (input) {
-        var temp = document.getElementsByTagName("template")[0];
+        var temp = document.getElementById("fretboard-item");
         var clone = temp.content.cloneNode(true);
         let id = input.id || 'fretboard' + Math.floor(Math.random() * 1000000);
         clone.firstElementChild.dataset.id = id;
@@ -199,8 +234,13 @@ export default class MyFretboard {
     }
 
     removeAllFretboard () {
-        this.app.confirmModal.style.display = "block";
-        this.app.setCallback(this.doRemoveAllFretboard.bind(this));
+        if (this.mode === 'fretboard') {
+            this.app.confirmModal.style.display = "block";
+            this.app.setCallback(this.doRemoveAllFretboard.bind(this));
+        } else {
+            this.progressions.removeAllProgression();
+        }
+
     }
     doRemoveAllFretboard () {
         let fretboards = document.querySelectorAll('.fretboard-container');

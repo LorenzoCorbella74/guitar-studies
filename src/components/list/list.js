@@ -115,7 +115,7 @@ export default class List {
                 var content = readerEvent.target.result; // this is the content!
                 try {
                     let parsed = JSON.parse(content)
-                    state.forceSetState(parsed.data);
+                    state.updateState(parsed.data);
                     this.list = state.getState();
                     document.querySelector('.study-list').innerHTML = '';
                     this.generateItems();
@@ -168,7 +168,7 @@ export default class List {
     }
 
     renderStudy (input) {
-        var temp = document.getElementsByTagName("template")[0];
+        var temp = document.getElementById("study-item");
         var clone = temp.content.cloneNode(true);
         let id = input.studyId || 'study' + Math.floor(Math.random() * 1000000);
         clone.firstElementChild.dataset.id = id;
@@ -204,7 +204,7 @@ export default class List {
         let index = this.list.findIndex(e => e.studyId === id);
         this.list[index].favourite = !this.list[index].favourite;
         event.target.innerHTML = this.list[index].favourite ? '&#128150;' : '&#128420;';
-        state.forceSetState(this.list);
+        state.updateState(this.list);
     }
 
     removeStudy (evt) {
@@ -217,7 +217,7 @@ export default class List {
         let index = this.list.findIndex(e => e.studyId === id);
         this.list.splice(index, 1);
         parent.remove();
-        state.forceSetState(this.list);
+        state.updateState(this.list);
         this.app.confirmModal.style.display = "none";
     }
 

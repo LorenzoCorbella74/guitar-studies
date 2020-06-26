@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css?family=Lato&display=swap");
 
 :root {
-  --font-color: black;
+  --font-color: #202020;
   --background-color: white;
   --primary-color: #626384; /* #30336b */
   --secondary-color: #4ea40b; /* #35daae; verde acqua - #a4950b; arancione - #ecd92b giallo */
@@ -100,7 +100,7 @@ body {
   background-color: var(--background-color);
   color: var(--font-color);
   opacity: 1;
-  transition: 0.35s opacity;
+  transition: 0.5s opacity;
   overflow-x: hidden;
 }
 
@@ -115,6 +115,7 @@ body.fade {
 
 /*  FORM ELEMENTS */
 input[type="text"],
+input[type="number"],
 textarea,
 select,
 button {
@@ -125,6 +126,12 @@ button {
   padding: 12px 20px;
   margin-top: 4px;
   margin-bottom: 4px;
+  color: var(--font-color);
+}
+
+input[type="number"] {
+  width: 90%;
+  margin-left: 0.5rem;
   color: var(--font-color);
 }
 
@@ -295,61 +302,61 @@ input[type="radio"] {
 
   .modal-header,
   .modal-body {
-      color: var(--font-color);
-      padding: 16px;
+    color: var(--font-color);
+    padding: 16px;
   }
 
-  .modal-footer{
+  .modal-footer {
     display: flex;
     justify-content: space-around;
     padding: 1rem;
   }
-
 }
 
-.small{
-  width: 250px!important;
+.small {
+  width: 250px !important;
+}
+
+.big {
+  width: 1024px !important;
 }
 
 /* Media Query for Tablets Ipads portrait mode */
 @media only screen and (max-width: 767px) {
-  
-      .modal-content {
-          margin: 0;
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-      }
-  
+  .modal-content.big {
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
 }
 
 /* Add Animation */
 @-webkit-keyframes animatetop {
   from {
-      top: -250px;
-      opacity: 0;
+    top: -250px;
+    opacity: 0;
   }
 
   to {
-      top: 0;
-      opacity: 1;
+    top: 0;
+    opacity: 1;
   }
 }
 
 @keyframes animatetop {
   from {
-      top: -250px;
-      opacity: 0;
+    top: -250px;
+    opacity: 0;
   }
 
   to {
-      top: 0;
-      opacity: 1;
+    top: 0;
+    opacity: 1;
   }
 }
-

@@ -1,23 +1,10 @@
 import "./modal-choice.scss";
 import template from './modal-choice.html';
 
-import { Scale } from "@tonaljs/tonal";
-
 import {allScales} from '../../constants';
 
 
-const optionsScaleUsArp = [
-    { text: 'Scale', value: 'scala' },
-    { text: 'Arpeggio', value: 'arpeggio' }
-];
-
-const optionsNoteUsDegree = [
-    { text: 'Note', value: 'nota' },
-    { text: 'Degree', value: 'grado' }
-];
-
-// TODO: 
-const optionsScales = /* Scale.names() */allScales.map(e => {
+const optionsScales = /* Scale.names() */allScales.map(e => {   // TODO: scelta scale...
     return { text: e, value: e };
 });
 
