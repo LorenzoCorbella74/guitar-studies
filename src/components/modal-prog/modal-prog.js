@@ -144,6 +144,7 @@ export default class ModalProgression {
 
     close () {
         this.element.style.display = "none";
+        this.resetForm();
     }
 
     save () {
