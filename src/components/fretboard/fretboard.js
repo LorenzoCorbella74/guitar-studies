@@ -52,7 +52,7 @@ export default class MyFretboard {
         this.selectedInterval = [];
 
         this.mode = input.mode || 'fretboard'; // can be 'fretboard' or 'progressions'
-        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? 'FRETs' : 'PROGs';
+        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? 'PROGs':'FRETs';
         if (this.mode === 'progressions') {
             document.querySelector('.fretboard-content').classList.toggle('hide');
             document.querySelector('.progression-content').classList.toggle('hide');
@@ -66,7 +66,7 @@ export default class MyFretboard {
 
     toggleMode () {
         this.mode = this.mode === 'fretboard' ? 'progressions' : 'fretboard';
-        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? 'FRETs' : 'PROGs';
+        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? 'PROGs':'FRETs';
         document.querySelector('.fretboard-content').classList.toggle('hide');
         document.querySelector('.progression-content').classList.toggle('hide');
     }
