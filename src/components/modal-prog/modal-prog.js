@@ -35,9 +35,9 @@ export default class ModalProgression {
         const refElems = this.element.querySelectorAll('[ref]')
         refElems.forEach((elem) => { this.refs[elem.getAttribute('ref')] = elem })
 
+        this.currentlyInEditing = false;
         this.progression = [];
         this.setDefaults();
-
         this.configureForm();
 
         // EVENTS
@@ -208,25 +208,30 @@ export default class ModalProgression {
     }
 
     removeProgressionItem (evt) {
-        let { id } = this.getParent(evt);
-        this.progression = this.progression.filter(e => e.id !== Number(id));
-        document.querySelectorAll('.progression-item').forEach(e => {
-            if (e.dataset.id === id) {
-                e.remove();
-            }
-        });
+        if (!this.currentlyInEditing) {
+            let { id } = this.getParent(evt);
+            this.progression = this.progression.filter(e => e.id !== Number(id));
+            document.querySelectorAll('.progression-item').forEach(e => {
+                if (e.dataset.id === id) {
+                    e.remove();
+                }
+            });
+        }
     }
 
     editProgressionItem (evt) {
-        let { parent, id } = this.getParent(evt);
-        parent.classList.toggle('selected-item');
-        let progression = this.progression.find(e => e.id === Number(id));
-        progression.editMode = true;
-        this.refs.timeSignature_mp.value = progression.time;
-        this.refs.chord_mp.value = progression.chord;
-        this.refs.root_mp.value = progression.root;
-        document.getElementsByClassName('save-item')[0].classList.remove('hide');
-        document.getElementsByClassName('add-mp')[0].classList.add('hide');
+        if (!this.currentlyInEditing) {
+            this.currentlyInEditing = true;
+            let { parent, id } = this.getParent(evt);
+            parent.classList.toggle('selected-item');
+            let progression = this.progression.find(e => e.id === Number(id));
+            progression.editMode = true;
+            this.refs.timeSignature_mp.value = progression.time;
+            this.refs.chord_mp.value = progression.chord;
+            this.refs.root_mp.value = progression.root;
+            document.getElementsByClassName('save-item')[0].classList.remove('hide');
+            document.getElementsByClassName('add-mp')[0].classList.add('hide');
+        }
     }
 
     saveProgressionItem (evt) {
@@ -244,6 +249,7 @@ export default class ModalProgression {
                 document.getElementsByClassName('add-mp')[0].classList.remove('hide');
             }
         });
+        this.currentlyInEditing = false;
     }
 
     transposeAll (evt) {
