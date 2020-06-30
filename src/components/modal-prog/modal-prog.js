@@ -57,6 +57,7 @@ export default class ModalProgression {
         document.getElementsByClassName('stop-mp')[0].addEventListener('click', this.stop.bind(this));
 
         document.getElementById('root_mp').addEventListener('change', (evt) => this.selectedNote = evt.target.value);
+        document.getElementById('key_mp').addEventListener('change', (evt) => this.selectedKey = evt.target.value);
         document.getElementById('chord_mp').addEventListener('change', (evt) => this.selectedChord = evt.target.value);
         document.getElementById('timeSignature_mp').addEventListener('change', (evt) => this.selectedTimeSignature = evt.target.value);
         document.getElementById('octave_mp').addEventListener('change', (evt) => this.selectedOctave = evt.target.value);
@@ -81,6 +82,7 @@ export default class ModalProgression {
         this.selectedInterval = '1P';
         this.selectedChord = 'maj7';
         this.selectedNote = 'C';
+        this.selectedKey = 'C';
         this.selectedTimeSignature = '4/4';
         this.selectedOctave = '3';
     }
@@ -113,6 +115,7 @@ export default class ModalProgression {
         this.refs.octave_mp.value = this.selectedOctave;
         this.refs.chord_mp.value = this.selectedChord;
         this.refs.root_mp.value = this.selectedNote;
+        this.refs.key_mp.value = this.selectedKey;
         this.progression = data.progression || [];
         this.progression.forEach(element => {
             this.renderChord(element);
@@ -122,6 +125,7 @@ export default class ModalProgression {
     configureForm () {
         this.fillOptions('ritmos_mp', optionsRitmo);
         this.fillOptions('root_mp', optionsNotes);
+        this.fillOptions('key_mp', optionsNotes);
         this.fillOptions('chord_mp', optionsChords);
         this.fillOptions('timeSignature_mp', optionsTimeSignatures);
         this.fillOptions('octave_mp', optionsOctaves);
@@ -147,6 +151,7 @@ export default class ModalProgression {
         this.refs.octave_mp.value = '';
         this.refs.chord_mp.value = '';
         this.refs.root_mp.value = '';
+        this.refs.key_mp.value = '';
         this.progression = [];
         document.querySelector('.item-list').innerHTML = '';
     }
@@ -162,7 +167,7 @@ export default class ModalProgression {
     }
 
     save () {
-        if ([this.refs.root_mp.value, this.refs.chord_mp.value, this.refs.timeSignature_mp.value].some(e => e.includes('Choose'))) {
+        if ([this.refs.key_mp.value, this.refs.root_mp.value, this.refs.chord_mp.value, this.refs.timeSignature_mp.value].some(e => e.includes('Choose'))) {
             return
         }
         this.data = {
@@ -170,7 +175,7 @@ export default class ModalProgression {
             progressionId: this.progressionId,
             title: this.refs.title_mp.value,
             bpm: this.refs.bpm_mp.value,
-            octave: this.refs.octave_mp.value,
+            key: this.refs.key_mp.value,
             description: this.refs.description_mp.value,
             ritmo: this.refs.ritmo_mp.value,
             progression: this.progression,
@@ -209,8 +214,8 @@ export default class ModalProgression {
         refElems.forEach((elem) => { item.refs[elem.getAttribute('ref')] = elem })
 
         item.refs.time.textContent = input.time;
-        item.refs.chord.textContent = `${input.root} ${input.chord}`;
-        item.refs.octave.textContent = `${input.octave}`;
+        item.refs.chord.textContent = `${input.root}${input.chord}`;
+        item.refs.octave.textContent = `O:${input.octave}`;
 
         // EVENTS
         item.querySelector('.item-delete-btn').addEventListener('click', (evt) => this.removeProgressionItem.call(this, evt));
@@ -257,7 +262,7 @@ export default class ModalProgression {
         progression.time = this.refs.timeSignature_mp.value;
         progression.chord = this.refs.chord_mp.value;
         progression.root = this.refs.root_mp.value;
-        progression.octave = this.refs.octave_mp.value;
+        progression.key = this.refs.key_mp.value;
         progression.editMode = false;
         document.querySelectorAll('.progression-item').forEach(e => {
             if (Number(e.dataset.id) === progression.id) {

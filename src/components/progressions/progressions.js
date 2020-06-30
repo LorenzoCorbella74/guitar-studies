@@ -71,19 +71,25 @@ export default class Progressions {
         progression.refs.titleP.textContent = input.title;
         progression.refs.dateP.textContent = this.renderDate(this.checkDate(input.creation));
 
-        let numeralsContainer = progression.querySelector('.progression-numerals');
-
+        
         // EVENTS
         progression.querySelector('.progression-info').addEventListener('click', (evt) => this.openProgression.call(this, evt, input.progressionId));
         progression.querySelector('.progression-delete-btn').addEventListener('click', (evt) => this.removeProgression.call(this, evt, input.progressionId));
         progression.querySelector('.progression-play-btn').addEventListener('click', (evt) => this.playProgression.call(this, evt, input.progressionId));
         progression.querySelector('.progression-stop-btn').addEventListener('click', (evt) => this.stopProgression.call(this, evt, input.progressionId));
-
+        
         progression.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+        this.renderNumerals(progression, input);
+    }
+
+    renderNumerals (progression, input) {
+        let numeralsContainer = progression.querySelector('.progression-numerals');
+        numeralsContainer.innerHTML = '';
         input.progression.forEach(element => {
             let span = document.createElement('span');
             span.classList.add('numeral');
-            span.textContent = element.chord; // Progression.toRomanNumerals("C", ["CMaj7", "Dm7", "G7"]);
+            span.textContent = Progression.toRomanNumerals(input.key, [`${element.root}${element.chord}`])[0];
             numeralsContainer.appendChild(span);
         });
     }
@@ -92,7 +98,7 @@ export default class Progressions {
         let progression = document.querySelector(`[data-id='${input.progressionId}']`)
         progression.refs.titleP.textContent = input.title;
         progression.refs.dateP.textContent = this.renderDate(this.checkDate(input.creation));
-        // TODO: 
+        this.renderNumerals(progression, input);
     }
 
     removeAllProgression () {
@@ -142,7 +148,6 @@ export default class Progressions {
     }
 
     playProgression (evt, progressionId) {
-        // TODO:
         let item = this.list.find(e => e.progressionId === progressionId);
         // console.log('Play progression: ', item);
         let chords = item.progression.map(e => Chord.getChord(e.chord, e.root + e.octave));
@@ -156,7 +161,7 @@ export default class Progressions {
             });
             global_time += times[i] * bpm; // è il tempo tra un accordo ed il successivo...
         });
-        this.loop = setTimeout(() => this.play(), totalTime * bpm * 1000);
+        this.loop = setTimeout(() => this.playProgression(evt, progressionId), totalTime * bpm * 1000);
     }
 
     stopProgression (evt, progressionId) {
@@ -166,14 +171,3 @@ export default class Progressions {
         clearTimeout(this.loop);
     }
 }
-
-
-/*
-
-
-https://github.com/tonaljs/tonal/tree/master/packages/progression
-
-Progression.toRomanNumerals("C", ["CMaj7", "Dm7", "G7"]);
-// => "IMaj7", "IIm7", "V7"]
-
-*/
