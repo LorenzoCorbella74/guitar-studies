@@ -49,14 +49,19 @@ class App {
         })
 
         this.spinner.textContent = 'Loading ambient sounds';
-        Soundfont.instrument(ac, 'pad_2_warm').then(ambientSoundDownloaded => {
+        Soundfont.instrument(ac, 'electric_piano_1').then(ambientSoundDownloaded => {   // electric_grand_piano , pad_2_warm, electric_piano_1 pad_1_new_age
             this.ambientSounds = ambientSoundDownloaded;
             this.spinner.textContent = 'Loading guitar sounds';
             console.log('Ambient: ', this.ambientSounds);
             Soundfont.instrument(ac, 'acoustic_guitar_steel').then(guitarDownloaded => {
                 this.guitarSounds = guitarDownloaded;
-                this.goTo('list'); // list as default
+                this.spinner.textContent = 'Loading percussion sounds';
+                Soundfont.instrument(ac, 'percussion',{ soundfont: 'FluidR3_GM' }).then(percussionDownloaded => {  // steel_drums, percussion
+                    this.drumSounds = percussionDownloaded;
+                    this.goTo('list'); // list as default
+                });
             });
+            
         });
 
     }
