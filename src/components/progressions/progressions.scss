@@ -42,7 +42,7 @@
             }
 
             .progression-numerals {
-                margin-top: 1rem;
+                margin-top: 0.5rem;
                 width: 250px;
                 white-space: nowrap;
                 overflow: hidden;
@@ -59,7 +59,7 @@
         display: flex;
         justify-content: space-evenly;
         background-color: rgba(210, 210, 210, 0.4);
-        padding: 25px;
+        padding: 20px;
 
         .progression-delete-btn,
         .progression-play-btn,
