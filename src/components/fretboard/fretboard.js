@@ -942,9 +942,11 @@ export default class MyFretboard {
         this.fretboardIstances[parentId].layers.forEach(layer => {
             layer.color = 'one';
             layer.opacity = 0.25;
+            layer.size = 1.3
         });
         selected.color = 'many';
         selected.opacity = 1;
+        selected.size = 0.9;
         this.fretboardIstances[parentId].layers.push(selected);
         if (selected.merge) {
             let title = `${selected.startScale} merged with ${selected.value}`;
