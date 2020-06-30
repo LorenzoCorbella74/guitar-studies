@@ -14,6 +14,7 @@ class App {
 
         // SOUNDS
         this.guitarSounds = null;
+        this.ambientSounds = null;
 
         // SETTINGS
         if (localStorage.getItem('dark-theme')) {
@@ -32,25 +33,35 @@ class App {
     start () {
         document.body.innerHTML = `${template}`;
 
+        this.spinner = document.querySelector('#loading-container h4');
+
         this.confirmModal = document.getElementById('confirm-modal');
         // "no" event
-        this.confirmModal.querySelector('.close-confirm').addEventListener('click', (evt)=>{
+        this.confirmModal.querySelector('.close-confirm').addEventListener('click', (evt) => {
             evt.stopPropagation();
             this.confirmModal.style.display = "none";
         })
         // "ok" event
-        this.confirmModal.callback = ()=> null;
-        this.confirmModal.querySelector('.save-confirm').addEventListener('click', (evt)=>{
+        this.confirmModal.callback = () => null;
+        this.confirmModal.querySelector('.save-confirm').addEventListener('click', (evt) => {
             evt.stopPropagation();
             this.confirmModal.callback();
         })
-        Soundfont.instrument(ac, 'acoustic_guitar_steel').then(guitarDownloaded => {
-            this.guitarSounds = guitarDownloaded;
-            this.goTo('list'); // list as default
+
+        this.spinner.textContent = 'Loading ambient sounds';
+        Soundfont.instrument(ac, 'pad_2_warm').then(ambientSoundDownloaded => {
+            this.ambientSounds = ambientSoundDownloaded;
+            this.spinner.textContent = 'Loading guitar sounds';
+            console.log('Ambient: ', this.ambientSounds);
+            Soundfont.instrument(ac, 'acoustic_guitar_steel').then(guitarDownloaded => {
+                this.guitarSounds = guitarDownloaded;
+                this.goTo('list'); // list as default
+            });
         });
+
     }
 
-    setCallback(callback){
+    setCallback (callback) {
         this.confirmModal.callback = callback;
     }
 

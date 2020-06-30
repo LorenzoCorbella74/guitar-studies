@@ -28,7 +28,7 @@
         display: flex;
         flex-wrap: wrap;
         align-content: flex-start;
-        height: 426px;
+        height: 320px;
         overflow: auto;
     }
 
@@ -45,6 +45,14 @@
     .save-mp {
         text-align: right;
 
+        &:hover,
+        &:focus {
+            cursor: pointer;
+        }
+    }
+
+    .play-mp, .stop-mp {
+        font-size: 1.6rem;
         &:hover,
         &:focus {
             cursor: pointer;

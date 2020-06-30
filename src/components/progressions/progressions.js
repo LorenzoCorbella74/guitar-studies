@@ -1,6 +1,8 @@
 import "./progressions.scss";
 import template from './progressions.html';
 
+import { Progression } from "@tonaljs/tonal";
+
 import ModalProgression from '../modal-prog/modal-prog';
 
 export default class Progressions {
@@ -12,8 +14,11 @@ export default class Progressions {
         this.list = list || [];
         this.studyId = studyId;
 
-        // EVENTS: si passa l'add ed il removeAll dall'esterno
-        this.modal_prog = new ModalProgression('modal-prog', this.save.bind(this));
+        // EVENTS: si passa la save e il play/stop
+        this.modal_prog = new ModalProgression('modal-prog',
+            this.save.bind(this),
+            this.app
+        );
     }
 
     generateItems (list) {
@@ -64,6 +69,8 @@ export default class Progressions {
         progression.refs.titleP.textContent = input.title;
         progression.refs.dateP.textContent = this.renderDate(this.checkDate(input.creation));
 
+        let numeralsContainer = progression.querySelector('.progression-numerals');
+
         // EVENTS
         progression.querySelector('.progression-info').addEventListener('click', (evt) => this.openProgression.call(this, evt, input.progressionId));
         progression.querySelector('.progression-delete-btn').addEventListener('click', (evt) => this.removeProgression.call(this, evt, input.progressionId));
@@ -71,6 +78,12 @@ export default class Progressions {
         progression.querySelector('.progression-stop-btn').addEventListener('click', (evt) => this.stopProgression.call(this, evt, input.progressionId));
 
         progression.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        input.progression.forEach(element => {
+            let span = document.createElement('span');
+            span.classList.add('numeral');
+            span.textContent = element.chord; // Progression.toRomanNumerals("C", ["CMaj7", "Dm7", "G7"]);
+            numeralsContainer.appendChild(span);
+        });
     }
 
     updateProgression (input) {
@@ -139,3 +152,14 @@ export default class Progressions {
     }
 
 }
+
+
+/*
+
+
+https://github.com/tonaljs/tonal/tree/master/packages/progression
+
+Progression.toRomanNumerals("C", ["CMaj7", "Dm7", "G7"]);
+// => "IMaj7", "IIm7", "V7"]
+
+*/

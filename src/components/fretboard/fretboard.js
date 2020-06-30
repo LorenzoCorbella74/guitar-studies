@@ -1004,7 +1004,7 @@ export default class MyFretboard {
         // EVENTS for what number of fingering
         for (let i = 0; i < fingeringList.children.length; i++) {
             const fingering = fingeringList.children[i];
-            fingering.addEventListener('mouseenter', (event) => {
+            fingering.addEventListener('click', (event) => {    // mouseenter was fun/fast but too much for the page...
                 event.stopPropagation();
                 for (let item of fingeringList.children) {
                     item.classList.remove('selected');

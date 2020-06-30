@@ -1,15 +1,20 @@
 import "./modal-prog.scss";
 import template from './modal-prog.html';
 
-import { ChordType, Note } from "@tonaljs/tonal";
+import { ChordType, Note, Chord  } from "@tonaljs/tonal";
 
 import { allIntervals } from '../../constants';
+import { ac } from '../../index';
 
 const optionsRitmo = ['Ritmo1', 'Ritmo2'].map(e => {        // TODO: 
     return { text: e, value: e };
 });
 
 const optionsNotes = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb', 'B'].map(e => {
+    return { text: e, value: e };
+});
+
+const optionsOctaves = ['2', '3', '4', '5', '6'].map(e => {
     return { text: e, value: e };
 });
 
@@ -23,12 +28,13 @@ const optionsTimeSignatures = Array.from(Array(16), (_, i) => i + 1).map(e => {
 
 export default class ModalProgression {
 
-    constructor(placeholderId, callback = () => null) {
+    constructor(placeholderId, callback = () => null, app) {
 
         this.element = document.getElementById(placeholderId);
         this.element.innerHTML = template; // Load template into placeholder element
 
         this.callback = callback;
+        this.app = app;
 
         // Find all refs in component
         this.refs = {}
@@ -37,6 +43,7 @@ export default class ModalProgression {
 
         this.currentlyInEditing = false;
         this.progression = [];
+        this.loop = null;
         this.setDefaults();
         this.configureForm();
 
@@ -46,10 +53,13 @@ export default class ModalProgression {
         document.getElementsByClassName("add-mp")[0].addEventListener('click', this.addToProgressionItem.bind(this));
         document.getElementsByClassName('save-item')[0].addEventListener('click', this.saveProgressionItem.bind(this));
         document.getElementsByClassName('transpose-mp')[0].addEventListener('click', this.transposeAll.bind(this));
+        document.getElementsByClassName('play-mp')[0].addEventListener('click', this.play.bind(this));
+        document.getElementsByClassName('stop-mp')[0].addEventListener('click', this.stop.bind(this));
 
         document.getElementById('root_mp').addEventListener('change', (evt) => this.selectedNote = evt.target.value);
         document.getElementById('chord_mp').addEventListener('change', (evt) => this.selectedChord = evt.target.value);
         document.getElementById('timeSignature_mp').addEventListener('change', (evt) => this.selectedTimeSignature = evt.target.value);
+        document.getElementById('octave_mp').addEventListener('change', (evt) => this.selectedOctave = evt.target.value);
 
         // When the user clicks anywhere outside of the modal, close it
         /* window.onclick = (event) => {
@@ -72,6 +82,7 @@ export default class ModalProgression {
         this.selectedChord = 'maj7';
         this.selectedNote = 'C';
         this.selectedTimeSignature = '4/4';
+        this.selectedOctave = '3';
     }
 
     // Input range for transpose
@@ -99,6 +110,7 @@ export default class ModalProgression {
         this.refs.bpm_mp.value = data.bpm || 80;
         this.refs.ritmo_mp.value = data.ritmos || 'Ritmo1';
         this.refs.timeSignature_mp.value = this.selectedTimeSignature;
+        this.refs.octave_mp.value = this.selectedOctave;
         this.refs.chord_mp.value = this.selectedChord;
         this.refs.root_mp.value = this.selectedNote;
         this.progression = data.progression || [];
@@ -112,6 +124,7 @@ export default class ModalProgression {
         this.fillOptions('root_mp', optionsNotes);
         this.fillOptions('chord_mp', optionsChords);
         this.fillOptions('timeSignature_mp', optionsTimeSignatures);
+        this.fillOptions('octave_mp', optionsOctaves);
     }
 
     fillOptions (id, options) {
@@ -131,6 +144,7 @@ export default class ModalProgression {
         this.refs.bpm_mp.value = '';
         this.refs.ritmo_mp.value = '';
         this.refs.timeSignature_mp.value = '';
+        this.refs.octave_mp.value = '';
         this.refs.chord_mp.value = '';
         this.refs.root_mp.value = '';
         this.progression = [];
@@ -156,6 +170,7 @@ export default class ModalProgression {
             progressionId: this.progressionId,
             title: this.refs.title_mp.value,
             bpm: this.refs.bpm_mp.value,
+            octave: this.refs.octave_mp.value,
             description: this.refs.description_mp.value,
             ritmo: this.refs.ritmo_mp.value,
             progression: this.progression,
@@ -172,6 +187,7 @@ export default class ModalProgression {
             root: this.selectedNote,
             chord: this.selectedChord,
             time: this.selectedTimeSignature,
+            octave: this.selectedOctave,
             editMode: false
         };
         this.progression.push(newItem);
@@ -194,6 +210,7 @@ export default class ModalProgression {
 
         item.refs.time.textContent = input.time;
         item.refs.chord.textContent = `${input.root} ${input.chord}`;
+        item.refs.octave.textContent = `${input.octave}`;
 
         // EVENTS
         item.querySelector('.item-delete-btn').addEventListener('click', (evt) => this.removeProgressionItem.call(this, evt));
@@ -229,6 +246,7 @@ export default class ModalProgression {
             this.refs.timeSignature_mp.value = progression.time;
             this.refs.chord_mp.value = progression.chord;
             this.refs.root_mp.value = progression.root;
+            this.refs.octave_mp.value = progression.octave;
             document.getElementsByClassName('save-item')[0].classList.remove('hide');
             document.getElementsByClassName('add-mp')[0].classList.add('hide');
         }
@@ -239,11 +257,13 @@ export default class ModalProgression {
         progression.time = this.refs.timeSignature_mp.value;
         progression.chord = this.refs.chord_mp.value;
         progression.root = this.refs.root_mp.value;
+        progression.octave = this.refs.octave_mp.value;
         progression.editMode = false;
         document.querySelectorAll('.progression-item').forEach(e => {
             if (Number(e.dataset.id) === progression.id) {
                 e.refs.time.textContent = progression.time;
                 e.refs.chord.textContent = `${progression.root} ${progression.chord}`;
+                e.refs.octave.textContent = `${progression.octave}`;
                 e.classList.toggle('selected-item');
                 document.getElementsByClassName('save-item')[0].classList.add('hide');
                 document.getElementsByClassName('add-mp')[0].classList.remove('hide');
@@ -263,4 +283,24 @@ export default class ModalProgression {
         this.slider.value = '0';
         this.setBubble();
     }
+
+    play() {
+        let chords = this.progression.map(e => Chord.getChord(e.chord, e.root + e.octave));
+        let times = this.progression.map(e => Number(e.time.charAt(0))); // indicano quanti beat ci stanno in ogni battuta
+        let totalTime = times.reduce((a, b) => a + b, 0);
+        let bpm = 60 / this.refs.bpm_mp.value; // durata del singolo beat in secondi
+        let global_time = ac.currentTime + 0.25;
+        chords.forEach((accordo, i) => {
+          accordo.notes.forEach((nota, i2) => {
+            this.app.ambientSounds.play(nota, global_time, { duration: times[i] * bpm, gain: 0.75/* , decay: 0.05, attack: 0.05  */}); // accordo
+          });
+          global_time += times[i] * bpm; // è il tempo tra un accordo ed il successivo...
+        });
+        this.loop = setTimeout(() => this.play(), totalTime * bpm * 1000);
+      }
+
+      stop() {
+        this.app.ambientSounds.stop();
+        clearTimeout(this.loop);
+      }
 }

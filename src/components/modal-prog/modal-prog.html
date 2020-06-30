@@ -1,7 +1,11 @@
 <div class="modal-content big">
     <div class="modal-header">
         <span class="close-mp">&#128128;</span>
-        <h2 ref="title">Progression setup</h2>
+        <h2 ref="title">
+            Progression setup
+            <span class="play-mp">&#128266;</span>
+            <span class="stop-mp">&#128264;</span>
+        </h2>
     </div>
     <div class="modal-body">
         <form>
@@ -21,14 +25,7 @@
                     <h4>Description</h4>
                     <textarea name="description" id="description_mp" rows="2" ref="description_mp"
                         placeholder="Add a description"></textarea>
-
-                    <h4>Ritmo </h4>
-                    <select id="ritmos_mp" ref="ritmo_mp">
-                        <option>Choose the ritmo...</option>
-                    </select>
-
-                    <div
-                        class="choice-panel">
+                    <div class="choice-panel">
                         <div style="flex: 1;">
                             <h4>Root</h4>
                             <select id="root_mp" ref="root_mp">
@@ -44,6 +41,10 @@
                             <select id="timeSignature_mp" ref="timeSignature_mp">
                                 <option>Choose the time Signature...</option>
                             </select>
+                            <h4>Octaves</h4>
+                            <select id="octave_mp" ref="octave_mp">
+                                <option>Choose the octave...</option>
+                            </select>
                         </div>
                         <div style="align-self: center; margin-left: 1rem;">
                             <span class="add-mp">&#10133;</span>
@@ -53,6 +54,13 @@
 
                 </div>
                 <div style="flex: 1;margin: 0 1.5rem">
+                    <div>
+                        <h4>Ritmo </h4>
+                        <select id="ritmos_mp" ref="ritmo_mp">
+                            <option>Choose the ritmo...</option>
+                        </select>
+                    </div>
+
                     <div style="display: flex; justify-content: space-between;">
                         <h4>Transpose all </h4>
                         <div>
@@ -79,6 +87,7 @@
     <div class="progression-item">
         <div class="progression-time" ref="time"></div>
         <div class="progression-chord" ref="chord"></div>
+        <div class="progression-octave" ref="octave"></div>
         <div class="progression-actions">
             <span class="item-edit-btn"> &#128295; </span>
             <span class="item-delete-btn">&#128298;</span>
