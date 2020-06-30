@@ -1,7 +1,9 @@
 import "./progressions.scss";
 import template from './progressions.html';
 
-import { Progression } from "@tonaljs/tonal";
+import { Progression, Chord } from "@tonaljs/tonal";
+
+import { ac } from '../../index';
 
 import ModalProgression from '../modal-prog/modal-prog';
 
@@ -142,15 +144,27 @@ export default class Progressions {
     playProgression (evt, progressionId) {
         // TODO:
         let item = this.list.find(e => e.progressionId === progressionId);
-        console.log('PLay progression: ', item);
+        // console.log('Play progression: ', item);
+        let chords = item.progression.map(e => Chord.getChord(e.chord, e.root + e.octave));
+        let times = item.progression.map(e => Number(e.time.charAt(0))); // indicano quanti beat ci stanno in ogni battuta
+        let totalTime = times.reduce((a, b) => a + b, 0);
+        let bpm = 60 / item.bpm; // durata del singolo beat in secondi
+        let global_time = ac.currentTime + 0.25;
+        chords.forEach((accordo, i) => {
+            accordo.notes.forEach((nota, i2) => {
+                this.app.ambientSounds.play(nota, global_time, { duration: times[i] * bpm, gain: 0.75/* , decay: 0.05, attack: 0.05  */ }); // accordo
+            });
+            global_time += times[i] * bpm; // è il tempo tra un accordo ed il successivo...
+        });
+        this.loop = setTimeout(() => this.play(), totalTime * bpm * 1000);
     }
 
     stopProgression (evt, progressionId) {
-        // TODO:
         let item = this.list.find(e => e.progressionId === progressionId);
         console.log('Stop progression: ', item);
+        this.app.ambientSounds.stop();
+        clearTimeout(this.loop);
     }
-
 }
 
 
