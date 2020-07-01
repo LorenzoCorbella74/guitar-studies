@@ -1,0 +1,39 @@
+#player {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    text-align: center;
+    top: 50%;
+    left: 10%;
+}
+
+.player-header {
+    cursor: move;
+    padding: 10px;
+    width: 24px;
+    height: 24px;
+    background-color: transparent;
+}
+
+.player-body {
+    width: 300px;
+    height: 160px;
+    padding: 12px;
+    border-radius: 12px;
+    background-color: var(--background-color);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.player-play-btn,
+.player-stop-btn {
+    margin-left: 8px;
+    transition: 0.5s ease;
+
+    &:hover {
+        cursor: pointer;
+        -webkit-transform: scale(1.25);
+        -moz-transform: scale(1.25);
+        -ms-transform: scale(1.25);
+        -o-transform: scale(1.25);
+    }
+}

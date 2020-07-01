@@ -114,7 +114,8 @@
     #save-btn,
     #back-btn,
     #interchange-btn,
-    #fifths-btn {
+    #fifths-btn,
+    #player-btn {
         margin-left: 8px;
         font-size: 22px;
         transition: 0.5s ease;
@@ -151,7 +152,7 @@
         #save-btn,
         #interchange-btn,
         #fifths-btn,
-        #mode-btn {
+        #mode-btn, #player-btn {
             font-size: 18px;
         }
     }
@@ -175,6 +176,12 @@
             position: fixed;
             left: 4%;
             top: 50%;
+        }
+
+        #player-btn {
+            position: fixed;
+            left: 4%;
+            top: 58%;
         }
     }
 }

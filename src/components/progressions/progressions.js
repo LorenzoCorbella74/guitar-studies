@@ -159,7 +159,7 @@ export default class Progressions {
         let times = item.progression.map(e => Number(e.time.charAt(0))); // indicano quanti beat ci stanno in ogni battuta
         let percussionTimes = [...times, ...times, ...times, ...times];
         let totalTime = times.reduce((a, b) => a + b, 0);
-        let bpm = 60 / this.refs.bpm_mp.value; // durata del singolo beat in secondi
+        let bpm = 60 / item.bpm; // durata del singolo beat in secondi
         let global_time = ac.currentTime + 0.25;
         let percussion_time = ac.currentTime + 0.25;
         percussionTimes.forEach((e, i) => {
@@ -173,13 +173,14 @@ export default class Progressions {
             });
             global_time += times[i] * bpm; // è il tempo tra un accordo ed il successivo...
         });
-        this.loop = setTimeout(() => this.play(), totalTime * bpm * 1000);
+        this.loop = setTimeout(() => this.playProgression(evt, progressionId), totalTime * bpm * 1000);
     }
 
     stopProgression (evt, progressionId) {
         let item = this.list.find(e => e.progressionId === progressionId);
         console.log('Stop progression: ', item);
         this.app.ambientSounds.stop();
+        this.app.drumSounds.stop();
         clearTimeout(this.loop);
     }
 }

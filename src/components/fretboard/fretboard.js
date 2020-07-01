@@ -11,6 +11,7 @@ import ModalNote from '../modal-note/modal-note';
 import ModalInterchange from '../modal-interchange/modal-interchange';
 import ModalFifths from "../modal-fifths/modal-fifths";
 import Progressions from "../progressions/progressions";
+import Player from '../player/player';
 
 import { ac } from '../../index';
 
@@ -36,7 +37,7 @@ export default class MyFretboard {
             this.add.bind(this),
             this.removeAllFretboard.bind(this),
             this.backToList.bind(this),
-            /* this.backToList.bind(this, false), */
+            this.togglePlayer.bind(this),
             this.openModalInterchange.bind(this),
             this.openModalFifth.bind(this),
             this.toggleMode.bind(this)
@@ -47,6 +48,7 @@ export default class MyFretboard {
         this.modal_fifths = new ModalFifths('modal-fifths');
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
         this.progressions = new Progressions(this.app, this.studyId, input.progs, this.backToList.bind(this, false));
+        this.player = new Player('player', this.progressions, this.progressions.playProgression, this.progressions.stopProgression);
 
         this.fretboardIstances = {};
         this.selectedInterval = [];
@@ -62,6 +64,10 @@ export default class MyFretboard {
         this.generateProgressions(input);
 
         window.onresize = this.resize.bind(this);
+    }
+
+    togglePlayer(){
+        this.player.toggle();
     }
 
     toggleMode () {
