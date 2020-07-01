@@ -3,10 +3,13 @@
         <div class="header-menu">
             <h2 ref="title" contenteditable="">Add Title....</h2> 
             <div>
-                <span id="back-btn">&#128281;</span>
-                <span id="interchange-btn">&#127756;</span>
-                <span id="fifths-btn">&#128256;</span>
-                <span ref="mode" id="mode-btn">XXX</span>
+                <span id="interchange-btn" class="tooltip">&#127756;
+                    <span class="tooltiptext">Modal Interchange</span>
+                </span>
+                <span id="fifths-btn" class="tooltip">&#128256;
+                    <span class="tooltiptext">Circlee of Fifths</span>
+                </span>
+                <span id="mode-btn" ref="mode"></span>
             </div>
         </div>
         
@@ -33,7 +36,8 @@
         <span id="add-general-btn">&#127381;</span>
         <span id="remove-general-btn">&#128701;</span>
         <span id="tags-general-btn">&#128204;</span>
-        <span id="save-btn">&#128190;</span>
+        <!-- <span id="save-btn">&#128190;</span> -->
+        <span id="back-btn">&#128281;</span>
     </div>
 
 </div>

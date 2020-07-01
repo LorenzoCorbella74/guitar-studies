@@ -9,12 +9,13 @@ import ModalProgression from '../modal-prog/modal-prog';
 
 export default class Progressions {
 
-    constructor(app, studyId, list) {
+    constructor(app, studyId, list, saveCallback) {
         this.element = document.querySelector('.progression-content');
         this.element.innerHTML = `${template}`;
         this.app = app;
         this.list = list || [];
         this.studyId = studyId;
+        this.saveCallback = saveCallback;
 
         // EVENTS: si passa la save e il play/stop
         this.modal_prog = new ModalProgression('modal-prog',
@@ -81,6 +82,7 @@ export default class Progressions {
         progression.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
         this.renderNumerals(progression, input);
+        this.saveCallback();
     }
 
     renderNumerals (progression, input) {
@@ -99,6 +101,7 @@ export default class Progressions {
         progression.refs.titleP.textContent = input.title;
         progression.refs.dateP.textContent = this.renderDate(this.checkDate(input.creation));
         this.renderNumerals(progression, input);
+        this.saveCallback();
     }
 
     removeAllProgression () {
@@ -110,6 +113,7 @@ export default class Progressions {
         this.list.length = 0;
         document.querySelector('.progression-list').innerHTML = '';
         this.app.confirmModal.style.display = "none";
+        this.saveCallback();
     }
     removeProgression (evt, progressionId) {
         this.app.confirmModal.style.display = "block";
@@ -121,6 +125,7 @@ export default class Progressions {
         this.list.splice(index, 1);
         document.querySelector(`[data-id='${progressionId}']`).remove();
         this.app.confirmModal.style.display = "none";
+        this.saveCallback();
     }
 
     openProgression (evt, progressionId) {
@@ -152,16 +157,23 @@ export default class Progressions {
         // console.log('Play progression: ', item);
         let chords = item.progression.map(e => Chord.getChord(e.chord, e.root + e.octave));
         let times = item.progression.map(e => Number(e.time.charAt(0))); // indicano quanti beat ci stanno in ogni battuta
+        let percussionTimes = [...times, ...times, ...times, ...times];
         let totalTime = times.reduce((a, b) => a + b, 0);
-        let bpm = 60 / item.bpm; // durata del singolo beat in secondi
+        let bpm = 60 / this.refs.bpm_mp.value; // durata del singolo beat in secondi
         let global_time = ac.currentTime + 0.25;
+        let percussion_time = ac.currentTime + 0.25;
+        percussionTimes.forEach((e, i) => {
+            this.app.drumSounds.play(37, percussion_time, { duration: percussionTimes[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
+            percussion_time += percussionTimes[i] / 4 * bpm; // è il tempo tra un accordo ed il successivo...
+        })
         chords.forEach((accordo, i) => {
             accordo.notes.forEach((nota, i2) => {
-                this.app.ambientSounds.play(nota, global_time, { duration: times[i] * bpm, gain: 0.75/* , decay: 0.05, attack: 0.05  */ }); // accordo
+                this.app.ambientSounds.play(nota, global_time, { duration: times[i] * bpm, gain: 0.65/* , decay: 0.05, attack: 0.05  */ }); // accordo
+                this.app.drumSounds.play(35, global_time, { duration: times[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
             });
             global_time += times[i] * bpm; // è il tempo tra un accordo ed il successivo...
         });
-        this.loop = setTimeout(() => this.playProgression(evt, progressionId), totalTime * bpm * 1000);
+        this.loop = setTimeout(() => this.play(), totalTime * bpm * 1000);
     }
 
     stopProgression (evt, progressionId) {

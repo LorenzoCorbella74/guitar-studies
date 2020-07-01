@@ -215,7 +215,7 @@ export default class ModalProgression {
 
         item.refs.time.textContent = input.time;
         item.refs.chord.textContent = `${input.root}${input.chord}`;
-        item.refs.octave.textContent = `O:${input.octave}`;
+        item.refs.octave.textContent = `${input.octave}`;
 
         // EVENTS
         item.querySelector('.item-delete-btn').addEventListener('click', (evt) => this.removeProgressionItem.call(this, evt));
@@ -258,17 +258,18 @@ export default class ModalProgression {
     }
 
     saveProgressionItem (evt) {
-        let progression = this.progression.find(e => e.editMode === true);
-        progression.time = this.refs.timeSignature_mp.value;
-        progression.chord = this.refs.chord_mp.value;
-        progression.root = this.refs.root_mp.value;
-        progression.key = this.refs.key_mp.value;
-        progression.editMode = false;
+        let item = this.progression.find(e => e.editMode === true);
+        item.time = this.refs.timeSignature_mp.value;
+        item.chord = this.refs.chord_mp.value;
+        item.root = this.refs.root_mp.value;
+        item.key = this.refs.key_mp.value;
+        item.octave = this.refs.octave_mp.value;
+        item.editMode = false;
         document.querySelectorAll('.progression-item').forEach(e => {
-            if (Number(e.dataset.id) === progression.id) {
-                e.refs.time.textContent = progression.time;
-                e.refs.chord.textContent = `${progression.root} ${progression.chord}`;
-                e.refs.octave.textContent = `${progression.octave}`;
+            if (Number(e.dataset.id) === item.id) {
+                e.refs.time.textContent = item.time;
+                e.refs.chord.textContent = `${item.root} ${item.chord}`;
+                e.refs.octave.textContent = `${item.octave}`;
                 e.classList.toggle('selected-item');
                 document.getElementsByClassName('save-item')[0].classList.add('hide');
                 document.getElementsByClassName('add-mp')[0].classList.remove('hide');

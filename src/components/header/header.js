@@ -3,7 +3,7 @@ import template from './header.html';
 
 export default class Header {
 
-    constructor(placeholderId, addCallback, removeCallback, backToListCallback, saveCallback, interchangeCallback, fifthsCallback, modeCallback) {
+    constructor(placeholderId, addCallback, removeCallback, backToListCallback, /* saveCallback, */ interchangeCallback, fifthsCallback, modeCallback) {
 
         this.element = document.getElementById(placeholderId);
         this.element.innerHTML = template;  // Load template into placeholder element
@@ -18,7 +18,7 @@ export default class Header {
         document.getElementById('add-general-btn').addEventListener('click', addCallback);
         document.getElementById('remove-general-btn').addEventListener('click', removeCallback);
         document.getElementById('back-btn').addEventListener('click', backToListCallback);
-        document.getElementById('save-btn').addEventListener('click', saveCallback);
+        /* document.getElementById('save-btn').addEventListener('click', saveCallback); */
         document.getElementById('tags-general-btn').addEventListener('click', this.toggleTabsPanel.bind(this));
         document.getElementById('interchange-btn').addEventListener('click', interchangeCallback);
         document.getElementById('fifths-btn').addEventListener('click', fifthsCallback);

@@ -321,6 +321,50 @@ input[type="radio"] {
   width: 1024px !important;
 }
 
+/* ----------------------------------- TOOLTIP ----------------------------------- */
+
+/* Tooltip container */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 70px;
+  background-color: var(--primary-color);
+  color: white;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  font-size: 12px;
+
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 200;
+  left: 125%;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+@media only screen and (max-width: 1024px) {
+  .tooltip .tooltiptext { 
+    top: 120%;
+    left: -125%;
+  }
+}
+
+/* --------------------------------------------------------------------- */
+
 /* Media Query for Tablets Ipads portrait mode */
 @media only screen and (max-width: 767px) {
   .modal-content.big {

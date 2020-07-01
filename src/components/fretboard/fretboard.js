@@ -36,7 +36,7 @@ export default class MyFretboard {
             this.add.bind(this),
             this.removeAllFretboard.bind(this),
             this.backToList.bind(this),
-            this.backToList.bind(this, false),
+            /* this.backToList.bind(this, false), */
             this.openModalInterchange.bind(this),
             this.openModalFifth.bind(this),
             this.toggleMode.bind(this)
@@ -46,13 +46,13 @@ export default class MyFretboard {
         this.modal_interchange = new ModalInterchange('modal-interchange');
         this.modal_fifths = new ModalFifths('modal-fifths');
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
-        this.progressions = new Progressions(this.app, this.studyId, input.progs );
+        this.progressions = new Progressions(this.app, this.studyId, input.progs, this.backToList.bind(this, false));
 
         this.fretboardIstances = {};
         this.selectedInterval = [];
 
         this.mode = input.mode || 'fretboard'; // can be 'fretboard' or 'progressions'
-        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? 'PROGs':'FRETs';
+        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? 'PROGs' : 'FRETs';
         if (this.mode === 'progressions') {
             document.querySelector('.fretboard-content').classList.toggle('hide');
             document.querySelector('.progression-content').classList.toggle('hide');
@@ -66,7 +66,7 @@ export default class MyFretboard {
 
     toggleMode () {
         this.mode = this.mode === 'fretboard' ? 'progressions' : 'fretboard';
-        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? 'PROGs':'FRETs';
+        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? 'PROGs' : 'FRETs';
         document.querySelector('.fretboard-content').classList.toggle('hide');
         document.querySelector('.progression-content').classList.toggle('hide');
     }
@@ -169,8 +169,8 @@ export default class MyFretboard {
         return { parent, id: parent.dataset.id };
     }
 
-    add(input){
-        if(this.mode==='fretboard'){
+    add (input) {
+        if (this.mode === 'fretboard') {
             this.addFretboard(input);
         } else {
             this.progressions.addProgression();
@@ -249,6 +249,7 @@ export default class MyFretboard {
         });
         this.fretboardIstances = {};    // remove the model
         this.app.confirmModal.style.display = "none";
+        this.backToList(false);
     }
 
     removeFretboard (evt) {
@@ -260,6 +261,7 @@ export default class MyFretboard {
         parent.remove();                    // remove the html element
         delete this.fretboardIstances[id]; // remove the model
         this.app.confirmModal.style.display = "none";
+        this.backToList(false);
     }
 
     togglePanel (evt) {
@@ -334,6 +336,7 @@ export default class MyFretboard {
             this.removeFingeringBtn(parent);
             this.calculateComparison(parent, id);
             this.calculateAssociation(parent, id);
+            this.backToList(false);
         }
         // resetting range
         const slider = parent.querySelector(".slidecontainer .slider");
@@ -407,6 +410,7 @@ export default class MyFretboard {
         this.fretboardIstances[data.id].note = data.note;
         let { parent } = this.getParent(null, data.id);
         parent.querySelector(`.note-btn`).innerHTML = data.note.length > 0 ? '&#128221;' : '&#128196;';
+        this.backToList(false);
     }
 
     /*  ----------------------------- COMPARISON PANEL ----------------------------- */
@@ -564,6 +568,7 @@ export default class MyFretboard {
         this.fretboardIstances[id].layers[toBeUpdate] = Object.assign(this.fretboardIstances[id].layers[toBeUpdate], data);
         this.fretboardIstances[id].repaint();
         this.updateLayerInfo(this.fretboardIstances[id].layers[toBeUpdate], id);
+        this.backToList(false);
     }
 
     // callback from modal choice
@@ -588,6 +593,7 @@ export default class MyFretboard {
             this.updateTitle(data.value, id);
             this.updateLayerInfo(this.fretboardIstances[id].layers[toBeUpdate], id);
             this.selectLayer({ target: parent }, data.id, id);  // si seleziona automaticamente
+            this.backToList(false);
         } else {        // SAVE NEW
             this.renderLayer(data);
         }
@@ -852,6 +858,7 @@ export default class MyFretboard {
         parent.querySelector('.note-btn').style.visibility = 'hidden';
         this.calculateComparison(parent, id);
         this.app.confirmModal.style.display = "none";
+        this.backToList(false);
     }
 
     editLayer (evt, layerId) {
@@ -886,6 +893,7 @@ export default class MyFretboard {
         let li = document.querySelector(`[data-id='${id}']`)
         li.querySelector('.visibility-btn').innerHTML = selected.visible ? ' &#9899; ' : '&#9898;';
         this.fretboardIstances[parentId].repaint();
+        this.backToList(false);
     }
 
     deleteLayer (evt, layerId, parentId) {
@@ -910,6 +918,7 @@ export default class MyFretboard {
             this.updateLayerInfo(null, parentId);
             this.removeFingeringBtn(parent);
             this.calculateComparison(parent, parentId);
+            this.backToList(false);
         }
     }
 
@@ -946,7 +955,11 @@ export default class MyFretboard {
         });
         selected.color = 'many';
         selected.opacity = 1;
-        selected.size = 0.9;
+        if (this.fretboardIstances[parentId].layers.length === 1) {
+            selected.size = 1;
+        } else {
+            selected.size = 0.9;
+        }
         this.fretboardIstances[parentId].layers.push(selected);
         if (selected.merge) {
             let title = `${selected.startScale} merged with ${selected.value}`;
@@ -959,6 +972,7 @@ export default class MyFretboard {
         this.calculateAssociation(parent, parentId);
         this.calculateComparison(parent, parentId);
         this.fretboardIstances[parentId].repaint();
+        this.backToList(false);
     }
 
     updateFingeringBtns (parent, parentId, data) {
