@@ -116,7 +116,7 @@ export default class MyFretboard {
     }
 
     backToList (noredirect) {
-        // this.player.configureForm(); // TODO:
+        this.player.configureForm(); // TODO:
         let copy = JSON.parse(JSON.stringify(this.fretboardIstances));
         let progressions = JSON.parse(JSON.stringify(this.progressions.list));
         for (const key in copy) {

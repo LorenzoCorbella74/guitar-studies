@@ -55,6 +55,9 @@ export default class Player {
 
     fillOptions (id, options) {
         var select = document.getElementById(id);
+        for (let i = select.length - 1; i >= 1; i--) {
+            select.remove(i);
+        }
         for (var i = 0; i < options.length; i++) {
             var opt = options[i];
             var el = document.createElement("option");
