@@ -15,6 +15,7 @@ export default class Player {
         this.element.innerHTML = template;
 
         this.selectedProgression = null;
+        this.selectedChord = null;  // TODO:
         this.configureForm();
 
         // EVENTS
@@ -22,7 +23,12 @@ export default class Player {
         document.getElementsByClassName("player-stop-btn")[0].addEventListener('click', this.stop.bind(this));
 
         // Change
-        document.getElementById('progress_pl').addEventListener('change', (evt) => this.selectedProgression = evt.target.value);
+        document.getElementById('progress_pl').addEventListener('change', (evt) => {
+            this.selectedProgression = evt.target.value;
+            let item = this.list.find(e => e.progressionId === this.selectedProgression);
+            let list = this.element.querySelector('.player-list');
+            list.innerHTML = item.progression.map((e, i) => `<span class="player-list-item"><span>${e.time}</span> <span>${e.root}${e.chord}</span></span>`).join('');
+        });
 
         this.pos1 = 0;
         this.pos2 = 0;
@@ -36,6 +42,11 @@ export default class Player {
             /* otherwise, move the DIV from anywhere inside the DIV:*/
             this.element.onmousedown = this.dragMouseDown.bind(this);
         }
+
+        // TODO: eventi per evidenziare l'accordo al momento suonato
+        this.element.addEventListener('chord',  (e) => { 
+            console.log('Custom event', e.detail)
+         }, false);
     }
 
     configureForm () {

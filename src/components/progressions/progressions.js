@@ -72,13 +72,13 @@ export default class Progressions {
         progression.refs.titleP.textContent = input.title;
         progression.refs.dateP.textContent = this.renderDate(this.checkDate(input.creation));
 
-        
+
         // EVENTS
         progression.querySelector('.progression-info').addEventListener('click', (evt) => this.openProgression.call(this, evt, input.progressionId));
         progression.querySelector('.progression-delete-btn').addEventListener('click', (evt) => this.removeProgression.call(this, evt, input.progressionId));
         progression.querySelector('.progression-play-btn').addEventListener('click', (evt) => this.playProgression.call(this, evt, input.progressionId));
         progression.querySelector('.progression-stop-btn').addEventListener('click', (evt) => this.stopProgression.call(this, evt, input.progressionId));
-        
+
         progression.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
         this.renderNumerals(progression, input);
@@ -166,12 +166,22 @@ export default class Progressions {
             this.app.drumSounds.play(37, percussion_time, { duration: percussionTimes[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
             percussion_time += percussionTimes[i] / 4 * bpm; // è il tempo tra un accordo ed il successivo...
         })
+        let when = [0];
         chords.forEach((accordo, i) => {
             accordo.notes.forEach((nota, i2) => {
                 this.app.ambientSounds.play(nota, global_time, { duration: times[i] * bpm, gain: 0.65/* , decay: 0.05, attack: 0.05  */ }); // accordo
                 this.app.drumSounds.play(35, global_time, { duration: times[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
             });
             global_time += times[i] * bpm; // è il tempo tra un accordo ed il successivo...
+            when.push(times[i] * bpm);
+        });
+        when.forEach((t, i) => {
+            setTimeout(() => {
+                var event = new CustomEvent("chord", {
+                    detail: { t, i }
+                });
+                this.element.dispatchEvent(event);
+            }, t);
         });
         this.loop = setTimeout(() => this.playProgression(evt, progressionId), totalTime * bpm * 1000);
     }

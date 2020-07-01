@@ -37,3 +37,24 @@
         -o-transform: scale(1.25);
     }
 }
+
+.player-list {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 100px;
+
+    .player-list-item {
+        margin-right: 0.25rem;
+        margin-bottom: 0.25rem;
+        width: 46%;
+        background-color: var(--primary-color);
+        color: var(--light-grey);
+        padding: 0.25rem;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-around;
+    }
+}
