@@ -66,7 +66,7 @@ export default class MyFretboard {
         window.onresize = this.resize.bind(this);
     }
 
-    togglePlayer(){
+    togglePlayer () {
         this.player.toggle();
     }
 
@@ -116,7 +116,7 @@ export default class MyFretboard {
     }
 
     backToList (noredirect) {
-        this.player.configureForm(); // TODO:
+        this.player.configureForm(); // TODO: aggiorna le opzioni del player in base alle progressioni presenti
         let copy = JSON.parse(JSON.stringify(this.fretboardIstances));
         let progressions = JSON.parse(JSON.stringify(this.progressions.list));
         for (const key in copy) {
@@ -205,6 +205,8 @@ export default class MyFretboard {
         fretboard.querySelector('.scale-play-btn').addEventListener('click', (evt) => this.playScale.call(this, evt));
         fretboard.querySelector('.note-btn').addEventListener('click', (evt) => this.openNoteModal.call(this, evt));
         fretboard.querySelector('.toggle-btn').addEventListener('click', (evt) => this.togglePanel.call(this, evt));
+        fretboard.querySelector('.play-loop-btn').addEventListener('click', (evt) => this.makeLayerLoop.call(this, evt));
+        fretboard.querySelector('.stop-loop-btn').addEventListener('click', (evt) => this.stopLayerLoop.call(this, evt));
 
         this.fretboardIstances[id] = Fretboard({
             id: id,
@@ -238,6 +240,34 @@ export default class MyFretboard {
         this.setBubble(slider, bubble, id);
 
         return fretboard;
+    }
+
+    // improve: clearinterval dei selectlayer già partiti...
+    makeLayerLoop (evt) {
+        let { id } = this.getParent(evt);
+        let time = ac.currentTime + 0.25;
+        let times = Array.from(Array(this.fretboardIstances[id].layers.length), (_, i) => i + 1).map(e => 4); // indicano quanti beat ci stanno in ogni battuta
+        let percussionTimes = Array.from(Array(this.fretboardIstances[id].layers.length * 4), (_, i) => i + 1).map(e => 1);
+        let bpm = 60 / 60; // durata del singolo beat in secondi
+        let percussion_time = ac.currentTime + 0.25;
+        percussionTimes.forEach((e, i) => {
+            this.app.drumSounds.play(37, percussion_time, { duration: percussionTimes[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
+            percussion_time += percussionTimes[i] * bpm; // è il tempo tra un accordo ed il successivo...
+        })
+        for (let i = 0; i < this.fretboardIstances[id].layers.length; i++) {
+            const layer = this.fretboardIstances[id].layers[i];
+            setTimeout(() => {
+                this.selectLayer(evt, layer.id, id);
+            }, time);
+            time += times[i] * bpm * 1000;
+        }
+        this.loop = setTimeout(() => this.makeLayerLoop(evt), this.fretboardIstances[id].layers.length * 4 * 1000);
+    }
+
+    stopLayerLoop (evt) {
+        let { parent, id } = this.getParent(evt);
+        this.app.drumSounds.stop();
+        clearInterval(this.loop);
     }
 
     removeAllFretboard () {

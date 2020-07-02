@@ -42,12 +42,12 @@
     }
 
     .add-btn,
+    .play-loop-btn,
+    .stop-loop-btn,
     .remove-btn,
     .transpose-btn {
-      margin-left: 8px;
-      margin-right: 8px;
-      font-weight: 700;
-      align-content: center;
+      margin-left: 6px;
+      margin-right: 6px;
       font-size: 18px;
       transition: 0.5s ease;
 

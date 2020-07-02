@@ -173,8 +173,9 @@ export default class Progressions {
                 this.app.drumSounds.play(35, global_time, { duration: times[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
             });
             global_time += times[i] * bpm; // è il tempo tra un accordo ed il successivo...
-            when.push(times[i] * bpm);
+            when.push(global_time*1000);
         });
+        console.log(when)
         when.forEach((t, i) => {
             setTimeout(() => {
                 var event = new CustomEvent("chord", {

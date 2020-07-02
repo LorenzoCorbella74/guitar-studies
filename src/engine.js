@@ -2,7 +2,7 @@ import * as d3 from "d3-selection";
 
 import { allNotes, allNotesEnh, COLOURS, COLOURS_MERGE, Tunings } from './constants';
 
-import { Scale, Note } from "@tonaljs/tonal";
+import { Scale, Note, Chord, transpose, Interval } from "@tonaljs/tonal";
 
 /* -------------------------------------------------------------------------- */
 
@@ -151,6 +151,35 @@ export function generateFingerings (data) {
     let output = generateScales(data.notes);
     return output.map(e => generateStrOfNotes(e, data, data.notesForString));
 }
+
+export function createChordFingering(chord) {
+    let data = Chord.getChord(chord.suffix, chord.key); // TODO:
+    let output = [];
+    chord.positions = chord.positions.filter(
+      e => e.frets.split("").indexOf("a") === -1
+    );
+    chord.positions.forEach((chord, chordIndex) => {
+      let frets = chord.frets.split("");
+      output[chordIndex] = [];
+      for (let index = frets.length - 1; index >= 0; index--) {
+        const fret = frets[index];
+        if (fret !== "x") {
+          let note = transpose(
+            Tunings.guitar6.standard[index],
+            Interval.fromSemitones(Number(fret))
+          );
+          let realNote = note.slice(0, -1);
+          if (data.notes.indexOf(realNote) === -1) {
+            realNote = Note.enharmonic(realNote);
+          }
+          let intervalIndex = data.notes.indexOf(realNote);
+          let d = `${6 - index}:${note}:${data.intervals[intervalIndex]}`;
+          output[chordIndex].push(d);
+        }
+      }
+    });
+    return output.map(e => e.reverse()).map(e => e.join(" "));
+  }
 /* -------------------------------------------------------------------------- */
 function asOffset (note) {
     note = note.toLowerCase();

@@ -44,9 +44,9 @@ export default class Player {
         }
 
         // TODO: eventi per evidenziare l'accordo al momento suonato
-        this.element.addEventListener('chord',  (e) => { 
+        this.element.addEventListener('chord', (e) => {
             console.log('Custom event', e.detail)
-         }, false);
+        }, false);
     }
 
     configureForm () {
@@ -112,6 +112,7 @@ export default class Player {
 
     stop () {
         this.stopCallback.call(this.progressions, null, this.selectedProgression);
+        clearInterval(this.interval);
     }
 
 }
