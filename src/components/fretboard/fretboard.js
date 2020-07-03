@@ -245,10 +245,10 @@ export default class MyFretboard {
     // improve: clearinterval dei selectlayer già partiti...
     makeLayerLoop (evt) {
         let { id } = this.getParent(evt);
-        let time = ac.currentTime + 0.25;
+        let time = ac.currentTime;
         let times = Array.from(Array(this.fretboardIstances[id].layers.length), (_, i) => i + 1).map(e => 4); // indicano quanti beat ci stanno in ogni battuta
         let percussionTimes = Array.from(Array(this.fretboardIstances[id].layers.length * 4), (_, i) => i + 1).map(e => 1);
-        let bpm = 60 / 60; // durata del singolo beat in secondi
+        let bpm = 60 / this.app.layerBpm; // durata del singolo beat in secondi
         let percussion_time = ac.currentTime + 0.25;
         percussionTimes.forEach((e, i) => {
             this.app.drumSounds.play(37, percussion_time, { duration: percussionTimes[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
@@ -261,7 +261,7 @@ export default class MyFretboard {
             }, time);
             time += times[i] * bpm * 1000;
         }
-        this.loop = setTimeout(() => this.makeLayerLoop(evt), this.fretboardIstances[id].layers.length * 4 * 1000);
+        this.loop = setTimeout(() => this.makeLayerLoop(evt), this.fretboardIstances[id].layers.length * 4 * bpm * 1000);
     }
 
     stopLayerLoop (evt) {

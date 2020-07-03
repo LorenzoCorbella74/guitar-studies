@@ -44,7 +44,11 @@
     padding: 0.5rem;
     overflow-x: hidden;
     overflow-y: scroll;
-    height: 100px;
+    height: 90px;
+    margin-bottom: 1rem;
+    border: 1px solid var(--light-grey);
+    background-color: var(--background-color);
+    border-radius: 4px;
 
     .player-list-item {
         margin-right: 0.25rem;

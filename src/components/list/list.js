@@ -30,6 +30,16 @@ export default class List {
         document.querySelector('.study-favourite-filter').addEventListener('click', this.filterFavourite.bind(this));
         document.querySelector('.search').addEventListener('input', (evt) => this.search.call(this, evt));
 
+        document.getElementsByClassName("layers-bpm")[0].addEventListener('change', (evt)=>{
+            this.app.layerBpm = evt.target.value;
+            localStorage.setItem('layers-bpm', evt.target.value);
+        });
+
+        let layerBpm = localStorage.getItem('layers-bpm');
+        if(layerBpm){
+            document.getElementsByClassName("layers-bpm")[0].value = layerBpm;
+        }
+
         let guitar_style = localStorage.getItem('fretboard-theme');
         for (let item of document.querySelector('.fretboard-style-theme').children) {
             if (item.dataset.style === guitar_style) {
