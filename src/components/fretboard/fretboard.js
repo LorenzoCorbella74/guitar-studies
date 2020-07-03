@@ -107,13 +107,6 @@ export default class MyFretboard {
         }
     }
 
-    getIconPath () {
-        let imgNum = Math.floor(Math.random() * 20) + 1;
-        if (imgNum > 20) {
-            imgNum = imgNum % 20;
-        }
-        return imgNum;
-    }
 
     backToList (noredirect) {
         this.player.configureForm(); // TODO: aggiorna le opzioni del player in base alle progressioni presenti
@@ -135,7 +128,7 @@ export default class MyFretboard {
         }
         state.saveOrUpdate({
             studyId: this.studyId,
-            img: this.img || this.getIconPath(),
+            img: this.img,
             title: this.header.refs.title.textContent,
             description: this.header.refs.description.value,
             favourite: this.favourite,

@@ -177,10 +177,20 @@ export default class List {
         }
     }
 
+    
+    getIconPath () {
+        let imgNum = Math.floor(Math.random() * 20) + 1;
+        if (imgNum > 20) {
+            imgNum = imgNum % 20;
+        }
+        return imgNum;
+    }
+
     renderStudy (input) {
         var temp = document.getElementById("study-item");
         var clone = temp.content.cloneNode(true);
         let id = input.studyId || 'study' + Math.floor(Math.random() * 1000000);
+        input.img = input.img ||  this.getIconPath(),
         clone.firstElementChild.dataset.id = id;
 
         document.querySelector('.study-list').appendChild(clone);

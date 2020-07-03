@@ -54,10 +54,19 @@ export default class Progressions {
         }
     }
 
+    getIconPath () {
+        let imgNum = Math.floor(Math.random() * 20) + 1;
+        if (imgNum > 20) {
+            imgNum = imgNum % 20;
+        }
+        return imgNum;
+    }
+
     renderProgression (input) {
         var temp = document.getElementsByTagName("template")[0];
         var clone = temp.content.cloneNode(true);
         input.progressionId = input.progressionId || 'progression' + Math.floor(Math.random() * 1000000);    // si valorizza l'id
+        input.img = input.img || this.getIconPath();
         clone.firstElementChild.dataset.id = input.progressionId;
 
         document.querySelector('.progression-list').appendChild(clone);
@@ -72,6 +81,9 @@ export default class Progressions {
         progression.refs.titleP.textContent = input.title;
         progression.refs.dateP.textContent = this.renderDate(this.checkDate(input.creation));
 
+        import(`../../img/progression${input.img}.jpeg`).then(img => {
+            progression.style.backgroundImage = `url(${img.default})`;
+        });
 
         // EVENTS
         progression.querySelector('.progression-info').addEventListener('click', (evt) => this.openProgression.call(this, evt, input.progressionId));
