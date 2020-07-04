@@ -78,11 +78,11 @@ export function generateChordsForModalInterchange (start) {
 }
 
 export function generateCircleOfFifths (scale) {
-    let beginning = "Gb";
+    let beginning = "Db";
     let scaleIndex = SCALETYPES.findIndex(e => e === scale);
     let generatedChords = shiftChord(CHORDSTYPES, scaleIndex);
     let noteFifths = [beginning];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 11; i++) {
         beginning = Note.transpose(beginning, "5P");
         noteFifths.push(beginning);
     }
