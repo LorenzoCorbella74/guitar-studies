@@ -52,7 +52,8 @@ const config = {
     new HtmlWebpackPlugin({
       appMountId: 'app',
       filename: 'index.html',
-      title:'Guitar fretboards'
+      title:'Guitar fretboards',
+      favicon:'favicon.ico'
     }),
     new MiniCssExtractPlugin()
   ]
