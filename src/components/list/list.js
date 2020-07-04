@@ -39,6 +39,9 @@ export default class List {
         if(layerBpm){
             document.getElementsByClassName("layers-bpm")[0].value = layerBpm;
             this.app.layerBpm = layerBpm;
+        } else {
+            document.getElementsByClassName("layers-bpm")[0].value = 60;
+            this.app.layerBpm = 60;
         }
 
         let guitar_style = localStorage.getItem('fretboard-theme');

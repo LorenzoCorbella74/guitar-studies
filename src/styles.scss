@@ -104,6 +104,15 @@ body {
   overflow-x: hidden;
 }
 
+#app-version{
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  background-color: transparent;
+  color: var(--detail);
+  opacity: 0.25;
+}
+
 body.fade {
   opacity: 0;
   transition: none;

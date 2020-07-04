@@ -1,6 +1,8 @@
 import "./styles.scss";
 import template from './index.html';
 
+import { APP_VERSION } from './constants';
+
 // Components
 import MyFretboard from './components/fretboard/fretboard';
 import List from './components/list/list';
@@ -11,6 +13,8 @@ export const ac = new AudioContext();
 
 class App {
     constructor() {
+
+        
 
         // SOUNDS
         this.guitarSounds = null;
@@ -32,6 +36,8 @@ class App {
 
     start () {
         document.body.innerHTML = `${template}`;
+
+        document.getElementById('app-version').innerHTML = `V.${APP_VERSION}`;
 
         this.spinner = document.querySelector('#loading-container h4');
 

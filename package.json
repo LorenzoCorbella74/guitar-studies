@@ -1,9 +1,17 @@
 {
-  "name": "fretboard-reloaded",
-  "version": "0.5.0",
+  "name": "guitar-fretboards",
+  "version": "0.6.0",
   "description": "",
   "main": "index.js",
-  "keywords": [],
+  "keywords": [
+    "guitar-fretboards",
+    "guitar-scales",
+    "guitar",
+    "guitar-chords",
+    "es6",
+    "vanilla-javascript",
+    "webpack4"
+  ],
   "author": "Lorenzo Corbella",
   "license": "ISC",
   "scripts": {
