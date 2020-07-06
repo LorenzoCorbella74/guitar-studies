@@ -5,6 +5,11 @@ import { APP_VERSION } from '../../constants';
 
 import state from '../../state';
 
+const NOITEMS = `
+<div class="no-items">
+    <h2>Press the &#127381; buttom and add your first study...</h2>
+</div>`;
+
 export default class List {
 
     constructor(app) {
@@ -145,6 +150,9 @@ export default class List {
         this.listToBeDisplayed.forEach((el, i) => {
             this.renderStudy(el, i);
         });
+        if(this.listToBeDisplayed.length===0){
+            document.querySelector('.study-list').innerHTML = NOITEMS;
+        }
     }
 
     getParent (evt) {
@@ -243,6 +251,9 @@ export default class List {
         parent.remove();
         state.updateState(this.list);
         this.app.confirmModal.style.display = "none";
+        if(this.listToBeDisplayed.length===0){
+            document.querySelector('.study-list').innerHTML = NOITEMS;
+        }
     }
 
     openStudy (evt) {

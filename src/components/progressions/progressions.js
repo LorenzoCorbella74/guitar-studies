@@ -7,6 +7,11 @@ import { ac } from '../../index';
 
 import ModalProgression from '../modal-prog/modal-prog';
 
+const NOITEMS = `
+<div class="no-items">
+    <h2>Press the &#127381; buttom and add your first progression to the relevant study...</h2>
+</div>`;
+
 export default class Progressions {
 
     constructor(app, studyId, list, saveCallback) {
@@ -24,12 +29,16 @@ export default class Progressions {
         );
     }
 
-    generateItems (list) {
-        this.list = list;
+    generateItems () {
         document.querySelector('.progression-list').innerHTML = '';
         this.list.forEach((el, i) => {
             this.renderProgression(el, i);
         });
+        if (this.list.length === 0) {
+            document.querySelector('.progression-list').innerHTML = NOITEMS;
+        } else {
+            this.saveCallback();
+        }
     }
 
     getParent (evt) {
@@ -94,7 +103,7 @@ export default class Progressions {
         progression.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
         this.renderNumerals(progression, input);
-        this.saveCallback();
+        
     }
 
     renderNumerals (progression, input) {
@@ -126,6 +135,7 @@ export default class Progressions {
         document.querySelector('.progression-list').innerHTML = '';
         this.app.confirmModal.style.display = "none";
         this.saveCallback();
+        document.querySelector('.progression-list').innerHTML = NOITEMS;
     }
     removeProgression (evt, progressionId) {
         this.app.confirmModal.style.display = "block";
@@ -138,6 +148,9 @@ export default class Progressions {
         document.querySelector(`[data-id='${progressionId}']`).remove();
         this.app.confirmModal.style.display = "none";
         this.saveCallback();
+        if (this.list.length === 0) {
+            document.querySelector('.progression-list').innerHTML = NOITEMS;
+        }
     }
 
     openProgression (evt, progressionId) {
@@ -153,7 +166,7 @@ export default class Progressions {
             this.updateProgression(data);
         } else {
             this.list.push(data);
-            this.renderProgression(data);
+            this.generateItems();
         }
     }
 
@@ -185,7 +198,7 @@ export default class Progressions {
                 this.app.drumSounds.play(35, global_time, { duration: times[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
             });
             global_time += times[i] * bpm; // è il tempo tra un accordo ed il successivo...
-            when.push(global_time*1000);
+            when.push(global_time * 1000);
         });
         console.log(when)
         when.forEach((t, i) => {

@@ -61,7 +61,7 @@ export default class MyFretboard {
         }
 
         this.generateFretboards(input);
-        this.generateProgressions(input);
+        this.generateProgressions();    /* Generate progressions only after fretboards are created */
 
         window.onresize = this.resize.bind(this);
     }
@@ -101,10 +101,8 @@ export default class MyFretboard {
         }
     }
 
-    generateProgressions (input) {
-        if (input.progs && input.progs.length > 0) {
-            this.progressions.generateItems(input.progs);
-        }
+    generateProgressions () {
+            this.progressions.generateItems();
     }
 
 
