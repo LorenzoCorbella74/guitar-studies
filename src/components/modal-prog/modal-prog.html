@@ -47,10 +47,21 @@
                             <select id="timeSignature_mp" ref="timeSignature_mp">
                                 <option>Choose the time Signature...</option>
                             </select>
-                            <h4>Octaves</h4>
-                            <select id="octave_mp" ref="octave_mp">
-                                <option>Choose the octave...</option>
-                            </select>
+                            <div style="display: flex;">
+                                <div style="flex: 1; margin-right: 0.5rem;">
+                                    <h4>Octaves</h4>
+                                    <select id="octave_mp" ref="octave_mp">
+                                        <option>Choose the octave...</option>
+                                    </select>
+                                </div>
+                                <div style="flex: 1;">
+                                    <h4>Bass</h4>
+                                    <select id="inversion_mp" ref="inversion_mp">
+                                        <option>Choose the Inversion...</option>
+                                    </select>
+                                </div>
+                            </div>
+
                         </div>
                         <div style="align-self: center; margin-left: 1rem;">
                             <span class="add-mp">&#10133;</span>
@@ -94,6 +105,7 @@
         <div class="progression-time" ref="time"></div>
         <div class="progression-chord" ref="chord"></div>
         <div class="progression-octave" ref="octave"></div>
+        <div class="progression-inversion" ref="inversion"></div>
         <div class="progression-actions">
             <span class="item-edit-btn"> &#128295; </span>
             <span class="item-delete-btn">&#128298;</span>

@@ -375,7 +375,7 @@ input[type="radio"] {
 /* --------------------------------------------------------------------- */
 
 /* Media Query for Tablets Ipads portrait mode */
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 1023px) {
   .modal-content.big {
     margin: 0;
     position: absolute;
@@ -383,7 +383,7 @@ input[type="radio"] {
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100%;
+    max-width: 1023px;
     height: 100%;
     overflow: hidden;
   }
