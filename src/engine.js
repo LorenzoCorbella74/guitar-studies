@@ -4,6 +4,40 @@ import { allNotes, allNotesEnh, COLOURS, COLOURS_MERGE, Tunings } from './consta
 
 import { Scale, Note, Chord, transpose, Interval } from "@tonaljs/tonal";
 
+
+
+function checkIndex (inversion, index) {
+    let output = false;
+    switch (inversion) {
+        case '1': output = index === 0; break;
+        case '2': output = (index === 0 || index === 1); break;
+        case '3': output = (index === 0 || index === 1 || index === 2); break;
+        default: output = index === 0; break;
+    }
+    return output;
+}
+
+export function applyInversion (chords) {
+    // console.log('Before: ', chords.map(e=>e.notes));
+    chords.map(e => {
+        if (e.inversion === 'no') {
+            return e; // ritorn al'accordo normale
+        } else {
+            e.notes = e.notes.map((nota, i) => {
+                if (checkIndex(e.inversion, i)) {
+                    let octave = nota.charAt(nota.length - 1);
+                    let note = nota.slice(0, -1);
+                    nota = `${note}${Number(octave) + 1}`;
+                }
+                return nota;
+            });
+            return e
+        }
+    });
+    // console.log('After: ', chords.map(e=>e.notes));
+    return chords;
+}
+
 /* -------------------------------------------------------------------------- */
 
 function getStartOctave (startNote) {

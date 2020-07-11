@@ -5,6 +5,8 @@ import { Progression, Chord } from "@tonaljs/tonal";
 
 import { ac } from '../../index';
 
+import {applyInversion} from '../../engine';
+
 import ModalProgression from '../modal-prog/modal-prog';
 
 const NOITEMS = `
@@ -181,6 +183,7 @@ export default class Progressions {
         let item = this.list.find(e => e.progressionId === progressionId);
         // console.log('Play progression: ', item);
         let chords = item.progression.map(e => Chord.getChord(e.chord, e.root + e.octave));
+        chords = applyInversion(chords);
         let times = item.progression.map(e => Number(e.time.charAt(0))); // indicano quanti beat ci stanno in ogni battuta
         let percussionTimes = [...times, ...times, ...times, ...times];
         let totalTime = times.reduce((a, b) => a + b, 0);

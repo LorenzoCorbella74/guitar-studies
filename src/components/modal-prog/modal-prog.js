@@ -6,6 +6,8 @@ import { ChordType, Note, Chord } from "@tonaljs/tonal";
 import { allIntervals } from '../../constants';
 import { ac } from '../../index';
 
+import {applyInversion} from '../../engine';
+
 const optionsRitmo = ['Ritmo1', 'Ritmo2'].map(e => {        // TODO: 
     return { text: e, value: e };
 });
@@ -18,7 +20,7 @@ const optionsOctaves = ['2', '3', '4', '5', '6'].map(e => {
     return { text: e, value: e };
 });
 
-const optionsInversions = ['T', '3', '5'].map(e => {
+const optionsInversions = ['no', '1', '2', '3'].map(e => {
     return { text: e, value: e };
 });
 
@@ -90,7 +92,7 @@ export default class ModalProgression {
         this.selectedKey = 'C';
         this.selectedTimeSignature = '4/4';
         this.selectedOctave = '3';
-        this.selectedInversion = '1';
+        this.selectedInversion = 'no';
     }
 
     // Input range for transpose
@@ -304,23 +306,11 @@ export default class ModalProgression {
         this.setBubble();
     }
 
+
+
     play () {
         let chords = this.progression.map(e => ({ inversion: e.inversion, ...Chord.getChord(e.chord, e.root + e.octave) }));
-        chords = chords.map(e => {
-            if (e.inversion === 'T') {
-                return e
-            } else if (e.inversion === '3') {
-                let octave = e.notes[1].charAt(e.notes[1].length - 1);
-                let note = e.notes[1].slice(0, -1);
-                e.notes[1] = `${note}${Number(octave) - 1}`;
-                return e
-            } else if (e.inversion === '5') {
-                let octave = e.notes[2].charAt(e.notes[2].length - 1);
-                let note = e.notes[2].slice(0, -1);
-                e.notes[2] = `${note}${Number(octave) - 1}`;
-                return e
-            }
-        });
+        chords = applyInversion(chords);
         let times = this.progression.map(e => Number(e.time.charAt(0))); // indicano quanti beat ci stanno in ogni battuta
         let percussionTimes = [...times, ...times, ...times, ...times];
         let totalTime = times.reduce((a, b) => a + b, 0);
