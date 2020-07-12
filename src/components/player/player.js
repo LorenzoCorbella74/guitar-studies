@@ -27,7 +27,7 @@ export default class Player {
             this.selectedProgression = evt.target.value;
             let item = this.list.find(e => e.progressionId === this.selectedProgression);
             let list = this.element.querySelector('.player-list');
-            list.innerHTML = item.progression.map((e, i) => `<span class="player-list-item"><span>${e.time}</span> <span>${e.root}${e.chord}</span></span>`).join('');
+            list.innerHTML = item.progression.map((e, i) => `<span class="player-list-item"><span>${e.time}</span> <span>${e.root}${e.chord} - ${e.octave}-${e.inversion}</span></span>`).join('');
         });
 
         this.pos1 = 0;
@@ -42,11 +42,19 @@ export default class Player {
             /* otherwise, move the DIV from anywhere inside the DIV:*/
             this.element.onmousedown = this.dragMouseDown.bind(this);
         }
+    }
 
-        // TODO: eventi per evidenziare l'accordo al momento suonato
-        this.element.addEventListener('chord', (e) => {
-            console.log('Custom event', e.detail)
-        }, false);
+    // fired from fretboard component
+    setHighLigth (index) {
+        let items = document.querySelectorAll('.player-list-item');
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            item.classList.remove('highligthed');
+        }
+        if(index!=='clean'){
+            items[index].classList.add('highligthed');
+            items[index].scrollIntoView();
+        }
     }
 
     configureForm () {
@@ -97,13 +105,10 @@ export default class Player {
         document.onmousemove = null;
     }
 
-    /*     fillForm(data) {
-            this.id = data.id;
-            this.refs.note.value = data.note;        
-        } */
-
     toggle () {
         this.element.style.display = this.element.style.display === "none" ? 'block' : 'none';
+        document.querySelector('.player-list').innerHTML='';
+        document.getElementById('progress_pl').value = '';
     }
 
     play () {

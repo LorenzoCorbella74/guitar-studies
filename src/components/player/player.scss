@@ -61,5 +61,11 @@
         border-radius: 8px;
         display: flex;
         justify-content: space-around;
+        font-size: 80%;
+    }
+
+    .highligthed {
+        background-color: var(--secondary-color);
+        color: white;
     }
 }

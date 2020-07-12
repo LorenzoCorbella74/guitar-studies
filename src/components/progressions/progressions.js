@@ -5,7 +5,7 @@ import { Progression, Chord } from "@tonaljs/tonal";
 
 import { ac } from '../../index';
 
-import {applyInversion} from '../../engine';
+import { applyInversion } from '../../engine';
 
 import ModalProgression from '../modal-prog/modal-prog';
 
@@ -105,7 +105,7 @@ export default class Progressions {
         progression.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
         this.renderNumerals(progression, input);
-        
+
     }
 
     renderNumerals (progression, input) {
@@ -194,25 +194,30 @@ export default class Progressions {
             this.app.drumSounds.play(37, percussion_time, { duration: percussionTimes[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
             percussion_time += percussionTimes[i] / 4 * bpm; // è il tempo tra un accordo ed il successivo...
         })
-        let when = [0];
+        let event_time = 0;
+        let when = [event_time];
         chords.forEach((accordo, i) => {
             accordo.notes.forEach((nota, i2) => {
                 this.app.ambientSounds.play(nota, global_time, { duration: times[i] * bpm, gain: 0.65/* , decay: 0.05, attack: 0.05  */ }); // accordo
                 this.app.drumSounds.play(35, global_time, { duration: times[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
             });
             global_time += times[i] * bpm; // è il tempo tra un accordo ed il successivo...
-            when.push(global_time * 1000);
+            event_time += times[i] * bpm;
+            when.push(event_time * 1000);
         });
-        console.log(when)
+        when.splice(-1);
+        this.timeout = {}
         when.forEach((t, i) => {
-            setTimeout(() => {
-                var event = new CustomEvent("chord", {
-                    detail: { t, i }
-                });
-                this.element.dispatchEvent(event);
-            }, t);
+            this.timeout[i.toString()] = setTimeout(() =>  this.sendEvent(t, i), t);
         });
         this.loop = setTimeout(() => this.playProgression(evt, progressionId), totalTime * bpm * 1000);
+    }
+
+    sendEvent (t, i) {
+        let event = new CustomEvent("chord", {
+            detail: { t, i }, bubbles: true,
+        });
+        this.element.dispatchEvent(event);
     }
 
     stopProgression (evt, progressionId) {
@@ -221,5 +226,10 @@ export default class Progressions {
         this.app.ambientSounds.stop();
         this.app.drumSounds.stop();
         clearTimeout(this.loop);
+        for (const key in this.timeout) {
+                clearTimeout(this.timeout[key]);
+        }
+        this.timeout = {};
+        this.sendEvent(0,'clean');
     }
 }

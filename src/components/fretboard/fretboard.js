@@ -63,6 +63,12 @@ export default class MyFretboard {
         this.generateFretboards(input);
         this.generateProgressions();    /* Generate progressions only after fretboards are created */
 
+        // TODO: eventi per evidenziare l'accordo al momento suonato
+        this.body.addEventListener('chord', (e) => {
+            console.log('Custom event', e.detail);
+            this.player.setHighLigth(e.detail.i);
+        }, false);
+
         window.onresize = this.resize.bind(this);
     }
 
@@ -102,7 +108,7 @@ export default class MyFretboard {
     }
 
     generateProgressions () {
-            this.progressions.generateItems();
+        this.progressions.generateItems();
     }
 
 
