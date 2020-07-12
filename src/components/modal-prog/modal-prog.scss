@@ -32,6 +32,11 @@
         overflow: auto;
     }
 
+    .highligthed {
+        background-color: var(--secondary-color);
+        color: white;
+    }
+
     /* The Close Button */
     .close-mp {
         float: right;

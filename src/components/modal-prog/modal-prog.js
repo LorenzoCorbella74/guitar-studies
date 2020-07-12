@@ -6,7 +6,7 @@ import { ChordType, Note, Chord } from "@tonaljs/tonal";
 import { allIntervals } from '../../constants';
 import { ac } from '../../index';
 
-import {applyInversion} from '../../engine';
+import { applyInversion } from '../../engine';
 
 const optionsRitmo = ['Ritmo1', 'Ritmo2'].map(e => {        // TODO: 
     return { text: e, value: e };
@@ -317,6 +317,8 @@ export default class ModalProgression {
         let bpm = 60 / this.refs.bpm_mp.value; // durata del singolo beat in secondi
         let global_time = ac.currentTime + 0.25;
         let percussion_time = ac.currentTime + 0.25;
+        let event_time = 0;
+        let when = [event_time];
         percussionTimes.forEach((e, i) => {
             this.app.drumSounds.play(37, percussion_time, { duration: percussionTimes[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
             percussion_time += percussionTimes[i] / 4 * bpm; // è il tempo tra un accordo ed il successivo...
@@ -327,6 +329,13 @@ export default class ModalProgression {
                 this.app.drumSounds.play(35, global_time, { duration: times[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
             });
             global_time += times[i] * bpm; // è il tempo tra un accordo ed il successivo...
+            event_time += times[i] * bpm;
+            when.push(event_time * 1000);
+        });
+        when.splice(-1);
+        this.timeout = {}
+        when.forEach((t, i) => {
+            this.timeout[i.toString()] = setTimeout(() => this.setHighLigth(i), t);
         });
         this.loop = setTimeout(() => this.play(), totalTime * bpm * 1000);
     }
@@ -335,6 +344,24 @@ export default class ModalProgression {
         this.app.ambientSounds.stop();
         this.app.drumSounds.stop();
         clearTimeout(this.loop);
+        for (const key in this.timeout) {
+            clearTimeout(this.timeout[key]);
+        }
+        this.timeout = {};
+        this.setHighLigth('clean');
+    }
+
+    // fired from modal-prog component
+    setHighLigth (index) {
+        let items = document.querySelector('.item-list');
+        for (let i = 0; i < items.children.length; i++) {
+            const item = items.children[i];
+            item.classList.remove('highligthed');
+        }
+        if (index !== 'clean') {
+            items.children[index].classList.add('highligthed');
+            items.children[index].scrollIntoView();
+        }
     }
 }
 
