@@ -242,18 +242,29 @@ export default class MyFretboard {
     // improve: clearinterval dei selectlayer già partiti...
     makeLayerLoop (evt) {
         let { id } = this.getParent(evt);
-        let time = ac.currentTime;
+        let time = ac.currentTime + 0.25;
         let times = Array.from(Array(this.fretboardIstances[id].layers.length), (_, i) => i + 1).map(e => 4); // indicano quanti beat ci stanno in ogni battuta
+        let layer = this.fretboardIstances[id].layers[0];   // TODO: si prende il 1°
+        let accordo = layer.intervals.map((e, i) => {
+            if (e[0] === '1' || e[0] === '3' || e[0] === '5') {
+                return layer.notes[i] + '4';
+            }
+        });
         let percussionTimes = Array.from(Array(this.fretboardIstances[id].layers.length * 4), (_, i) => i + 1).map(e => 1);
         let bpm = 60 / this.app.layerBpm; // durata del singolo beat in secondi
         let percussion_time = ac.currentTime + 0.25;
+        let global_time = ac.currentTime + 0.25;
         percussionTimes.forEach((e, i) => {
             this.app.drumSounds.play(37, percussion_time, { duration: percussionTimes[i] * bpm, gain: 0.35/* , decay: 0.05, attack: 0.05  */ });
             percussion_time += percussionTimes[i] * bpm; // è il tempo tra un accordo ed il successivo...
         })
+        accordo.forEach((nota, i2) => {
+            this.app.ambientSounds.play(nota, global_time, { duration: times[i2] * bpm, gain: 0.65/* , decay: 0.05, attack: 0.05  */ }); // accordo
+        });
+        this.timeout = {};
         for (let i = 0; i < this.fretboardIstances[id].layers.length; i++) {
             const layer = this.fretboardIstances[id].layers[i];
-            setTimeout(() => {
+            this.timeout[i.toString()] = setTimeout(() => {
                 this.selectLayer(evt, layer.id, id);
             }, time);
             time += times[i] * bpm * 1000;
@@ -265,6 +276,10 @@ export default class MyFretboard {
         let { parent, id } = this.getParent(evt);
         this.app.drumSounds.stop();
         clearInterval(this.loop);
+        for (const key in this.timeout) {
+            clearTimeout(this.timeout[key]);
+        }
+        this.timeout = {};
     }
 
     removeAllFretboard () {
