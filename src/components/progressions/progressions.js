@@ -222,7 +222,7 @@ export default class Progressions {
 
     stopProgression (evt, progressionId) {
         let item = this.list.find(e => e.progressionId === progressionId);
-        console.log('Stop progression: ', item);
+        console.log(`Stop progression: `, item);
         this.app.ambientSounds.stop();
         this.app.drumSounds.stop();
         clearTimeout(this.loop);

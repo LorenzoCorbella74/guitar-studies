@@ -51,7 +51,7 @@ export default class Player {
             const item = items[i];
             item.classList.remove('highligthed');
         }
-        if(index!=='clean'){
+        if (index !== 'clean') {
             items[index].classList.add('highligthed');
             items[index].scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
@@ -106,8 +106,8 @@ export default class Player {
     }
 
     toggle () {
-        this.element.style.display = this.element.style.display === "none" ? 'block' : 'none';
-        document.querySelector('.player-list').innerHTML='';
+        this.element.style.display = (this.element.style.display === "none" || this.element.style.display === "") ? 'block' : 'none';
+        document.querySelector('.player-list').innerHTML = '';
         document.getElementById('progress_pl').value = '';
     }
 

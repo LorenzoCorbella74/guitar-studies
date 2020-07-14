@@ -112,10 +112,7 @@
     #remove-general-btn,
     #tags-general-btn,
     #save-btn,
-    #back-btn,
-    #interchange-btn,
-    #fifths-btn,
-    #player-btn {
+    #back-btn {
         margin-left: 8px;
         font-size: 22px;
         transition: 0.5s ease;
@@ -129,12 +126,29 @@
         }
     }
 
+    #interchange-btn,
+    #fifths-btn,
+    #player-btn {
+        margin-left: 6px;
+        font-size: 32px;
+        transition: 0.5s ease;
+
+        &:hover {
+            cursor: pointer;
+            -webkit-transform: scale(1.25);
+            -moz-transform: scale(1.25);
+            -ms-transform: scale(1.25);
+            -o-transform: scale(1.25);
+        }
+    }
+
     #mode-btn {
         margin-right: 8px;
+        margin-left: 4px;
         font-weight: 700;
-        padding: 3px 8px;
+        padding: 4px 6px;
         border-radius: 8px;
-        font-size: 20px;
+        font-size: 28px !important;
         background-color: var(--primary-color);
         color: white;
         transition: 0.5s ease;
@@ -152,7 +166,8 @@
         #save-btn,
         #interchange-btn,
         #fifths-btn,
-        #mode-btn, #player-btn {
+        #mode-btn,
+        #player-btn {
             font-size: 18px;
         }
     }

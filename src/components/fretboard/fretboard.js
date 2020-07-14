@@ -54,7 +54,7 @@ export default class MyFretboard {
         this.selectedInterval = [];
 
         this.mode = input.mode || 'fretboard'; // can be 'fretboard' or 'progressions'
-        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? 'PROGs' : 'FRETs';
+        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? '&#127929;' : '&#127928;';
         if (this.mode === 'progressions') {
             document.querySelector('.fretboard-content').classList.toggle('hide');
             document.querySelector('.progression-content').classList.toggle('hide');
@@ -78,7 +78,7 @@ export default class MyFretboard {
 
     toggleMode () {
         this.mode = this.mode === 'fretboard' ? 'progressions' : 'fretboard';
-        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? 'PROGs' : 'FRETs';
+        this.header.refs.mode.innerHTML = this.mode === 'fretboard' ? '&#127929;' : '&#127928;';
         document.querySelector('.fretboard-content').classList.toggle('hide');
         document.querySelector('.progression-content').classList.toggle('hide');
     }
@@ -202,8 +202,16 @@ export default class MyFretboard {
         fretboard.querySelector('.scale-play-btn').addEventListener('click', (evt) => this.playScale.call(this, evt));
         fretboard.querySelector('.note-btn').addEventListener('click', (evt) => this.openNoteModal.call(this, evt));
         fretboard.querySelector('.toggle-btn').addEventListener('click', (evt) => this.togglePanel.call(this, evt));
-        fretboard.querySelector('.play-loop-btn').addEventListener('click', (evt) => this.makeLayerLoop.call(this, evt));
-        fretboard.querySelector('.stop-loop-btn').addEventListener('click', (evt) => this.stopLayerLoop.call(this, evt));
+        fretboard.querySelector('.toggle-loop-btn').addEventListener('click', (evt) => {
+            let { id } = this.getParent(evt);
+            this.fretboardIstances[id].isPlaying =!this.fretboardIstances[id].isPlaying ;
+            if (this.fretboardIstances[id].isPlaying) {
+                this.makeLayerLoop.call(this, evt);
+            } else {
+                this.stopLayerLoop.call(this, evt);
+            }
+            fretboard.querySelector('.toggle-loop-btn').innerHTML = this.fretboardIstances[id].isPlaying ? '&#128192;' : '&#128191;';
+        });
 
         this.fretboardIstances[id] = Fretboard({
             id: id,
@@ -214,6 +222,7 @@ export default class MyFretboard {
         });
         this.fretboardIstances[id].drawBoard();
         this.fretboardIstances[id].layers = [];
+        this.fretboardIstances[id].isPlaying = false;
         this.fretboardIstances[id].selectedIndex = null;
         this.fretboardIstances[id].visible = input.visible === false ? false : true;
         this.fretboardIstances[id].note = input.note || '',   // testo info 
