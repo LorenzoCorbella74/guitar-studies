@@ -6,6 +6,7 @@ import { APP_VERSION } from './constants';
 // Components
 import MyFretboard from './components/fretboard/fretboard';
 import List from './components/list/list';
+import Login from './components/login/login';
 
 // SOUNDS
 import Soundfont from 'soundfont-player';
@@ -14,7 +15,8 @@ export const ac = new AudioContext();
 class App {
     constructor() {
 
-        
+        this.user = null;
+        this.authenticated = false;
 
         // SOUNDS
         this.guitarSounds = null;
@@ -78,12 +80,14 @@ class App {
 
     goTo (where, data) {
         document.body.classList.add('fade');
-        if (where === 'list') {
+        if (where === 'list' && this.authenticated) {
             this.currentRoute = 'list';
             new List(this);
-        } else if (where === 'study') {
+        } else if (where === 'study' && this.authenticated) {
             this.currentRoute = 'study';
             new MyFretboard(this, data);
+        } else {
+            new Login(this);
         }
         document.body.classList.remove('fade');
     }

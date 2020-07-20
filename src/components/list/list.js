@@ -27,6 +27,7 @@ export default class List {
         // events
         document.querySelector('.save').addEventListener('click', this.save.bind(this));
         document.querySelector('.import').addEventListener('click', this.import.bind(this));
+        document.querySelector('.logout').addEventListener('click', this.logout.bind(this));
         this.theme = document.querySelector('.theme');
         this.theme.addEventListener('click', this.toggleTheme.bind(this));
         document.querySelector('.add-study').addEventListener('click', this.addStudy.bind(this));
@@ -66,6 +67,12 @@ export default class List {
                 this.setTheme(evt.target.dataset.style)
             });
         });
+    }
+
+    logout(){
+        // TODO:
+        this.app.authenticated = false;
+        this.app.goTo('login');
     }
 
     setTheme (theme) {

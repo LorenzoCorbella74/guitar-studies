@@ -7,6 +7,8 @@
   --secondary-color: #4ea40b; /* #35daae; verde acqua - #a4950b; arancione - #ecd92b giallo */
   --light-grey: lightgrey;
   --detail: #666;
+  --success-color: #2ecc71;
+  --error-color: #e74c3c;
 }
 
 .dark-theme {
@@ -124,6 +126,7 @@ body.fade {
 
 /*  FORM ELEMENTS */
 input[type="text"],
+input[type="password"],
 input[type="number"],
 textarea,
 select,
@@ -152,6 +155,16 @@ textarea {
 input[type="radio"] {
   width: 24px;
   margin-bottom: 12px;
+}
+
+
+.primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+.secondary {
+  background-color: var(--secondary-color);
+  color: white;
 }
 
 /*  RANGE SLIDER */

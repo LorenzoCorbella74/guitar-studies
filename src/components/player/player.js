@@ -53,7 +53,7 @@ export default class Player {
         }
         if (index !== 'clean') {
             items[index].classList.add('highligthed');
-            items[index].scrollIntoView({ behavior: 'smooth', block: 'end' });
+            items[index].scrollIntoView({ behavior: 'smooth' });
         }
     }
 
