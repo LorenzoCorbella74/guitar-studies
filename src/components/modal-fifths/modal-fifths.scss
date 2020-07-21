@@ -36,7 +36,8 @@
         }
     }
 
-    .fifths-table, .comparison-table {
+    .fifths-table,
+    .comparison-table {
         border-collapse: collapse;
         border-spacing: 0;
         width: 100%;
@@ -51,25 +52,36 @@
         .fifths-header {
             font-weight: 700;
         }
-        .fifths-row {
-            // TODO:
-        }
-
-       /*  tr:hover {
-            background-color: #f2f2f2;
-        } */
 
         .table-primary {
-            background-color: var(--primary-color);
+            background-color: var(--primary-color) !important;
             color: white;
         }
         .table-secondary {
-            background-color: var(--secondary-color);
+            background-color: var(--secondary-color) !important;
             color: white;
         }
 
-        .notes-row{
+        .notes-row {
             border-bottom: 1px solid var(--light-grey);
+        }
+    }
+
+    .comparison-table {
+        & tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        & tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        & tr:last-of-type {
+            border-bottom: 2px solid #009879;
+        }
+
+        & tr:hover {
+            background-color: #f2f2f2;
         }
     }
 }

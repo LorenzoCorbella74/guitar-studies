@@ -288,6 +288,7 @@ export default class List {
             .then((response) => {
                 /* let index = this.list.findIndex(e => e.studyId === parent.dataset.id);
                 this.list.splice(index, 1); */
+                this.loader.classList.add('hide');
                 if (this.listToBeDisplayed.length === 0) {
                     document.querySelector('.study-list').innerHTML = NOITEMS;
                 } else {
@@ -295,6 +296,7 @@ export default class List {
                 }
             })
             .catch(error => {
+                this.loader.classList.add('hide');
                 alert('Error deleting study: ', error);
             });
     }
