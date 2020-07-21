@@ -1,8 +1,6 @@
 import "./fretboard.scss";
 import template from './fretboard.html'
 
-import state from '../../state';
-
 // Components
 import ModalChoice from '../modal-choice/modal-choice';
 import Settings from '../settings/settings';
@@ -24,6 +22,8 @@ export default class MyFretboard {
 
     constructor(app, input = {}) {
         this.app = app;
+
+        this.generationMode = false;
 
         this.studyId = input.studyId || Math.floor(Math.random() * 1000000);
         this.creation = input.creation || new Date();
@@ -47,7 +47,7 @@ export default class MyFretboard {
         this.modal_interchange = new ModalInterchange('modal-interchange');
         this.modal_fifths = new ModalFifths('modal-fifths');
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
-        this.progressions = new Progressions(this.app, this.studyId, input.progs, this.backToList.bind(this, false));
+        this.progressions = new Progressions(this.app, this.studyId, input.progs, this.saveorUpdateFret.bind(this));
         this.player = new Player('player', this.progressions, this.progressions.playProgression, this.progressions.stopProgression);
 
         this.fretboardIstances = {};
@@ -84,6 +84,7 @@ export default class MyFretboard {
     }
 
     generateFretboards (input) {
+        this.generationMode = true;
         this.header.refs.title.textContent = input.title || 'Add title...';
         this.header.refs.description.value = input.description || 'Add Description...';
         this.header.tags = input.tags || [];
@@ -102,7 +103,9 @@ export default class MyFretboard {
                     }
                 })
             }
+            this.generationMode = false;
         } else {
+            this.generationMode = false;
             this.addFretboard({}); // create one fretboard if empty
         }
     }
@@ -111,41 +114,60 @@ export default class MyFretboard {
         this.progressions.generateItems();
     }
 
+    saveorUpdateFret (callback) {
+        if (!this.generationMode) {
+            this.player.configureForm(); // TODO: aggiorna le opzioni del player in base alle progressioni presenti
+            let copy = JSON.parse(JSON.stringify(this.fretboardIstances));
+            let progressions = JSON.parse(JSON.stringify(this.progressions.list));
+            for (const key in copy) {
+                const fret = copy[key]; // si rimuove tutto ciò che sarà ricreato dinamicamente
+                delete fret.notes;
+                delete fret.svgContainer;
+                fret.layers.forEach(element => {
+                    delete element.intervals;
+                    delete element.reduced;
+                    delete element.extended;
+                    delete element.scaleChords;
+                    delete element.modeNames;
+                    delete element.fingerings;
+                    delete element.copynotesVisibility
+                });
+            }
+            let reqObj = {
+                userId: this.app.user.user.uid,
+                studyId: this.studyId,
+                img: this.img || 1,
+                title: this.header.refs.title.textContent,
+                description: this.header.refs.description.value,
+                favourite: this.favourite,
+                mode: this.mode,
+                tags: this.header.tags,
+                progress: this.header.refs.progress.value,
+                creation: this.creation,
+                frets: copy,
+                progs: progressions
+            };
+            if (this.studyId.toString().length > 6) {
+                this.app.state.update(this.studyId, reqObj).then(resp => {
+                    console.log('Updated: ', resp);
+                    if (callback) {
+                        callback();
+                    }
+                });
+            } else {
+                this.app.state.create(reqObj).then(resp => {
+                    console.log('Created: ', resp);
+                    this.studyId = resp.id;
+                    if (callback) {
+                        callback();
+                    }
+                });
+            }
+        }
+    }
 
-    backToList (noredirect) {
-        this.player.configureForm(); // TODO: aggiorna le opzioni del player in base alle progressioni presenti
-        let copy = JSON.parse(JSON.stringify(this.fretboardIstances));
-        let progressions = JSON.parse(JSON.stringify(this.progressions.list));
-        for (const key in copy) {
-            const fret = copy[key]; // si rimuove tutto ciò che sarà ricreato dinamicamente
-            delete fret.notes;
-            delete fret.svgContainer;
-            fret.layers.forEach(element => {
-                delete element.intervals;
-                delete element.reduced;
-                delete element.extended;
-                delete element.scaleChords;
-                delete element.modeNames;
-                delete element.fingerings;
-                delete element.copynotesVisibility
-            });
-        }
-        state.saveOrUpdate({
-            studyId: this.studyId,
-            img: this.img,
-            title: this.header.refs.title.textContent,
-            description: this.header.refs.description.value,
-            favourite: this.favourite,
-            mode: this.mode,
-            tags: this.header.tags,
-            progress: this.header.refs.progress.value,
-            creation: this.creation,
-            frets: copy,
-            progs: progressions
-        });
-        if (noredirect && 'cancelable' in noredirect) { // "save" btn or "back to list" btn
-            this.app.goTo('list');
-        }
+    backToList () {
+        this.saveorUpdateFret(() => this.app.goTo('list'));
     }
 
     resize () {
@@ -204,7 +226,7 @@ export default class MyFretboard {
         fretboard.querySelector('.toggle-btn').addEventListener('click', (evt) => this.togglePanel.call(this, evt));
         fretboard.querySelector('.toggle-loop-btn').addEventListener('click', (evt) => {
             let { id } = this.getParent(evt);
-            this.fretboardIstances[id].isPlaying =!this.fretboardIstances[id].isPlaying ;
+            this.fretboardIstances[id].isPlaying = !this.fretboardIstances[id].isPlaying;
             if (this.fretboardIstances[id].isPlaying) {
                 this.makeLayerLoop.call(this, evt);
             } else {
@@ -307,7 +329,7 @@ export default class MyFretboard {
         });
         this.fretboardIstances = {};    // remove the model
         this.app.confirmModal.style.display = "none";
-        this.backToList(false);
+        this.saveorUpdateFret();
     }
 
     removeFretboard (evt) {
@@ -319,7 +341,7 @@ export default class MyFretboard {
         parent.remove();                    // remove the html element
         delete this.fretboardIstances[id]; // remove the model
         this.app.confirmModal.style.display = "none";
-        this.backToList(false);
+        this.saveorUpdateFret();
     }
 
     togglePanel (evt) {
@@ -394,7 +416,7 @@ export default class MyFretboard {
             this.removeFingeringBtn(parent);
             this.calculateComparison(parent, id);
             this.calculateAssociation(parent, id);
-            this.backToList(false);
+            this.saveorUpdateFret();
         }
         // resetting range
         const slider = parent.querySelector(".slidecontainer .slider");
@@ -468,7 +490,7 @@ export default class MyFretboard {
         this.fretboardIstances[data.id].note = data.note;
         let { parent } = this.getParent(null, data.id);
         parent.querySelector(`.note-btn`).innerHTML = data.note.length > 0 ? '&#128221;' : '&#128196;';
-        this.backToList(false);
+        this.saveorUpdateFret();
     }
 
     /*  ----------------------------- COMPARISON PANEL ----------------------------- */
@@ -626,7 +648,7 @@ export default class MyFretboard {
         this.fretboardIstances[id].layers[toBeUpdate] = Object.assign(this.fretboardIstances[id].layers[toBeUpdate], data);
         this.fretboardIstances[id].repaint();
         this.updateLayerInfo(this.fretboardIstances[id].layers[toBeUpdate], id);
-        this.backToList(false);
+        this.saveorUpdateFret();
     }
 
     // callback from modal choice
@@ -651,7 +673,7 @@ export default class MyFretboard {
             this.updateTitle(data.value, id);
             this.updateLayerInfo(this.fretboardIstances[id].layers[toBeUpdate], id);
             this.selectLayer({ target: parent }, data.id, id);  // si seleziona automaticamente
-            this.backToList(false);
+            this.saveorUpdateFret();
         } else {        // SAVE NEW
             this.renderLayer(data);
         }
@@ -916,7 +938,7 @@ export default class MyFretboard {
         parent.querySelector('.note-btn').style.visibility = 'hidden';
         this.calculateComparison(parent, id);
         this.app.confirmModal.style.display = "none";
-        this.backToList(false);
+        this.saveorUpdateFret();
     }
 
     editLayer (evt, layerId) {
@@ -951,7 +973,7 @@ export default class MyFretboard {
         let li = document.querySelector(`[data-id='${id}']`)
         li.querySelector('.visibility-btn').innerHTML = selected.visible ? ' &#9899; ' : '&#9898;';
         this.fretboardIstances[parentId].repaint();
-        this.backToList(false);
+        this.saveorUpdateFret();
     }
 
     deleteLayer (evt, layerId, parentId) {
@@ -976,7 +998,7 @@ export default class MyFretboard {
             this.updateLayerInfo(null, parentId);
             this.removeFingeringBtn(parent);
             this.calculateComparison(parent, parentId);
-            this.backToList(false);
+            this.saveorUpdateFret();
         }
     }
 
@@ -1030,7 +1052,7 @@ export default class MyFretboard {
         this.calculateAssociation(parent, parentId);
         this.calculateComparison(parent, parentId);
         this.fretboardIstances[parentId].repaint();
-        this.backToList(false);
+        this.saveorUpdateFret();
     }
 
     updateFingeringBtns (parent, parentId, data) {

@@ -3,6 +3,8 @@ import template from './index.html';
 
 import { APP_VERSION } from './constants';
 
+import firebase from './firebase';  // INIT ??
+
 // Components
 import MyFretboard from './components/fretboard/fretboard';
 import List from './components/list/list';
@@ -21,6 +23,8 @@ class App {
         // SOUNDS
         this.guitarSounds = null;
         this.ambientSounds = null;
+
+        this.db = firebase;
 
         // SETTINGS
         if (localStorage.getItem('dark-theme')) {
@@ -64,14 +68,18 @@ class App {
             Soundfont.instrument(ac, 'acoustic_guitar_steel').then(guitarDownloaded => {
                 this.guitarSounds = guitarDownloaded;
                 this.spinner.textContent = 'Loading percussion sounds';
-                Soundfont.instrument(ac, 'percussion',{ soundfont: 'FluidR3_GM' }).then(percussionDownloaded => {  // steel_drums, percussion
+                Soundfont.instrument(ac, 'percussion', { soundfont: 'FluidR3_GM' }).then(percussionDownloaded => {  // steel_drums, percussion
                     this.drumSounds = percussionDownloaded;
+                    // FIXME: 
+                    let currentUser = firebase.auth().currentUser;
+                    if (currentUser) {
+                        this.authenticated = true;
+                    }
                     this.goTo('list'); // list as default
                 });
             });
-            
-        });
 
+        });
     }
 
     setCallback (callback) {

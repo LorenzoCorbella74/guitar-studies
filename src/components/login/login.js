@@ -1,6 +1,8 @@
 import "./login.scss";
 import template from './login.html';
 
+import firebase from 'firebase';
+
 const operationType = {
     LOGIN: 'LOGIN',
     REGISTER: 'REGISTER'
@@ -11,30 +13,31 @@ export default class Login {
     constructor(app) {
 
         this.app = app;
-        
+
         document.getElementById('loading-container').classList.add('hide');
-        
+
         this.body = document.getElementById('content');
         this.body.innerHTML = `${template}`;
-        
+
         this.title = document.getElementById('login-msg');
         this.switchModeBtn = document.getElementById('register-msg');
         this.enterBtn = document.getElementsByClassName("login-enter-btn")[0];
         this.enterGoogleBtn = document.getElementsByClassName("login-enter-google-btn")[0]
         this.enterFacebookBtn = document.getElementsByClassName("login-enter-facebook-btn")[0]
-        
+
         this.form = document.getElementById('form');
         this.email = document.getElementById('email');
         this.password = document.getElementById('password');
-        
+
         // EVENTS
         this.switchModeBtn.addEventListener('click', this.switchMode.bind(this));
         this.enterBtn.addEventListener('click', this.enter.bind(this));
         this.enterGoogleBtn.addEventListener('click', this.enterGoogle.bind(this));
         this.enterFacebookBtn.addEventListener('click', this.enterFacebook.bind(this));
-        
-        this.mode = operationType.REGISTER  // default is login...
-        this.switchMode();
+
+        this.mode = operationType.REGISTER
+        this.loading = false;
+        this.switchMode();  // default is login...
     }
 
     switchMode () {
@@ -71,27 +74,55 @@ export default class Login {
     }
 
     enter () {
+        this.loading = true;
         this.validateForm(() => {
-            // TODO: 
-            this.app.authenticated = true;
-            this.app.goTo('list');
+            firebase
+                .auth()
+                .signInWithEmailAndPassword(this.email.value, this.password.value)
+                .then(user => {
+                    console.log('User; ', user);
+                    this.loading = false;
+                    this.app.authenticated = true;
+                    this.app.user = user;
+                    this.app.goTo('list');
+                })
+                .catch(err => {
+                    this.loading = false;
+                    this.error = err.message;
+                });
         });
     }
 
     enterGoogle () {
-        this.validateForm(() => {
-            // TODO: 
-            this.app.authenticated = true;
-            this.app.goTo('list');
-        });
+        const provider = new firebase.auth.GoogleAuthProvider();
+        firebase
+            .auth()
+            .signInWithPopup(provider)
+            .then(data => {
+                console.log('User in login page: ', data.user, data.credential.accessToken);
+                this.app.authenticated = true;
+                this.app.user = data.user;
+                this.app.goTo('list');
+            })
+            .catch(err => {
+                this.error = err.message;
+            });
     }
 
     enterFacebook () {
-        this.validateForm(() => {
-            // TODO: 
-            this.app.authenticated = true;
-            this.app.goTo('list');
-        });
+        const provider = new firebase.auth.FacebookAuthProvider();
+        firebase
+            .auth()
+            .signInWithPopup(provider)
+            .then(data => {
+                console.log('User in login page: ', data.user, data.credential.accessToken);
+                this.app.authenticated = true;
+                this.app.user = data.user;
+                this.app.goTo('list');
+            })
+            .catch(err => {
+                this.error = err.message;
+            });
     }
 
     // Show input error message

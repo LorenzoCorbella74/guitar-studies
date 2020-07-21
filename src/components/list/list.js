@@ -3,7 +3,9 @@ import template from './list.html';
 
 import { APP_VERSION } from '../../constants';
 
-import state from '../../state';
+import State from '../../state';
+
+import firebase from 'firebase';
 
 const NOITEMS = `
 <div class="no-items">
@@ -18,9 +20,9 @@ export default class List {
         this.body.innerHTML = `${template}`;
 
         this.app = app;
-        this.list = state.getState();           // lista da stato
-        this.listToBeDisplayed = this.list;     // lista da filtrare
-        this.generateItems();
+        this.app.state = new State(this.app);
+
+        this.loadStudies();
 
         this.favouriteFlag = true;
 
@@ -36,13 +38,13 @@ export default class List {
         document.querySelector('.study-favourite-filter').addEventListener('click', this.filterFavourite.bind(this));
         document.querySelector('.search').addEventListener('input', (evt) => this.search.call(this, evt));
 
-        document.getElementsByClassName("layers-bpm")[0].addEventListener('change', (evt)=>{
+        document.getElementsByClassName("layers-bpm")[0].addEventListener('change', (evt) => {
             this.app.layerBpm = evt.target.value;
             localStorage.setItem('layers-bpm', evt.target.value);
         });
 
         let layerBpm = localStorage.getItem('layers-bpm');
-        if(layerBpm){
+        if (layerBpm) {
             document.getElementsByClassName("layers-bpm")[0].value = layerBpm;
             this.app.layerBpm = layerBpm;
         } else {
@@ -69,10 +71,31 @@ export default class List {
         });
     }
 
-    logout(){
-        // TODO:
-        this.app.authenticated = false;
-        this.app.goTo('login');
+    loadStudies () {
+        this.app.state
+            .getState()
+            .then((studies) => {
+                this.list = studies;
+                this.listToBeDisplayed = this.list; // lista da filtrare
+                this.generateItems();
+            })
+            .catch(error => {
+                alert('Error getting studies: ', error);
+            });
+    }
+
+    logout () {
+        this.isLoading = true;
+        firebase
+            .auth()
+            .signOut()
+            .then(() => {
+                console.log('User logged out!');
+                this.app.user = null;
+                this.app.authenticated = false;
+                this.isLoading = false;
+                this.app.goTo('login');
+            });
     }
 
     setTheme (theme) {
@@ -141,8 +164,12 @@ export default class List {
                 var content = readerEvent.target.result; // this is the content!
                 try {
                     let parsed = JSON.parse(content)
-                    state.updateState(parsed.data);
-                    this.list = state.getState();
+                    /* 
+                        TODO:
+                        1) si cancellano su firestore tutti gli item dell'utente
+                        2) Si fa un salvatagio per ogni item...
+                        3) this.list = state.getState();
+                     */
                     document.querySelector('.study-list').innerHTML = '';
                     this.generateItems();
                 } catch (error) {
@@ -154,10 +181,11 @@ export default class List {
     }
 
     generateItems () {
+        document.querySelector('.study-list').innerHTML='';
         this.listToBeDisplayed.forEach((el, i) => {
             this.renderStudy(el, i);
         });
-        if(this.listToBeDisplayed.length===0){
+        if (this.listToBeDisplayed.length === 0) {
             document.querySelector('.study-list').innerHTML = NOITEMS;
         }
     }
@@ -189,14 +217,10 @@ export default class List {
     }
 
     checkDate (date) {
-        if (Object.prototype.toString.call(date) === '[object Date]') {
-            return date
-        } else {
-            return new Date(date);
-        }
+        return new Date(date.seconds);
     }
 
-    
+
     getIconPath () {
         let imgNum = Math.floor(Math.random() * 20) + 1;
         if (imgNum > 20) {
@@ -209,8 +233,8 @@ export default class List {
         var temp = document.getElementById("study-item");
         var clone = temp.content.cloneNode(true);
         let id = input.studyId || 'study' + Math.floor(Math.random() * 1000000);
-        input.img = input.img ||  this.getIconPath(),
-        clone.firstElementChild.dataset.id = id;
+        input.img = input.img || this.getIconPath(),
+            clone.firstElementChild.dataset.id = id;
 
         document.querySelector('.study-list').appendChild(clone);
 
@@ -239,11 +263,17 @@ export default class List {
     }
 
     toggleFavourite (evt) {
-        let { parent, id } = this.getParent(evt);
-        let index = this.list.findIndex(e => e.studyId === id);
+        let { parent } = this.getParent(evt);
+        let index = this.list.findIndex(e => e.studyId === parent.dataset.id);
         this.list[index].favourite = !this.list[index].favourite;
         event.target.innerHTML = this.list[index].favourite ? '&#128150;' : '&#128420;';
-        state.updateState(this.list);
+        this.app.state.update(parent.dataset.id, this.list[index])
+            .then((response) => {
+                console.log('item updated: ', this.list[index]);
+            })
+            .catch(error => {
+                alert('Error deleting study: ', error);
+            });
     }
 
     removeStudy (evt) {
@@ -252,20 +282,26 @@ export default class List {
     }
 
     doRemoveStudy (evt) {
-        let { parent, id } = this.getParent(evt);
-        let index = this.list.findIndex(e => e.studyId === id);
-        this.list.splice(index, 1);
-        parent.remove();
-        state.updateState(this.list);
-        this.app.confirmModal.style.display = "none";
-        if(this.listToBeDisplayed.length===0){
-            document.querySelector('.study-list').innerHTML = NOITEMS;
-        }
+        let { parent } = this.getParent(evt);
+        this.app.state.delete(parent.dataset.id)
+            .then((response) => {
+                /* let index = this.list.findIndex(e => e.studyId === parent.dataset.id);
+                this.list.splice(index, 1); */
+                this.app.confirmModal.style.display = "none";
+                if (this.listToBeDisplayed.length === 0) {
+                    document.querySelector('.study-list').innerHTML = NOITEMS;
+                } else {
+                    this.loadStudies();
+                }
+            })
+            .catch(error => {
+                alert('Error deleting study: ', error);
+            });
     }
 
     openStudy (evt) {
-        let { id } = this.getParent(evt);
-        let index = this.list.findIndex(e => e.studyId === id);
+        let { parent } = this.getParent(evt);
+        let index = this.list.findIndex(e => e.studyId === parent.dataset.id);
         this.app.goTo('study', this.list[index]);
     }
 
