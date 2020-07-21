@@ -60,6 +60,8 @@ export default class MyFretboard {
             document.querySelector('.progression-content').classList.toggle('hide');
         }
 
+        this.loader = document.getElementById('loader');
+
         this.generateFretboards(input);
         this.generateProgressions();    /* Generate progressions only after fretboards are created */
 
@@ -124,6 +126,7 @@ export default class MyFretboard {
 
     saveorUpdateFret (callback) {
         if (!this.generationMode) {
+            this.loader.classList.remove('hide');
             this.player.configureForm(); // TODO: aggiorna le opzioni del player in base alle progressioni presenti
             let copy = JSON.parse(JSON.stringify(this.fretboardIstances));
             let progressions = JSON.parse(JSON.stringify(this.progressions.list));
@@ -158,6 +161,7 @@ export default class MyFretboard {
             if (this.studyId.toString().length > 6) {
                 this.app.state.update(this.studyId, reqObj).then(resp => {
                     console.log('Updated: ', resp);
+                    this.loader.classList.add('hide');
                     if (callback) {
                         callback();
                     }
@@ -165,6 +169,7 @@ export default class MyFretboard {
             } else {
                 this.app.state.create(reqObj).then(resp => {
                     console.log('Created: ', resp);
+                    this.loader.classList.add('hide');
                     this.studyId = resp.id;
                     if (callback) {
                         callback();

@@ -16,6 +16,8 @@ export default class Login {
 
         document.getElementById('loading-container').classList.add('hide');
 
+        this.loader = document.getElementById('loader');
+
         this.body = document.getElementById('content');
         this.body.innerHTML = `${template}`;
 
@@ -74,22 +76,40 @@ export default class Login {
     }
 
     enter () {
-        this.loading = true;
+        this.loader.classList.remove('hide');
         this.validateForm(() => {
-            firebase
+            if(this.mode === operationType.REGISTER){
+                firebase
                 .auth()
-                .signInWithEmailAndPassword(this.email.value, this.password.value)
+                .createUserWithEmailAndPassword(this.email.value, this.password.value)
                 .then(user => {
                     console.log('User; ', user);
-                    this.loading = false;
+                    this.loader.classList.add('hide');
                     this.app.authenticated = true;
                     this.app.user = user;
                     this.app.goTo('list');
                 })
                 .catch(err => {
-                    this.loading = false;
+                    this.loader.classList.add('hide');
                     this.error = err.message;
                 });
+            } else {
+                firebase
+                .auth()
+                .signInWithEmailAndPassword(this.email.value, this.password.value)
+                .then(user => {
+                    console.log('User; ', user);
+                    this.loader.classList.add('hide');
+                    this.app.authenticated = true;
+                    this.app.user = user;
+                    this.app.goTo('list');
+                })
+                .catch(err => {
+                    this.loader.classList.add('hide');
+                    this.error = err.message;
+                });
+            }
+            
         });
     }
 

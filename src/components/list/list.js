@@ -22,6 +22,8 @@ export default class List {
         this.app = app;
         this.app.state = new State(this.app);
 
+        this.loader = document.getElementById('loader');
+
         this.loadStudies();
 
         this.favouriteFlag = true;
@@ -72,14 +74,17 @@ export default class List {
     }
 
     loadStudies () {
+        this.loader.classList.remove('hide');
         this.app.state
             .getState()
             .then((studies) => {
                 this.list = studies;
                 this.listToBeDisplayed = this.list; // lista da filtrare
+                this.loader.classList.add('hide');
                 this.generateItems();
             })
             .catch(error => {
+                this.loader.classList.add('hide');
                 alert('Error getting studies: ', error);
             });
     }
@@ -254,15 +259,18 @@ export default class List {
     }
 
     toggleFavourite (evt) {
+        this.loader.classList.remove('hide');
         let { parent } = this.getParent(evt);
         let index = this.list.findIndex(e => e.studyId === parent.dataset.id);
         this.list[index].favourite = !this.list[index].favourite;
         event.target.innerHTML = this.list[index].favourite ? '&#128150;' : '&#128420;';
         this.app.state.update(parent.dataset.id, this.list[index])
             .then((response) => {
+                this.loader.classList.add('hide');
                 console.log('item updated: ', this.list[index]);
             })
             .catch(error => {
+                this.loader.classList.add('hide');
                 alert('Error deleting study: ', error);
             });
     }
@@ -273,12 +281,13 @@ export default class List {
     }
 
     doRemoveStudy (evt) {
+        this.app.confirmModal.style.display = "none";
         let { parent } = this.getParent(evt);
+        this.loader.classList.remove('hide');
         this.app.state.delete(parent.dataset.id)
             .then((response) => {
                 /* let index = this.list.findIndex(e => e.studyId === parent.dataset.id);
                 this.list.splice(index, 1); */
-                this.app.confirmModal.style.display = "none";
                 if (this.listToBeDisplayed.length === 0) {
                     document.querySelector('.study-list').innerHTML = NOITEMS;
                 } else {

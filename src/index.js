@@ -3,7 +3,8 @@ import template from './index.html';
 
 import { APP_VERSION } from './constants';
 
-import firebase from './firebase';  // INIT ??
+import firebaseInstance from './firebase';  // INIT ??
+import firebase from 'firebase';
 
 // Components
 import MyFretboard from './components/fretboard/fretboard';
@@ -24,7 +25,7 @@ class App {
         this.guitarSounds = null;
         this.ambientSounds = null;
 
-        this.db = firebase;
+        this.db = firebaseInstance;
 
         // SETTINGS
         if (localStorage.getItem('dark-theme')) {

@@ -18,7 +18,7 @@ export default class State {
                     if (i == -1 && doc.data().userId === this.app.user.user.uid) {
                         this.studies.push({
                             studyId: doc.id,
-                            img: doc.data().img,
+                            /* img: doc.data().img,
                             userId: doc.data().userId,
                             title: doc.data().title,
                             description: doc.data().description,
@@ -27,7 +27,8 @@ export default class State {
                             tags: doc.data().tags,
                             creation: doc.data().creation,
                             frets: doc.data().frets,
-                            progs: doc.data().progs
+                            progs: doc.data().progs */
+                            ...doc.data()
                         });
                     }
                 });
