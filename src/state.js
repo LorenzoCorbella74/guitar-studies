@@ -18,7 +18,7 @@ export default class State {
                     if (i == -1 && doc.data().userId === this.app.user.user.uid) {
                         this.studies.push({
                             studyId: doc.id,
-                            img: doc.data().imageNum,
+                            img: doc.data().img,
                             userId: doc.data().userId,
                             title: doc.data().title,
                             description: doc.data().description,

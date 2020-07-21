@@ -113,7 +113,6 @@ export default class ModalProgression {
     }
 
     fillForm (data = {}) {
-        this.studyId = data.studyId;
         this.progressionId = data.progressionId;
         this.refs.title_mp.value = data.title || '';
         this.refs.description_mp.value = data.description || '';
@@ -182,7 +181,6 @@ export default class ModalProgression {
             return
         }
         this.data = {
-            studyId: this.studyId,
             progressionId: this.progressionId,
             title: this.refs.title_mp.value,
             bpm: this.refs.bpm_mp.value,

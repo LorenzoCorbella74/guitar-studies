@@ -16,12 +16,11 @@ const NOITEMS = `
 
 export default class Progressions {
 
-    constructor(app, studyId, list, saveCallback) {
+    constructor(app, list, saveCallback) {
         this.element = document.querySelector('.progression-content');
         this.element.innerHTML = `${template}`;
         this.app = app;
         this.list = list || [];
-        this.studyId = studyId;
         this.saveCallback = saveCallback;
 
         // EVENTS: si passa la save e il play/stop
@@ -174,7 +173,6 @@ export default class Progressions {
 
     addProgression () {
         let toBeAdded = {
-            studyId: this.studyId,
         }
         this.modal_prog.open(toBeAdded);
     }

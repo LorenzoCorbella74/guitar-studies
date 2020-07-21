@@ -28,7 +28,7 @@ export default class MyFretboard {
         this.studyId = input.studyId || Math.floor(Math.random() * 1000000);
         this.creation = input.creation || new Date();
         this.favourite = input.favourite || false;
-        this.img = input.img;
+        this.img = input.img || this.getIconPath();
 
         this.body = document.getElementById('content');
         this.body.innerHTML = `${template}`;
@@ -47,7 +47,7 @@ export default class MyFretboard {
         this.modal_interchange = new ModalInterchange('modal-interchange');
         this.modal_fifths = new ModalFifths('modal-fifths');
         this.settings = new Settings('settings', this.updateLayerSettings.bind(this));
-        this.progressions = new Progressions(this.app, this.studyId, input.progs, this.saveorUpdateFret.bind(this));
+        this.progressions = new Progressions(this.app, input.progs, this.saveorUpdateFret.bind(this));
         this.player = new Player('player', this.progressions, this.progressions.playProgression, this.progressions.stopProgression);
 
         this.fretboardIstances = {};
@@ -70,6 +70,14 @@ export default class MyFretboard {
         }, false);
 
         window.onresize = this.resize.bind(this);
+    }
+
+    getIconPath () {
+        let imgNum = Math.floor(Math.random() * 20) + 1;
+        if (imgNum > 20) {
+            imgNum = imgNum % 20;
+        }
+        return imgNum;
     }
 
     togglePlayer () {
@@ -136,7 +144,7 @@ export default class MyFretboard {
             let reqObj = {
                 userId: this.app.user.user.uid,
                 studyId: this.studyId,
-                img: this.img || 1,
+                img: this.img,
                 title: this.header.refs.title.textContent,
                 description: this.header.refs.description.value,
                 favourite: this.favourite,

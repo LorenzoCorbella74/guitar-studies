@@ -181,7 +181,7 @@ export default class List {
     }
 
     generateItems () {
-        document.querySelector('.study-list').innerHTML='';
+        document.querySelector('.study-list').innerHTML = '';
         this.listToBeDisplayed.forEach((el, i) => {
             this.renderStudy(el, i);
         });
@@ -220,20 +220,11 @@ export default class List {
         return new Date(date.seconds);
     }
 
-
-    getIconPath () {
-        let imgNum = Math.floor(Math.random() * 20) + 1;
-        if (imgNum > 20) {
-            imgNum = imgNum % 20;
-        }
-        return imgNum;
-    }
-
     renderStudy (input) {
         var temp = document.getElementById("study-item");
         var clone = temp.content.cloneNode(true);
         let id = input.studyId || 'study' + Math.floor(Math.random() * 1000000);
-        input.img = input.img || this.getIconPath(),
+        /* input.img = input.img || this.getIconPath(), */
             clone.firstElementChild.dataset.id = id;
 
         document.querySelector('.study-list').appendChild(clone);
