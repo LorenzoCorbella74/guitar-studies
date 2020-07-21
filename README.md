@@ -10,7 +10,7 @@ GUITAR FRETBOARDS 2,  the revamped remake of  [vue-fretboard](https://github.com
 
 It is optimised to be responsive up to ***800px*** so it can be used on tablets or larger screen.
 
-For a demo go [here](https://laughing-mccarthy-3ab279.netlify.app/). 
+For a demo go [here](https://guitar-fretboards-2020.netlify.app/). 
 
 Guitar images courtesy of [Pexels](https://www.pexels.com).  
 
