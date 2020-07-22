@@ -29,9 +29,10 @@ export default class List {
         this.favouriteFlag = true;
 
         // events
-        document.querySelector('.save').addEventListener('click', this.save.bind(this));
+        document.querySelector('.export').addEventListener('click', this.export.bind(this));
         document.querySelector('.import').addEventListener('click', this.import.bind(this));
         document.querySelector('.logout').addEventListener('click', this.logout.bind(this));
+        document.querySelector('.about').addEventListener('click', this.about.bind(this));
         this.theme = document.querySelector('.theme');
         this.theme.addEventListener('click', this.toggleTheme.bind(this));
         document.querySelector('.add-study').addEventListener('click', this.addStudy.bind(this));
@@ -71,6 +72,10 @@ export default class List {
                 this.setTheme(evt.target.dataset.style)
             });
         });
+    }
+
+    about(){
+        this.app.aboutModal.style.display = "block";
     }
 
     loadStudies () {
@@ -143,7 +148,7 @@ export default class List {
         this.generateItems();
     }
 
-    save () {
+    export () {
         let output = {
             ver: APP_VERSION,
             date: this.renderDate(new Date()),
@@ -168,16 +173,31 @@ export default class List {
             reader.onload = readerEvent => {
                 var content = readerEvent.target.result; // this is the content!
                 try {
-                    let parsed = JSON.parse(content)
-                    /* 
-                        TODO:
-                        1) si cancellano su firestore tutti gli item dell'utente
-                        2) Si fa un salvatagio per ogni item...
-                        3) this.list = state.getState();
-                     */
+                    this.loader.classList.remove('hide');
                     document.querySelector('.study-list').innerHTML = '';
-                    this.generateItems();
+                    let parsed = JSON.parse(content);
+                    // 1) si cancellano su firestore tutti gli item dell'utente
+                    this.app.state.db.get()
+                        .then(res => {
+                            res.forEach(element => {
+                                // si cancellano solo i documenti legati ad un utente
+                                if(element.data().userId ===this.app.user.user.uid){   
+                                    element.ref.delete();
+                                }
+                            });
+                            let promises = [];
+                            // 2) Si fa un salvatagio per ogni item...
+                            parsed.data.forEach(element => {
+                                promises.push(this.app.state.set(element));  
+                            });
+                            Promise.all(promises).then(() => {
+                                this.loadStudies();
+                                this.loader.classList.add('hide');
+                            });
+
+                        });
                 } catch (error) {
+                    this.loader.classList.add('hide');
                     console.log('Was not possible to import the file!')
                 }
             }
@@ -222,7 +242,11 @@ export default class List {
     }
 
     checkDate (date) {
-        return new Date(date.seconds);
+        if (Object.prototype.toString.call(date) === '[object Date]') {
+            return date
+        } else {
+            return new Date(date);
+        }
     }
 
     renderStudy (input) {
@@ -230,7 +254,7 @@ export default class List {
         var clone = temp.content.cloneNode(true);
         let id = input.studyId || 'study' + Math.floor(Math.random() * 1000000);
         /* input.img = input.img || this.getIconPath(), */
-            clone.firstElementChild.dataset.id = id;
+        clone.firstElementChild.dataset.id = id;
 
         document.querySelector('.study-list').appendChild(clone);
 

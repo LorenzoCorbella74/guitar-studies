@@ -26,7 +26,7 @@ export default class MyFretboard {
         this.generationMode = false;
 
         this.studyId = input.studyId || Math.floor(Math.random() * 1000000);
-        this.creation = input.creation || new Date();
+        this.creation = input.creation || new Date().toISOString();
         this.favourite = input.favourite || false;
         this.img = input.img || this.getIconPath();
 

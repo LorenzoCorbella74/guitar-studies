@@ -72,6 +72,10 @@ export default class State {
             });
     }
 
+    set(newItem) {
+        return this.db.doc(newItem.studyId).set(newItem);    // prende l'id passato
+    }
+
     update (editedId, newItem) {
         return this.db
             .doc(editedId)

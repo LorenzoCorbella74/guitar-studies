@@ -12,10 +12,10 @@
 }
 
 .dark-theme {
-  --font-color: #E0E0E0;
-  --background-color: #4C5A69;
+  --font-color: #e0e0e0;
+  --background-color: #4c5a69;
   --primary-color: #3b3c4f;
-  --secondary-color: #F9BF3B;
+  --secondary-color: #f9bf3b;
   --light-grey: #989898;
   --detail: #fefefe;
 }
@@ -95,6 +95,7 @@
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -307,6 +308,29 @@ input[type="radio"] {
   /* Black w/ opacity */
 }
 
+#about-modal {
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 10;
+  /* Sit on top */
+  padding-top: 100px;
+  /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
+}
+
 /* Modal Content */
 .modal-content {
   position: relative;
@@ -336,6 +360,10 @@ input[type="radio"] {
 
 .small {
   width: 250px !important;
+}
+
+.medium {
+  width: 480px !important;
 }
 
 .big {
@@ -487,5 +515,13 @@ input[type="radio"] {
   40% {
     box-shadow: 0 -2em;
     height: 5em;
+  }
+}
+
+.about-exit,
+.save-confirm,
+.close-confirm {
+  &:hover {
+    cursor: pointer;
   }
 }

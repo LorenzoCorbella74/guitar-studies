@@ -61,6 +61,12 @@ class App {
             this.confirmModal.callback();
         })
 
+        this.aboutModal = document.getElementById('about-modal');
+        this.aboutModal.querySelector('.about-exit').addEventListener('click', (evt) => {
+            evt.stopPropagation();
+            this.aboutModal.style.display = "none";
+        })
+
         this.spinner.textContent = 'Loading ambient sounds';
         Soundfont.instrument(ac, 'electric_piano_1').then(ambientSoundDownloaded => {   // electric_grand_piano , pad_2_warm, electric_piano_1 pad_1_new_age
             this.ambientSounds = ambientSoundDownloaded;
