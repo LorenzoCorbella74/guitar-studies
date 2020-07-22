@@ -24,8 +24,8 @@ export default class Login {
         this.title = document.getElementById('login-msg');
         this.switchModeBtn = document.getElementById('register-msg');
         this.enterBtn = document.getElementsByClassName("login-enter-btn")[0];
-        this.enterGoogleBtn = document.getElementsByClassName("login-enter-google-btn")[0]
-        this.enterFacebookBtn = document.getElementsByClassName("login-enter-facebook-btn")[0]
+       /*  this.enterGoogleBtn = document.getElementsByClassName("login-enter-google-btn")[0]
+        this.enterFacebookBtn = document.getElementsByClassName("login-enter-facebook-btn")[0] */
 
         this.form = document.getElementById('form');
         this.email = document.getElementById('email');
@@ -34,8 +34,8 @@ export default class Login {
         // EVENTS
         this.switchModeBtn.addEventListener('click', this.switchMode.bind(this));
         this.enterBtn.addEventListener('click', this.enter.bind(this));
-        this.enterGoogleBtn.addEventListener('click', this.enterGoogle.bind(this));
-        this.enterFacebookBtn.addEventListener('click', this.enterFacebook.bind(this));
+        /* this.enterGoogleBtn.addEventListener('click', this.enterGoogle.bind(this));
+        this.enterFacebookBtn.addEventListener('click', this.enterFacebook.bind(this)); */
 
         this.mode = operationType.REGISTER
         this.loading = false;
@@ -51,15 +51,15 @@ export default class Login {
         if (this.mode === operationType.LOGIN) {
             this.title.innerHTML = 'Login &#127928;';
             this.enterBtn.textContent = 'Log in!'
-            this.enterGoogleBtn.style.display = 'block';
-            this.enterFacebookBtn.style.display = 'block';
+            /* this.enterGoogleBtn.style.display = 'block';
+            this.enterFacebookBtn.style.display = 'block'; */
             this.switchModeBtn.style.display = 'block';
             this.switchModeBtn.textContent = 'New here?  Create a new account!';
         } else {
             this.title.innerHTML = 'Register &#127928;';
             this.enterBtn.textContent = 'Enter the family'
-            this.enterGoogleBtn.style.display = 'none';
-            this.enterFacebookBtn.style.display = 'none';
+            /* this.enterGoogleBtn.style.display = 'none';
+            this.enterFacebookBtn.style.display = 'none'; */
             this.switchModeBtn.style.display = 'block';
             this.switchModeBtn.textContent = 'Already a member? Log in!';
         }
