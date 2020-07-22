@@ -85,12 +85,12 @@ Once saved it's possible to edit / erase and play / stop the relevant progressio
 
 ## Built With
 - HTML5, SASS
-- no icons just HTML5 EMOJI !!
-- no FE Frameworks, just Vanilla ES6 Javascript !!
-- no BE just localstorage !!
+- Webpack 4
+- no icons just HTML5 EMOJI!!
+- no FE Frameworks, just Vanilla ES6 Javascript!!
+- BE with Firebase!!
 - [tonal](https://github.com/danigb/tonal)
 - [soundfont-player](https://github.com/danigb/soundfont-player)
-- Webpack 4
 
 ## License
 This project is licensed under the MIT License.
