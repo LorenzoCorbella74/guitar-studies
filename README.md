@@ -1,12 +1,12 @@
-# GUITAR FRETBOARDS 2
+# GUITAR STUDIES
 
 ![tastiera](./docs/fretboard.PNG)
 
 ![](https://img.shields.io/badge/type-JS_Library-brightgreen.svg "Project type")
-![](https://img.shields.io/github/repo-size/LorenzoCorbella74/guitar-fretboards "Repository size")
-![](https://img.shields.io/github/package-json/v/LorenzoCorbella74/guitar-fretboards)
+![](https://img.shields.io/github/repo-size/LorenzoCorbella74/guitar-studies "Repository size")
+![](https://img.shields.io/github/package-json/v/LorenzoCorbella74/guitar-studies)
 
-GUITAR FRETBOARDS 2,  the revamped remake of  [vue-fretboard](https://github.com/LorenzoCorbella74/vue-fretboard), aims to be the definitive free web app for the organisation of guitar studies on the superimpositions of scales and arpeggios.
+GUITAR STUDIES,  the revamped remake of  [vue-fretboard](https://github.com/LorenzoCorbella74/vue-fretboard), aims to be the definitive free web app for the organisation of guitar studies on the superimpositions of scales and arpeggios.
 
 It is optimised to be responsive up to ***800px*** so it can be used on tablets or larger screen.
 
@@ -15,14 +15,14 @@ For a demo go [here](https://guitar-studies-2020.netlify.app/).
 Guitar images courtesy of [Pexels](https://www.pexels.com).  
 
 # Documentation
-GUITAR FRETBOARDS 2 is based on two pages: the `list page` and the `single study page`. 
+GUITAR STUDIES is based on two pages: the `list page` and the `single study page`. 
 
 
 ##  LIST page
 In the list page it is possible to select a single study or filter guitar studies by tags, favourites, progress status, creation date or free text. 
 ![tastiera](./docs/LIST.PNG)
 
-On the right side of the header a  dropdown menu permits to customise the app settings and export / import the personal app data:
+On the right side of the header a dropdown menu permits to customise the app settings and export / import the personal app data:
 
 ![tastiera](./docs/LIST_MENU.PNG)
 
