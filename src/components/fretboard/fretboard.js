@@ -18,6 +18,12 @@ import { Fretboard, mergeArrays, createMergeColors, generateFingerings, safeNote
 import { Note, Scale, Interval } from "@tonaljs/tonal";
 import { allIntervals, allScales } from '../../constants';
 
+import screenfull from 'screenfull';
+
+function isMobileDevice() {
+    return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+};
+
 export default class MyFretboard {
 
     constructor(app, input = {}) {
@@ -247,6 +253,9 @@ export default class MyFretboard {
             }
             fretboard.querySelector('.toggle-loop-btn').innerHTML = this.fretboardIstances[id].isPlaying ? '&#128192;' : '&#128191;';
         });
+        if(!isMobileDevice()){
+            fretboard.querySelector('.fullscreen-btn').addEventListener('click', (evt) => this.toggleFullscrean.call(this, evt));
+        }
 
         this.fretboardIstances[id] = Fretboard({
             id: id,
@@ -281,6 +290,22 @@ export default class MyFretboard {
         this.setBubble(slider, bubble, id);
 
         return fretboard;
+    }
+
+    toggleFullscrean (evt) {
+        let { parent } = this.getParent(evt);
+        let element = parent.querySelector('.fret');
+        if (screenfull.isEnabled) {
+            /* let fretboard = element.querySelector('.fretboard');
+            fretboard.classList.toggle('full'); */
+            screenfull.request(element);
+            /* screenfull.on('change', () => {
+                console.log('Am I fullscreen?', screenfull.isFullscreen ? 'Yes' : 'No');
+                if (!screenfull.isFullscreen) {
+                    fretboard.classList.toggle('full'); // si rimuove se non + fullscren
+                }
+            }) */
+        }
     }
 
     // improve: clearinterval dei selectlayer già partiti...
@@ -415,6 +440,7 @@ export default class MyFretboard {
             });
             this.selectLayer(evt, prevLayerId, id);
         } else {
+            parent.querySelector('.fullscreen-btn').style.visibility = 'hidden';
             parent.querySelector('.settings-btn').style.visibility = 'hidden';
             parent.querySelector('.scale-info-btn').style.visibility = 'hidden';
             parent.querySelector('.scale-toggle-btn').style.visibility = 'hidden';
@@ -526,7 +552,7 @@ export default class MyFretboard {
         otherThanBase.forEach(element => {
             element.intervalsFromSelected = element.notes.map(e => Interval.distance(base.root, e))
         });
-        console.log('comparison list....', this.fretboardIstances[id].layers, base, otherThanBase);
+        // console.log('comparison list....', this.fretboardIstances[id].layers, base, otherThanBase);
         this.renderTable([base]);
         this.renderTable(otherThanBase, base);
     }
@@ -944,6 +970,7 @@ export default class MyFretboard {
         this.updateTitle('', parent.dataset.id);
         this.updateLayerInfo(null, parent.dataset.id);
         this.removeFingeringBtn(parent);
+        parent.querySelector('.fullscreen-btn').style.visibility = 'hidden';
         parent.querySelector('.settings-btn').style.visibility = 'hidden';
         parent.querySelector('.scale-info-btn').style.visibility = 'hidden';
         parent.querySelector('.scale-toggle-btn').style.visibility = 'hidden';
@@ -998,6 +1025,7 @@ export default class MyFretboard {
         if (prevLayerId) {
             this.selectLayer(evt, prevLayerId, parentId);
         } else {
+            parent.querySelector('.fullscreen-btn').style.visibility = 'hidden';
             parent.querySelector('.settings-btn').style.visibility = 'hidden';
             parent.querySelector('.scale-info-btn').style.visibility = 'hidden';
             parent.querySelector('.scale-toggle-btn').style.visibility = 'hidden';
@@ -1028,6 +1056,9 @@ export default class MyFretboard {
         let { parent } = this.getParent(null, parentId);
         this.fretboardIstances[parentId].selectedIndex = id; // id del layer
         // BTN
+        if(!isMobileDevice()){
+            parent.querySelector('.fullscreen-btn').style.visibility = 'inherit';
+        }
         parent.querySelector('.settings-btn').style.visibility = 'inherit';
         parent.querySelector('.scale-info-btn').style.visibility = 'inherit';
         parent.querySelector('.scale-toggle-btn').style.visibility = 'inherit';

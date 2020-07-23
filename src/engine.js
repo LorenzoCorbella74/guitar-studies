@@ -269,7 +269,7 @@ export function safeNotes (note) {
         case 'E#': output = 'F'; break;
         case 'Fb': output = 'E'; break;
         case 'Cb': output = 'B'; break;
-        default: output = note; break;
+        default: output = Note.simplify(note); break;
     }
     return output;
 }

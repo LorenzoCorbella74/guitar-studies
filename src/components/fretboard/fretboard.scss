@@ -7,7 +7,8 @@
   background-color: var(--background-color);
 }
 
-.fretboard-content, .progression-content {
+.fretboard-content,
+.progression-content {
   margin-top: 120px;
 }
 
@@ -29,6 +30,20 @@
     &:hover {
       cursor: pointer;
     }
+  }
+
+  .fret {
+    background-color: var(--background-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* transition: 0.5s ease;
+    .full{
+      -webkit-transform: scale(1.25);
+      -moz-transform: scale(1.25);
+      -ms-transform: scale(1.25);
+      -o-transform: scale(1.25);
+    } */
   }
 
   .col-layers {
@@ -71,7 +86,8 @@
       margin-left: 24px;
       justify-content: space-between;
 
-      .extended, .reduced {
+      .extended,
+      .reduced {
         margin-right: 8px;
       }
 
@@ -190,7 +206,9 @@
 .scale-info-btn,
 .scale-toggle-btn,
 .scale-play-btn,
-.note-btn {
+.note-btn,
+.settings-btn,
+.fullscreen-btn {
   margin-left: 12px;
 
   &:hover {
@@ -224,8 +242,7 @@
 .edit-btn,
 .move-btn,
 .delete-btn,
-.visibility-btn,
-.settings-btn {
+.visibility-btn {
   align-content: flex-start;
   margin-left: 8px;
   margin-right: 8px;
@@ -251,7 +268,8 @@
 .scale-info-btn,
 .scale-toggle-btn,
 .scale-play-btn,
-.note-btn {
+.note-btn,
+.fullscreen-btn {
   visibility: hidden;
 }
 

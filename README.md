@@ -10,7 +10,7 @@ GUITAR FRETBOARDS 2,  the revamped remake of  [vue-fretboard](https://github.com
 
 It is optimised to be responsive up to ***800px*** so it can be used on tablets or larger screen.
 
-For a demo go [here](https://guitar-fretboards-2020.netlify.app/). 
+For a demo go [here](https://guitar-studies-2020.netlify.app/). 
 
 Guitar images courtesy of [Pexels](https://www.pexels.com).  
 
@@ -22,7 +22,7 @@ GUITAR FRETBOARDS 2 is based on two pages: the `list page` and the `single study
 In the list page it is possible to select a single study or filter guitar studies by tags, favourites, progress status, creation date or free text. 
 ![tastiera](./docs/LIST.PNG)
 
-On the right side of the header a  dropdown menu permits to customise the app settings and save / import the personal app data:
+On the right side of the header a  dropdown menu permits to customise the app settings and export / import the personal app data:
 
 ![tastiera](./docs/LIST_MENU.PNG)
 
@@ -30,7 +30,7 @@ On the right side of the header a  dropdown menu permits to customise the app se
 
 ## Single STUDY page
 
-On the study page it' possible to create both fretboards visualisations and chords proressions: on the header of the single study page the provided button permits to switch between the "progression mode" &#127929;  and the "fretboard mode" &#127928;..
+On the study page it' possible to create both fretboards visualisations and chords proressions: on the header of the single study page the provided button permits to switch between the "progression mode" &#127929;  and the "fretboard mode" &#127928;.
 
 ## Fretboards mode
 Click the 🆕 button on the header to add responsive svg fretboard visualisations! for each fretboard it's possible to:
@@ -41,11 +41,12 @@ Click the 🆕 button on the header to add responsive svg fretboard visualisatio
 - ⚫ Show a table with a comparison between the selected layer notes and the ones of the other layers
 
 Each single layer has multiple available actions in the provided menu:
-- layer visibility on/off, 
-- delete layer
-- clone layer, 
-- send layer to a new fretboard
-- merge with a new scale (for a graphical comparison of the notes in common and distint on each scale)
+- ⚫ layer visibility on/off, 
+- 🔧 edit layer
+- 🔪 delete layer
+- 👬 clone layer, 
+- 🆕 send layer to a new fretboard
+- 🔗merge with a new scale (for a graphical comparison of the notes in common and distint on each scale)
 
 On the left side of the fretboad panel it's possibile to 
 - select one layer
@@ -58,6 +59,7 @@ In the right side of the fretboard info panel it's summarised the relevant infor
 - 🎶 toggle between the scale and its relative arpeggio
 -  📐 open the settings panel (labels with notes'names or degrees and notes' size and opacity for better graphic overlapping)
 -  🔬 toggle a footer where the relevant chords of the choosen scale and the relative extended and reduced scales are shown
+-  👓 toggle "ZEN mode", with a distraction free fretboard in fullscreen (available only on desktop)
 -  🔪 erase the entire fretboard
 ![tastiera](./docs/app7.PNG)
 
@@ -81,6 +83,9 @@ Click the 🆕 button on the header to add chord progressions and fill the relev
 ![tastiera](./docs/progressions.PNG)
 
 Once saved it's possible to edit / erase and play / stop the relevant progression.
+
+## Next steps
+- [ ] Add Chords as layer
 
 
 ## Built With
