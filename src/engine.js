@@ -621,7 +621,7 @@ export const Fretboard = function (config) {
                 const rect = instance.svgContainer
                     .append('rect')
                     .attr('class', 'note')
-                    .style('stroke', 'var(--detail)')
+                    .style('stroke', 'var(--primary-color)')
                     .attr('stroke-width', 1)
                     .attr("x", (absPitch - basePitch + 0.40 / size) * instance.fretWidth + 'px')
                     .attr("y", (string - 1) * instance.fretHeight + YMARGIN() / size / 2 + 4.5 + 'px')
@@ -638,7 +638,7 @@ export const Fretboard = function (config) {
                     .attr("cx", x + 0.75)
                     .attr("cy", y)
                     .attr("r", 12 * size)
-                    .style("stroke", 'var(--detail)')
+                    .style("stroke", 'var(--primary-color)')
                     .style("fill", hexToRGB(color, opacity))
                     .on("click", () => null);
             }

@@ -78,6 +78,8 @@ export default class MyFretboard {
         }, false);
 
         window.onresize = this.resize.bind(this);
+
+        this.resize();
     }
 
     getIconPath () {

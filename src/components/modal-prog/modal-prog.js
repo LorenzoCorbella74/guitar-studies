@@ -1,36 +1,46 @@
 import "./modal-prog.scss";
 import template from './modal-prog.html';
 
-import { ChordType, Note, Chord } from "@tonaljs/tonal";
+import { /* ChordType, */ Note, Chord } from "@tonaljs/tonal";
 
-import { allIntervals } from '../../constants';
+import { allIntervals, allOptionsNotes, allChords } from '../../constants';
 import { ac } from '../../index';
 
 import { applyInversion } from '../../engine';
 
-const optionsRitmo = ['Ritmo1', 'Ritmo2'].map(e => {        // TODO: 
-    return { text: e, value: e };
-});
+import { MySelect } from './../my-select/my-select';
 
-const optionsNotes = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb', 'B'].map(e => {
-    return { text: e, value: e };
-});
+/* 
+    // TODO: 
+    const optionsRitmo = ['Ritmo1', 'Ritmo2'].map(e => {       
+        return { text: e, value: e };
+    }); 
+*/
 
-const optionsOctaves = ['2', '3', '4', '5', '6'].map(e => {
-    return { text: e, value: e };
-});
+const optionsOctaves = [
+    { label: 'Choose the octave', isHeader: true },
+    { label: '2', value: '2' },
+    { label: '3', value: '3' },
+    { label: '4', value: '4' },
+    { label: '5', value: '5' }
+];
 
-const optionsInversions = ['no', '1', '2', '3'].map(e => {
-    return { text: e, value: e };
-});
+const optionsInversions = [
+    { label: 'Choose the inversion', isHeader: true },
+    { label: 'no', value: 'no' },
+    { label: '1', value: '1' },
+    { label: '2', value: '2' },
+    { label: '3', value: '3' }
+];
 
-const optionsChords = ChordType.all().map(e => {
-    return { text: e.aliases[0], value: e.aliases[0] };
-}).sort((a, b) => a.text + b.text);
-
-const optionsTimeSignatures = Array.from(Array(16), (_, i) => i + 1).map(e => {
-    return { text: e + '/4', value: e + '/4' };
+const optionsChords = allChords; /* ChordType.all().map(e => {
+    return { label: e.aliases[0], value: e.aliases[0] };
+}).sort((a, b) => a.label + b.label);
+ */
+let optionsTimeSignatures = Array.from(Array(16), (_, i) => i + 1).map(e => {
+    return { label: e + '/4', value: e + '/4' };
 });
+optionsTimeSignatures.unshift({ label: 'Choose the time signature', isHeader: true })
 
 export default class ModalProgression {
 
@@ -50,7 +60,6 @@ export default class ModalProgression {
         this.currentlyInEditing = false;
         this.progression = [];
         this.loop = null;
-        this.setDefaults();
         this.configureForm();
 
         // EVENTS
@@ -61,13 +70,6 @@ export default class ModalProgression {
         document.getElementsByClassName('transpose-mp')[0].addEventListener('click', this.transposeAll.bind(this));
         document.getElementsByClassName('play-mp')[0].addEventListener('click', this.play.bind(this));
         document.getElementsByClassName('stop-mp')[0].addEventListener('click', this.stop.bind(this));
-
-        document.getElementById('root_mp').addEventListener('change', (evt) => this.selectedNote = evt.target.value);
-        document.getElementById('key_mp').addEventListener('change', (evt) => this.selectedKey = evt.target.value);
-        document.getElementById('chord_mp').addEventListener('change', (evt) => this.selectedChord = evt.target.value);
-        document.getElementById('timeSignature_mp').addEventListener('change', (evt) => this.selectedTimeSignature = evt.target.value);
-        document.getElementById('octave_mp').addEventListener('change', (evt) => this.selectedOctave = evt.target.value);
-        document.getElementById('inversion_mp').addEventListener('change', (evt) => this.selectedInversion = evt.target.value);
 
         // When the user clicks anywhere outside of the modal, close it
         /* window.onclick = (event) => {
@@ -83,16 +85,6 @@ export default class ModalProgression {
             this.setBubble();
         });
         this.setBubble();
-    }
-
-    setDefaults () {
-        this.selectedInterval = '1P';
-        this.selectedChord = 'maj7';
-        this.selectedNote = 'C';
-        this.selectedKey = 'C';
-        this.selectedTimeSignature = '4/4';
-        this.selectedOctave = '3';
-        this.selectedInversion = 'no';
     }
 
     // Input range for transpose
@@ -117,13 +109,6 @@ export default class ModalProgression {
         this.refs.title_mp.value = data.title || '';
         this.refs.description_mp.value = data.description || '';
         this.refs.bpm_mp.value = data.bpm || 80;
-        this.refs.ritmo_mp.value = data.ritmos || 'Ritmo1';
-        this.refs.timeSignature_mp.value = this.selectedTimeSignature;
-        this.refs.octave_mp.value = this.selectedOctave;
-        this.refs.inversion_mp.value = this.selectedInversion;
-        this.refs.chord_mp.value = this.selectedChord;
-        this.refs.root_mp.value = this.selectedNote;
-        this.refs.key_mp.value = this.selectedKey;
         this.progression = data.progression || [];
         this.progression.forEach(element => {
             this.renderChord(element);
@@ -131,24 +116,43 @@ export default class ModalProgression {
     }
 
     configureForm () {
-        this.fillOptions('ritmos_mp', optionsRitmo);
-        this.fillOptions('root_mp', optionsNotes);
-        this.fillOptions('key_mp', optionsNotes);
-        this.fillOptions('chord_mp', optionsChords);
-        this.fillOptions('timeSignature_mp', optionsTimeSignatures);
-        this.fillOptions('octave_mp', optionsOctaves);
-        this.fillOptions('inversion_mp', optionsInversions);
-    }
-
-    fillOptions (id, options) {
-        var select = document.getElementById(id);
-        for (var i = 0; i < options.length; i++) {
-            var opt = options[i];
-            var el = document.createElement("option");
-            el.textContent = opt.text;
-            el.value = opt.value;
-            select.appendChild(el);
-        }
+        this.key = new MySelect({
+            id: "prog-key",
+            val: "C",
+            data: allOptionsNotes,
+            onSelect: newval => console.log('Key: ', newval)
+        });
+        this.root = new MySelect({
+            id: "prog-root",
+            val: "C",
+            data: allOptionsNotes,
+            onSelect: newval => console.log('Root: ', newval)
+        });
+        this.chord = new MySelect({
+            id: "prog-chord",
+            val: "maj7",
+            data: optionsChords,
+            onSelect: newval => console.log('Chord: ', newval)
+        });
+        this.time = new MySelect({
+            id: "prog-time",
+            val: "4/4",
+            data: optionsTimeSignatures,
+            onSelect: newval => console.log('Time Signature: ', newval)
+        });
+        this.octave = new MySelect({
+            id: "prog-octave",
+            val: "3",
+            data: optionsOctaves,
+            onSelect: newval => console.log('Octave: ', newval)
+        });
+        this.inversion = new MySelect({
+            id: "prog-inversion",
+            val: "no",
+            data: optionsInversions,
+            onSelect: newval => console.log('Inversion: ', newval)
+        });
+        console.log(JSON.stringify(optionsChords));
     }
 
     resetForm () {
@@ -156,12 +160,12 @@ export default class ModalProgression {
         this.refs.description_mp.value = '';
         this.refs.bpm_mp.value = '';
         this.refs.ritmo_mp.value = '';
-        this.refs.timeSignature_mp.value = '';
-        this.refs.octave_mp.value = '';
-        this.refs.inversion_mp.value = '';
-        this.refs.chord_mp.value = '';
-        this.refs.root_mp.value = '';
-        this.refs.key_mp.value = '';
+        this.key.value.innerHTML = '';
+        this.root.value.innerHTML = '';
+        this.chord.value.innerHTML = '';
+        this.time.value.innerHTML = '';
+        this.octave.value.innerHTML = '';
+        this.inversion.value.innerHTML = '';
         this.progression = [];
         document.querySelector('.item-list').innerHTML = '';
     }
@@ -177,16 +181,13 @@ export default class ModalProgression {
     }
 
     save () {
-        if ([this.refs.key_mp.value, this.refs.root_mp.value, this.refs.chord_mp.value, this.refs.timeSignature_mp.value].some(e => e.includes('Choose'))) {
-            return
-        }
         this.data = {
             progressionId: this.progressionId,
             title: this.refs.title_mp.value,
             bpm: this.refs.bpm_mp.value,
-            key: this.refs.key_mp.value,
+            key: this.key.value.innerHTML,
             description: this.refs.description_mp.value,
-            ritmo: this.refs.ritmo_mp.value,
+            /* ritmo: this.refs.ritmo_mp.value, */
             progression: this.progression,
             creation: new Date()
         }
@@ -196,13 +197,23 @@ export default class ModalProgression {
     }
 
     addToProgressionItem () {
+        if ([
+            this.key.value.innerHTML,
+            this.root.value.innerHTML,
+            this.chord.value.innerHTML,
+            this.time.value.innerHTML,
+            this.octave.value.innerHTML,
+            this.inversion.value.innerHTML,
+        ].some(e => (e.includes('Choose') || e === ''))) {
+            return
+        }
         let newItem = {
             id: Math.floor(Math.random() * 1000000),
-            root: this.selectedNote,
-            chord: this.selectedChord,
-            time: this.selectedTimeSignature,
-            octave: this.selectedOctave,
-            inversion: this.selectedInversion,
+            root: this.root.value.innerHTML,
+            chord: this.chord.value.innerHTML,
+            time: this.time.value.innerHTML,
+            octave: this.octave.value.innerHTML,
+            inversion: this.inversion.value.innerHTML,
             editMode: false
         };
         this.progression.push(newItem);
@@ -259,11 +270,11 @@ export default class ModalProgression {
             parent.classList.toggle('selected-item');
             let progression = this.progression.find(e => e.id === Number(id));
             progression.editMode = true;
-            this.refs.timeSignature_mp.value = progression.time;
-            this.refs.chord_mp.value = progression.chord;
-            this.refs.root_mp.value = progression.root;
-            this.refs.octave_mp.value = progression.octave;
-            this.refs.inversion_mp.value = progression.inversion;
+            this.time.value.innerHTML = progression.time;
+            this.chord.value.innerHTML = progression.chord;
+            this.root.value.innerHTML = progression.root;
+            this.octave.value.innerHTML = progression.octave;
+            this.inversion.value.innerHTML = progression.inversion;
             document.getElementsByClassName('save-item')[0].classList.remove('hide');
             document.getElementsByClassName('add-mp')[0].classList.add('hide');
         }
@@ -271,12 +282,12 @@ export default class ModalProgression {
 
     saveProgressionItem (evt) {
         let item = this.progression.find(e => e.editMode === true);
-        item.time = this.refs.timeSignature_mp.value;
-        item.chord = this.refs.chord_mp.value;
-        item.root = this.refs.root_mp.value;
-        item.key = this.refs.key_mp.value;
-        item.octave = this.refs.octave_mp.value;
-        item.inversion = this.refs.inversion_mp.value;
+        item.time = this.time.value.innerHTML;
+        item.chord = this.chord.value.innerHTML;
+        item.root = this.root.value.innerHTML;
+        item.key = this.key.value.innerHTML;
+        item.octave = this.octave.value.innerHTML;
+        item.inversion = this.inversion.value.innerHTML;
         item.editMode = false;
         document.querySelectorAll('.progression-item').forEach(e => {
             if (Number(e.dataset.id) === item.id) {
@@ -303,8 +314,6 @@ export default class ModalProgression {
         this.slider.value = '0';
         this.setBubble();
     }
-
-
 
     play () {
         let chords = this.progression.map(e => ({ inversion: e.inversion, ...Chord.getChord(e.chord, e.root + e.octave) }));
@@ -365,7 +374,6 @@ export default class ModalProgression {
 
 
 /*
-
 
 35 B0 Acoustic Bass Drum    59 B2 Ride Cymbal 2
 36 C1 Bass Drum 1           60 C3 Hi Bongo

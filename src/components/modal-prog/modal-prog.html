@@ -10,7 +10,7 @@
     <div class="modal-body">
         <form>
             <div style="display: flex;">
-                <div style="flex: 1;margin: 0 2px; max-width: 510px;">
+                <div style="flex: 1;margin: 0 2px;">
                     <div style="display: flex;">
                         <div style="flex:0.5;">
                             <h4>Title</h4>
@@ -18,9 +18,7 @@
                         </div>
                         <div style="flex:0.25; margin-left: 0.5rem;">
                             <h4>Key</h4>
-                            <select id="key_mp" ref="key_mp">
-                                <option>Choose the main key...</option>
-                            </select>
+                            <div id="prog-key" style="width: 100%;margin: 0.5rem 0 1rem 0;"></div>
                         </div>
                         <div style="flex:0.25;">
                             <h4 style="margin-left: 10px;">BPM</h4>
@@ -34,31 +32,26 @@
                     <div class="choice-panel">
                         <div style="flex: 1;">
                             <h4>Root</h4>
-                            <select id="root_mp" ref="root_mp">
-                                <option>Choose the root...</option>
-                            </select>
+                            <div id="prog-root" style="width: 100%; margin: 0.5rem 0 1rem 0;"></div>
+                            <div style="display: flex;">
+                                <div style="flex: 1; margin-right: 0.5rem;">
+                                    <h4>Chords</h4>
+                                    <div id="prog-chord" style="width: 100%; margin: 0.5rem 0 1rem 0;"></div>
+                                </div>
+                                <div style="flex: 1;">
+                                    <h4>Time Signatures</h4>
+                                    <div id="prog-time" style="width: 100%; margin: 0.5rem 0 1rem 0;"></div>
+                                </div>
+                            </div>
 
-                            <h4>Chords</h4>
-                            <select id="chord_mp" ref="chord_mp">
-                                <option>Choose the root...</option>
-                            </select>
-
-                            <h4>Time Signatures</h4>
-                            <select id="timeSignature_mp" ref="timeSignature_mp">
-                                <option>Choose the time Signature...</option>
-                            </select>
                             <div style="display: flex;">
                                 <div style="flex: 1; margin-right: 0.5rem;">
                                     <h4>Octaves</h4>
-                                    <select id="octave_mp" ref="octave_mp">
-                                        <option>Choose the octave...</option>
-                                    </select>
+                                    <div id="prog-octave" style="width: 100%; margin: 0.5rem 0 1rem 0;"></div>
                                 </div>
                                 <div style="flex: 1;">
                                     <h4>Inversion</h4>
-                                    <select id="inversion_mp" ref="inversion_mp">
-                                        <option>Choose the Inversion...</option>
-                                    </select>
+                                    <div id="prog-inversion" style="width: 100%; margin: 0.5rem 0 1rem 0;"></div>
                                 </div>
                             </div>
 
@@ -70,13 +63,13 @@
                     </div>
 
                 </div>
-                <div style="flex: 1;margin: 0 1.5rem; max-width: 510px;">
-                    <div>
+                <div style="flex: 1;margin: 0 1.5rem;">
+                    <!-- <div>
                         <h4>Ritmo </h4>
                         <select id="ritmos_mp" ref="ritmo_mp">
                             <option>Choose the ritmo...</option>
                         </select>
-                    </div>
+                    </div> -->
 
                     <div style="display: flex; justify-content: space-between;">
                         <h4>Transpose all </h4>
