@@ -61,7 +61,8 @@ export class MySelect {
         evt.stopPropagation();
         this.hide();
         var newval = elem.dataset.value;
-        this.value.innerHTML = newval;
+        let item = this.options.data.find(e => e.value === newval);
+        this.value.innerHTML = item.label;
         if (this.options.onSelect) this.options.onSelect(newval);
     }
 

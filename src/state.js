@@ -14,7 +14,7 @@ export default class State {
             .then(snapshot => {
                 snapshot.forEach(doc => {
                     let i = this.studies.findIndex(x => x.id == doc.id && doc.data().userId === this.app.user.user.uid);
-                    // Se non trova elementi con lo stesso id e dello stesso autore l'aggiunge
+                    // Se non trova elementi con lo stesso id e dello stesso autore l'aggiunge ai già presenti
                     if (i == -1 && doc.data().userId === this.app.user.user.uid) {
                         this.studies.push({
                             id: doc.id,

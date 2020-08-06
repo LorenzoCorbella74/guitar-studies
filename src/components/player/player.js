@@ -1,6 +1,8 @@
 import "./player.scss";
 import template from './player.html';
 
+import {MySelect} from '../my-select/my-select';
+
 export default class Player {
 
     constructor(placeholderId, progressions, playCallback = () => null, stopCallback = () => null) {
@@ -21,14 +23,6 @@ export default class Player {
         // EVENTS
         document.getElementsByClassName("player-play-btn")[0].addEventListener('click', this.play.bind(this));
         document.getElementsByClassName("player-stop-btn")[0].addEventListener('click', this.stop.bind(this));
-
-        // Change
-        document.getElementById('progress_pl').addEventListener('change', (evt) => {
-            this.selectedProgression = evt.target.value;
-            let item = this.list.find(e => e.progressionId === this.selectedProgression);
-            let list = this.element.querySelector('.player-list');
-            list.innerHTML = item.progression.map((e, i) => `<span class="player-list-item"><span>${e.time}</span> <span>${e.root}${e.chord} - ${e.octave}-${e.inversion}</span></span>`).join('');
-        });
 
         this.pos1 = 0;
         this.pos2 = 0;
@@ -58,21 +52,22 @@ export default class Player {
     }
 
     configureForm () {
-        this.fillOptions('progress_pl', this.list.map(e => ({ text: e.title, value: e.progressionId })));
-    }
-
-    fillOptions (id, options) {
-        var select = document.getElementById(id);
-        for (let i = select.length - 1; i >= 1; i--) {
-            select.remove(i);
-        }
-        for (var i = 0; i < options.length; i++) {
-            var opt = options[i];
-            var el = document.createElement("option");
-            el.textContent = opt.text;
-            el.value = opt.value;
-            select.appendChild(el);
-        }
+       let options = this.list.map(e => ({ label: e.title, value: e.progressionId }));
+       options.unshift({ label: 'Choose the Progression', isHeader: true });
+        this.player_choice = new MySelect({
+            id: "progress_pl",
+            val: options[0].label,
+            data: options,
+            onSelect: newval => {
+                this.selectedProgression = newval;
+                let item = this.list.find(e => e.progressionId === this.selectedProgression);
+                let list = this.element.querySelector('.player-list');
+                list.innerHTML = item.progression.map((e, i) => `<span class="player-list-item">
+                <span>${e.time}</span> 
+                <span>${e.root}${e.chord} - ${e.octave}-${e.inversion}</span>
+                </span>`).join('');
+            }
+        });
     }
 
     dragMouseDown (e) {
@@ -108,7 +103,7 @@ export default class Player {
     toggle () {
         this.element.style.display = (this.element.style.display === "none" || this.element.style.display === "") ? 'block' : 'none';
         document.querySelector('.player-list').innerHTML = '';
-        document.getElementById('progress_pl').value = '';
+        this.player_choice.value.innerHTML = '';
     }
 
     play () {

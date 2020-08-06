@@ -20,7 +20,7 @@ import { allIntervals, allScales } from '../../constants';
 
 import screenfull from 'screenfull';
 
-function isMobileDevice() {
+function isMobileDevice () {
     return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 };
 
@@ -255,7 +255,7 @@ export default class MyFretboard {
             }
             fretboard.querySelector('.toggle-loop-btn').innerHTML = this.fretboardIstances[id].isPlaying ? '&#128192;' : '&#128191;';
         });
-        if(!isMobileDevice()){
+        if (!isMobileDevice()) {
             fretboard.querySelector('.fullscreen-btn').addEventListener('click', (evt) => this.toggleFullscrean.call(this, evt));
         }
 
@@ -313,15 +313,16 @@ export default class MyFretboard {
     // improve: clearinterval dei selectlayer già partiti...
     makeLayerLoop (evt) {
         let { id } = this.getParent(evt);
+        let length = this.fretboardIstances[id].layers.reduce((acc, ele) => (ele.visible ? acc+1 : acc), 0);
         let time = ac.currentTime + 0.25;
-        let times = Array.from(Array(this.fretboardIstances[id].layers.length), (_, i) => i + 1).map(e => 4); // indicano quanti beat ci stanno in ogni battuta
+        let times = Array.from(Array(length), (_, i) => i + 1).map(e => 4); // indicano quanti beat ci stanno in ogni battuta
         let layer = this.fretboardIstances[id].layers[0];   // TODO: si prende il 1°
         let accordo = layer.intervals.map((e, i) => {
             if (e[0] === '1' || e[0] === '3' || e[0] === '5') {
                 return layer.notes[i] + '4';
             }
         });
-        let percussionTimes = Array.from(Array(this.fretboardIstances[id].layers.length * 4), (_, i) => i + 1).map(e => 1);
+        let percussionTimes = Array.from(Array(length * 4), (_, i) => i + 1).map(e => 1);
         let bpm = 60 / this.app.layerBpm; // durata del singolo beat in secondi
         let percussion_time = ac.currentTime + 0.25;
         let global_time = ac.currentTime + 0.25;
@@ -335,12 +336,15 @@ export default class MyFretboard {
         this.timeout = {};
         for (let i = 0; i < this.fretboardIstances[id].layers.length; i++) {
             const layer = this.fretboardIstances[id].layers[i];
-            this.timeout[i.toString()] = setTimeout(() => {
-                this.selectLayer(evt, layer.id, id);
-            }, time);
-            time += times[i] * bpm * 1000;
+            // si cicla tra i layer visibili
+            if (layer.visible) {
+                this.timeout[i.toString()] = setTimeout(() => {
+                    this.selectLayer(evt, layer.id, id);
+                }, time);
+                time += times[i] * bpm * 1000;
+            }
         }
-        this.loop = setTimeout(() => this.makeLayerLoop(evt), this.fretboardIstances[id].layers.length * 4 * bpm * 1000);
+        this.loop = setTimeout(() => this.makeLayerLoop(evt), length * 4 * bpm * 1000);
     }
 
     stopLayerLoop (evt) {
@@ -824,7 +828,7 @@ export default class MyFretboard {
     checkScale (scales) {
         let output = [];
         scales.forEach(scale => {
-            if (allScales.find(e=> e.label.includes(scale))) {
+            if (allScales.find(e => e.label.includes(scale))) {
                 output.push(scale)
             }
         });
@@ -1058,7 +1062,7 @@ export default class MyFretboard {
         let { parent } = this.getParent(null, parentId);
         this.fretboardIstances[parentId].selectedIndex = id; // id del layer
         // BTN
-        if(!isMobileDevice()){
+        if (!isMobileDevice()) {
             parent.querySelector('.fullscreen-btn').style.visibility = 'inherit';
         }
         parent.querySelector('.settings-btn').style.visibility = 'inherit';
