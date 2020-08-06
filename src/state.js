@@ -17,7 +17,7 @@ export default class State {
                     // Se non trova elementi con lo stesso id e dello stesso autore l'aggiunge
                     if (i == -1 && doc.data().userId === this.app.user.user.uid) {
                         this.studies.push({
-                            studyId: doc.id,
+                            id: doc.id,
                             /* img: doc.data().img,
                             userId: doc.data().userId,
                             title: doc.data().title,
