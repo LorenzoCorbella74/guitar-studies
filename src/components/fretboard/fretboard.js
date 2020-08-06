@@ -824,7 +824,7 @@ export default class MyFretboard {
     checkScale (scales) {
         let output = [];
         scales.forEach(scale => {
-            if (allScales.includes(scale)) {
+            if (allScales.find(e=> e.label.includes(scale))) {
                 output.push(scale)
             }
         });

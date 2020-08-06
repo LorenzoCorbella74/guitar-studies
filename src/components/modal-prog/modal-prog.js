@@ -152,14 +152,14 @@ export default class ModalProgression {
             data: optionsInversions,
             onSelect: newval => console.log('Inversion: ', newval)
         });
-        console.log(JSON.stringify(optionsChords));
+        // console.log(JSON.stringify(optionsChords));
     }
 
     resetForm () {
         this.refs.title_mp.value = '';
         this.refs.description_mp.value = '';
         this.refs.bpm_mp.value = '';
-        this.refs.ritmo_mp.value = '';
+       /*  this.refs.ritmo_mp.value = ''; */
         this.key.value.innerHTML = '';
         this.root.value.innerHTML = '';
         this.chord.value.innerHTML = '';
