@@ -75,7 +75,7 @@ class App {
             Soundfont.instrument(ac, 'acoustic_guitar_steel').then(guitarDownloaded => {
                 this.guitarSounds = guitarDownloaded;
                 this.spinner.textContent = 'Loading percussion sounds';
-                Soundfont.instrument(ac, 'percussion', { soundfont: 'FluidR3_GM' }).then(percussionDownloaded => {  // steel_drums, percussion
+                Soundfont.instrument(ac, 'synth_drum', { soundfont: 'FluidR3_GM' }).then(percussionDownloaded => {  // steel_drums, percussion
                     this.drumSounds = percussionDownloaded;
                     // FIXME: 
                     let currentUser = firebase.auth().currentUser;

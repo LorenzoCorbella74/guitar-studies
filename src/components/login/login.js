@@ -24,6 +24,7 @@ export default class Login {
         this.title = document.getElementById('login-msg');
         this.switchModeBtn = document.getElementById('register-msg');
         this.enterBtn = document.getElementsByClassName("login-enter-btn")[0];
+        this.errorToast = document.getElementsByClassName("error-toast")[0];
        /*  this.enterGoogleBtn = document.getElementsByClassName("login-enter-google-btn")[0]
         this.enterFacebookBtn = document.getElementsByClassName("login-enter-facebook-btn")[0] */
 
@@ -76,6 +77,7 @@ export default class Login {
     }
 
     enter () {
+        this.errorToast.textContent ='';
         this.loader.classList.remove('hide');
         this.validateForm(() => {
             if(this.mode === operationType.REGISTER){
@@ -91,7 +93,7 @@ export default class Login {
                 })
                 .catch(err => {
                     this.loader.classList.add('hide');
-                    this.error = err.message;
+                    this.errorToast.textContent = err.message;
                 });
             } else {
                 firebase
@@ -106,7 +108,7 @@ export default class Login {
                 })
                 .catch(err => {
                     this.loader.classList.add('hide');
-                    this.error = err.message;
+                    this.errorToast.textContent = err.message;
                 });
             }
             
@@ -125,7 +127,7 @@ export default class Login {
                 this.app.goTo('list');
             })
             .catch(err => {
-                this.error = err.message;
+                this.errorToast.textContent = err.message;
             });
     }
 
@@ -141,7 +143,7 @@ export default class Login {
                 this.app.goTo('list');
             })
             .catch(err => {
-                this.error = err.message;
+                this.errorToast.textContent = err.message;
             });
     }
 

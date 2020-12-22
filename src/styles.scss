@@ -166,6 +166,12 @@ input[type="radio"] {
   color: white;
 }
 
+.error-toast {
+  color: red;
+  font-size: 80%;
+  font-weight: 600;
+}
+
 /*  RANGE SLIDER */
 .slidecontainer,
 .range-container {
@@ -432,7 +438,7 @@ input[type="radio"] {
 
   .progression-item {
     font-size: 80%;
-    width: 46%!important;
+    width: 46% !important;
   }
 }
 
