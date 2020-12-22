@@ -7,7 +7,7 @@ export default class Header {
 
         this.element = document.getElementById(placeholderId);
         this.element.innerHTML = template;  // Load template into placeholder element
-        this.prevScrollpos = window.pageYOffset;
+        // this.prevScrollpos = window.pageYOffset;
 
         // Find all refs in component
         this.refs = {}
@@ -24,15 +24,15 @@ export default class Header {
         document.getElementById('fifths-btn').addEventListener('click', fifthsCallback);
         document.getElementById('mode-btn').addEventListener('click', (evt)=> modeCallback.call(null, evt));
 
-        window.onscroll = () => {
+        /* window.onscroll = () => {
             var currentScrollPos = window.pageYOffset;
-            if (this.prevScrollpos > currentScrollPos) {
+            if (this.prevScrollpos > currentScrollPos ) {
                 this.element.style.top = '0';
             } else {
                 this.element.style.top = '-98px';
             }
             this.prevScrollpos = currentScrollPos;
-        }
+        } */
 
         // SLIDER RANGE
         const header = document.querySelector('.header');
